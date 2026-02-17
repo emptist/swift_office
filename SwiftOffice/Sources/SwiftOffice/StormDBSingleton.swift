@@ -56,7 +56,7 @@ open class StormDBSingleton: JSONDatabase {
         return opts["mainKey"] as? String ?? ""
     }
     
-    public class func getJSON(_ opts: [String: Any] = [:]) -> [String: Any]? {
+    public override class func getJSON(_ opts: [String: Any] = [:]) -> [String: Any]? {
         let (jsonfilename, isReady) = jsonfileNeedsNoFix(opts)
         
         if isReady {
