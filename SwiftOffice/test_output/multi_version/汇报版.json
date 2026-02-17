@@ -1,22 +1,21 @@
 {
-  "version" : "汇报版",
-  "description" : "适合向上级汇报，重点突出",
+  "slideCount" : 7,
   "slides" : [
     {
       "type" : "title",
       "text" : "医院质量报告 - 汇报版"
     },
     {
-      "text" : "总体概述",
-      "type" : "sectionTitle"
-    },
-    {
-      "type" : "text",
-      "content" : "本年度医疗质量稳步提升..."
-    },
-    {
       "type" : "sectionTitle",
-      "text" : "科室对比"
+      "text" : "总体概述"
+    },
+    {
+      "content" : "本年度医疗质量稳步提升...",
+      "type" : "text"
+    },
+    {
+      "text" : "科室对比",
+      "type" : "sectionTitle"
     },
     {
       "title" : "科室综合评价",
@@ -31,5 +30,6 @@
       "content" : "建议继续加强..."
     }
   ],
-  "slideCount" : 7
+  "description" : "适合向上级汇报，重点突出",
+  "version" : "汇报版"
 }

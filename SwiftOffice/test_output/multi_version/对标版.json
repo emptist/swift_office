@@ -1,6 +1,4 @@
 {
-  "slideCount" : 9,
-  "description" : "与标杆医院对比分析",
   "slides" : [
     {
       "type" : "title",
@@ -15,12 +13,12 @@
       "content" : "本年度医疗质量稳步提升..."
     },
     {
-      "type" : "sectionTitle",
-      "text" : "对标分析"
+      "text" : "对标分析",
+      "type" : "sectionTitle"
     },
     {
-      "type" : "barChart",
-      "title" : "与标杆对比"
+      "title" : "与标杆对比",
+      "type" : "barChart"
     },
     {
       "text" : "问题清单",
@@ -35,9 +33,11 @@
       "text" : "结论建议"
     },
     {
-      "type" : "text",
-      "content" : "建议继续加强..."
+      "content" : "建议继续加强...",
+      "type" : "text"
     }
   ],
-  "version" : "对标版"
+  "version" : "对标版",
+  "description" : "与标杆医院对比分析",
+  "slideCount" : 9
 }

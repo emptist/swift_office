@@ -1,27 +1,27 @@
 {
-  "slideCount" : 5,
   "description" : "仅包含关键信息，适合快速浏览",
-  "version" : "简化版",
   "slides" : [
     {
       "text" : "医院质量报告 - 简化版",
       "type" : "title"
     },
     {
-      "type" : "sectionTitle",
-      "text" : "摘要"
+      "text" : "摘要",
+      "type" : "sectionTitle"
     },
     {
-      "type" : "text",
-      "content" : "关键指标摘要..."
+      "content" : "关键指标摘要...",
+      "type" : "text"
     },
     {
-      "type" : "sectionTitle",
-      "text" : "结论建议"
+      "text" : "结论建议",
+      "type" : "sectionTitle"
     },
     {
       "type" : "text",
       "content" : "建议继续加强..."
     }
-  ]
+  ],
+  "version" : "简化版",
+  "slideCount" : 5
 }

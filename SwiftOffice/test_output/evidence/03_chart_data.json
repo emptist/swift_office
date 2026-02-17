@@ -1,11 +1,11 @@
 {
-  "type" : "bar",
   "title" : "内科治愈好转率",
   "categories" : [
     "2021",
     "2022",
     "2023"
   ],
+  "type" : "bar",
   "series" : [
     {
       "name" : "治愈好转率",

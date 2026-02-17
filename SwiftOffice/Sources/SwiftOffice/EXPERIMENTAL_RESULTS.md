@@ -193,3 +193,16 @@ Swift:        struct 无继承 → static var 直接模拟 class-side
 | `项目设置.cso` | `项目设置.cso` |
 | `class extends Base` | `struct + static var` |
 | 单继承 | 无继承，更灵活 |
+
+---
+
+## Protocol 使用场景
+
+| 场景 | 是否需要 Protocol | 原因 |
+|------|------------------|------|
+| 基础使用 | ❌ | struct + static var 足够 |
+| 多态处理 | ✅ | 需要统一处理多个实体 |
+| 代码共享 | ✅ | Protocol extension 提供默认实现 |
+| 能力分层 | ✅ | Protocol 继承模拟原著继承链 |
+
+**结论：100% 方案 (static var) 本身不需要 Protocol**
