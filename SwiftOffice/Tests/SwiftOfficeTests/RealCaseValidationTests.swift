@@ -113,43 +113,201 @@ struct RealCaseValidationTests {
     }
     
     // ========================================
-    // 测试 3: 多版本输出
+    // 测试 3: 多版本输出 (搭积木式组合)
     // ========================================
     
-    @Test("多版本输出: 同一数据生成多种格式")
+    @Test("多版本输出: 搭积木式组合不同章节模板")
     func testMultiVersionOutput() async throws {
-        let outputDir = "/Users/jk/gits/hub/prog_langs/swift/swift_office/SwiftOffice/test_output/versions"
+        // 同一数据源
+        struct 报告数据 {
+            nonisolated(unsafe) static let data: [String: Any] = [
+                "科室": ["内科", "外科", "妇产科"],
+                "指标": ["治愈好转率", "死亡率", "平均住院日"],
+                "值": [
+                    "内科_治愈好转率": 95.5,
+                    "内科_死亡率": 0.3,
+                    "内科_平均住院日": 8.5,
+                    "外科_治愈好转率": 92.3,
+                    "外科_死亡率": 0.5,
+                    "外科_平均住院日": 9.0
+                ]
+            ]
+        }
+        
+        // 章节积木 (可复用的章节组件)
+        enum 章节积木 {
+            case 扉页(String)
+            case 目录
+            case 总体概述
+            case 科室对比
+            case 趋势分析
+            case 对标分析
+            case 问题清单
+            case 结论建议
+            case 详细数据表
+            case 简化摘要
+            
+            func toSlides() -> [[String: Any]] {
+                switch self {
+                case .扉页(let title):
+                    return [["type": "title", "text": title]]
+                case .目录:
+                    return [["type": "toc"]]
+                case .总体概述:
+                    return [
+                        ["type": "sectionTitle", "text": "总体概述"],
+                        ["type": "text", "content": "本年度医疗质量稳步提升..."]
+                    ]
+                case .科室对比:
+                    return [
+                        ["type": "sectionTitle", "text": "科室对比"],
+                        ["type": "radarChart", "title": "科室综合评价"]
+                    ]
+                case .趋势分析:
+                    return [
+                        ["type": "sectionTitle", "text": "趋势分析"],
+                        ["type": "lineChart", "title": "年度趋势"]
+                    ]
+                case .对标分析:
+                    return [
+                        ["type": "sectionTitle", "text": "对标分析"],
+                        ["type": "barChart", "title": "与标杆对比"]
+                    ]
+                case .问题清单:
+                    return [
+                        ["type": "sectionTitle", "text": "问题清单"],
+                        ["type": "table", "title": "待改进项"]
+                    ]
+                case .结论建议:
+                    return [
+                        ["type": "sectionTitle", "text": "结论建议"],
+                        ["type": "text", "content": "建议继续加强..."]
+                    ]
+                case .详细数据表:
+                    return [
+                        ["type": "sectionTitle", "text": "详细数据"],
+                        ["type": "table", "title": "完整指标数据"]
+                    ]
+                case .简化摘要:
+                    return [
+                        ["type": "sectionTitle", "text": "摘要"],
+                        ["type": "text", "content": "关键指标摘要..."]
+                    ]
+                }
+            }
+        }
+        
+        // 报告版本定义 (搭积木组合)
+        struct 报告版本 {
+            let name: String
+            let description: String
+            let blocks: [章节积木]
+            
+            func generate() -> [[String: Any]] {
+                var slides: [[String: Any]] = []
+                for block in blocks {
+                    slides.append(contentsOf: block.toSlides())
+                }
+                return slides
+            }
+        }
+        
+        // 版本 1: 简化版 (最少章节)
+        let 简化版 = 报告版本(
+            name: "简化版",
+            description: "仅包含关键信息，适合快速浏览",
+            blocks: [
+                .扉页("医院质量报告 - 简化版"),
+                .简化摘要,
+                .结论建议
+            ]
+        )
+        
+        // 版本 2: 院内报告 (详细数据)
+        let 院内报告 = 报告版本(
+            name: "院内报告",
+            description: "包含详细数据，供内部使用",
+            blocks: [
+                .扉页("医院质量报告 - 院内版"),
+                .目录,
+                .总体概述,
+                .科室对比,
+                .趋势分析,
+                .问题清单,
+                .详细数据表,
+                .结论建议
+            ]
+        )
+        
+        // 版本 3: 汇报版 (适合向上级汇报)
+        let 汇报版 = 报告版本(
+            name: "汇报版",
+            description: "适合向上级汇报，重点突出",
+            blocks: [
+                .扉页("医院质量报告 - 汇报版"),
+                .总体概述,
+                .科室对比,
+                .结论建议
+            ]
+        )
+        
+        // 版本 4: 对标版 (与标杆对比)
+        let 对标版 = 报告版本(
+            name: "对标版",
+            description: "与标杆医院对比分析",
+            blocks: [
+                .扉页("医院质量报告 - 对标版"),
+                .总体概述,
+                .对标分析,
+                .问题清单,
+                .结论建议
+            ]
+        )
+        
+        // 生成多套报告
+        let versions = [简化版, 院内报告, 汇报版, 对标版]
+        
+        let outputDir = "/Users/jk/gits/hub/prog_langs/swift/swift_office/SwiftOffice/test_output/multi_version"
         try FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
         
-        // 数据源
-        let data: [[String: Any]] = [
-            ["科室": "内科", "指标": "治愈好转率", "值": 95.5],
-            ["科室": "外科", "指标": "治愈好转率", "值": 92.3],
-            ["科室": "妇产科", "指标": "治愈好转率", "值": 97.1]
-        ]
+        var generatedFiles: [String] = []
         
-        // 版本 1: JSON
-        let json = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
-        try json.write(to: URL(fileURLWithPath: "\(outputDir)/data.json"))
-        
-        // 版本 2: CSV
-        var csv = "科室,指标,值\n"
-        for row in data {
-            csv += "\(row["科室"]!),\(row["指标"]!),\(row["值"]!)\n"
+        for version in versions {
+            let slides = version.generate()
+            
+            // 保存为 JSON (实际会生成 PPTX)
+            let json = try JSONSerialization.data(
+                withJSONObject: [
+                    "version": version.name,
+                    "description": version.description,
+                    "slideCount": slides.count,
+                    "slides": slides
+                ],
+                options: .prettyPrinted
+            )
+            let filename = "\(outputDir)/\(version.name).json"
+            try json.write(to: URL(fileURLWithPath: filename))
+            generatedFiles.append(filename)
         }
-        try csv.write(toFile: "\(outputDir)/data.csv", atomically: true, encoding: .utf8)
         
-        // 版本 3: Markdown 表格
-        var md = "| 科室 | 指标 | 值 |\n|------|------|------|\n"
-        for row in data {
-            md += "| \(row["科室"]!) | \(row["指标"]!) | \(row["值"]!) |\n"
-        }
-        try md.write(toFile: "\(outputDir)/data.md", atomically: true, encoding: .utf8)
+        // 验证生成了 4 套不同结构的报告
+        #expect(generatedFiles.count == 4)
         
-        // 验证
-        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/data.json"))
-        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/data.csv"))
-        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/data.md"))
+        // 验证章节数量不同
+        let 简化版Slides = 简化版.generate()
+        let 院内报告Slides = 院内报告.generate()
+        let 汇报版Slides = 汇报版.generate()
+        let 对标版Slides = 对标版.generate()
+        
+        #expect(简化版Slides.count < 汇报版Slides.count)
+        #expect(汇报版Slides.count < 院内报告Slides.count)
+        #expect(院内报告Slides.count > 对标版Slides.count)
+        
+        // 验证文件存在
+        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/简化版.json"))
+        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/院内报告.json"))
+        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/汇报版.json"))
+        #expect(FileManager.default.fileExists(atPath: "\(outputDir)/对标版.json"))
     }
     
     // ========================================

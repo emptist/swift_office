@@ -1,0 +1,62 @@
+{
+  "description" : "包含详细数据，供内部使用",
+  "slideCount" : 14,
+  "slides" : [
+    {
+      "type" : "title",
+      "text" : "医院质量报告 - 院内版"
+    },
+    {
+      "type" : "toc"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "总体概述"
+    },
+    {
+      "content" : "本年度医疗质量稳步提升...",
+      "type" : "text"
+    },
+    {
+      "text" : "科室对比",
+      "type" : "sectionTitle"
+    },
+    {
+      "title" : "科室综合评价",
+      "type" : "radarChart"
+    },
+    {
+      "text" : "趋势分析",
+      "type" : "sectionTitle"
+    },
+    {
+      "title" : "年度趋势",
+      "type" : "lineChart"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "问题清单"
+    },
+    {
+      "title" : "待改进项",
+      "type" : "table"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "详细数据"
+    },
+    {
+      "type" : "table",
+      "title" : "完整指标数据"
+    },
+    {
+      "text" : "结论建议",
+      "type" : "sectionTitle"
+    },
+    {
+      "type" : "text",
+      "content" : "建议继续加强..."
+    }
+  ],
+  "version" : "院内报告"
+}
