@@ -156,6 +156,26 @@ PPT 章节自动生成，按顺序排列
 
 ## 核心优势
 
+### 关键洞察：struct 无继承性 = 优势！
+
+**原著 CoffeeScript 的困境：**
+- 必须用 class-side 模拟单例（因为没有 struct）
+- 继承链带来复杂性
+- 子类需要 override 父类方法
+
+**Swift struct 的优势：**
+- 无继承性 → 无需考虑继承链
+- 每个 struct 独立，直接使用 static var
+- 不需要 override，代码更简洁
+- **这正是 Swift 的"因祸得福"！**
+
+```
+CoffeeScript: class 继承链 → class-side 模拟单例
+Swift:        struct 无继承 → static var 直接模拟 class-side
+```
+
+### 其他优势
+
 1. **使用方式与原著完全一致**: `项目设置.cso.一级指标设置`
 2. **懒加载**: 首次访问时初始化
 3. **缓存**: 数据驻留内存
