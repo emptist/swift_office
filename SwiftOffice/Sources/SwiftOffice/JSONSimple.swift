@@ -1,6 +1,6 @@
 import Foundation
 
-public class JSONSimple {
+open class JSONSimple {
     
     public class func getJSONFilename(_ opts: [String: Any]) -> String {
         let dirname = opts["dirname"] as? String
