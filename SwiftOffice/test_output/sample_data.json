@@ -1,23 +1,23 @@
 {
-  "metrics" : {
-    "average" : 136,
-    "total_sales" : 680,
-    "growth_rate" : 0.14999999999999999
-  },
   "report_title" : "SwiftOffice 测试数据",
-  "generated_at" : "2026-02-17T15:14:33Z",
+  "generated_at" : "2026-02-17T15:55:46Z",
   "categories" : [
     {
-      "value" : 100,
-      "name" : "产品A"
+      "name" : "产品A",
+      "value" : 100
     },
     {
-      "name" : "产品B",
-      "value" : 200
+      "value" : 200,
+      "name" : "产品B"
     },
     {
       "name" : "产品C",
       "value" : 150
     }
-  ]
+  ],
+  "metrics" : {
+    "average" : 136,
+    "growth_rate" : 0.14999999999999999,
+    "total_sales" : 680
+  }
 }
