@@ -1,0 +1,45 @@
+# Swift
+.build/
+.swiftpm/
+Package.resolved
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+xcuserdata/
+*.xcuserstate
+
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Output files
+*.pptx
+*.xlsx
+!test_*.pptx
+!test_*.xlsx
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Secrets (if any)
+.env
+.env.local
+*.pem
+*.key
