@@ -1,0 +1,35 @@
+{
+  "slideCount" : 7,
+  "slides" : [
+    {
+      "type" : "title",
+      "text" : "医院质量报告 - 汇报版"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "总体概述"
+    },
+    {
+      "content" : "本年度医疗质量稳步提升...",
+      "type" : "text"
+    },
+    {
+      "text" : "科室对比",
+      "type" : "sectionTitle"
+    },
+    {
+      "title" : "科室综合评价",
+      "type" : "radarChart"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "结论建议"
+    },
+    {
+      "type" : "text",
+      "content" : "建议继续加强..."
+    }
+  ],
+  "description" : "适合向上级汇报，重点突出",
+  "version" : "汇报版"
+}

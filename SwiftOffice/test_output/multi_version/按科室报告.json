@@ -1,0 +1,38 @@
+{
+  "slides" : [
+    {
+      "text" : "医院质量报告 - 按科室",
+      "type" : "title"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "内科"
+    },
+    {
+      "type" : "table",
+      "title" : "内科指标"
+    },
+    {
+      "text" : "外科",
+      "type" : "sectionTitle"
+    },
+    {
+      "title" : "外科指标",
+      "type" : "table"
+    },
+    {
+      "type" : "sectionTitle",
+      "text" : "妇产科"
+    },
+    {
+      "type" : "table",
+      "title" : "妇产科指标"
+    }
+  ],
+  "template" : "按科室报告",
+  "sections" : [
+    "内科",
+    "外科",
+    "妇产科"
+  ]
+}
