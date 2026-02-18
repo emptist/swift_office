@@ -43,3 +43,9 @@ temp/
 .env.local
 *.pem
 *.key
+
+# Development tools (master only)
+SwiftOfficeValidator/
+references/
+test_output/
+ai.md
