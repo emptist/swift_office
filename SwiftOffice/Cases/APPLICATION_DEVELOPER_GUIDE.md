@@ -1,6 +1,8 @@
-# Developer Guide - Creating a New Case
+# Application Developer Guide - Creating a New Case
 
-This guide explains how to create a new project case using SwiftOffice, translating the CoffeeScript workflow to Swift.
+This guide is for **application developers** who want to use SwiftOffice to create data analysis and report generation projects.
+
+> **For package contributors**: See [../PACKAGE_DEVELOPER_GUIDE.md](../PACKAGE_DEVELOPER_GUIDE.md) for contributing to SwiftOffice itself.
 
 ## Table of Contents
 

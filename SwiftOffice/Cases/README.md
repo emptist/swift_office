@@ -2,7 +2,7 @@
 
 每个项目一个文件夹，以客户名项目名加年份命名。
 
-> **📖 Developer Guide**: See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for step-by-step instructions on creating a new case.
+> **📖 Application Developer Guide**: See [APPLICATION_DEVELOPER_GUIDE.md](APPLICATION_DEVELOPER_GUIDE.md) for step-by-step instructions on creating a new case.
 
 ## 文件夹结构
 

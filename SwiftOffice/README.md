@@ -257,7 +257,8 @@ All scripts use stdin/stdout JSON I/O for inter-process communication with Swift
 ## References
 
 - [hqcoffee](../hqcoffee) - Original CoffeeScript implementation
-- [Cases/DEVELOPER_GUIDE.md](Cases/DEVELOPER_GUIDE.md) - Step-by-step guide for creating new cases
+- [Cases/APPLICATION_DEVELOPER_GUIDE.md](Cases/APPLICATION_DEVELOPER_GUIDE.md) - Step-by-step guide for creating new cases
+- [PACKAGE_DEVELOPER_GUIDE.md](PACKAGE_DEVELOPER_GUIDE.md) - Guide for package contributors
 - [ARCHITECTURE.md](Sources/SwiftOffice/ARCHITECTURE.md) - Detailed architecture docs
 - [TECHNICAL_DOCUMENTATION.md](Sources/SwiftOffice/TECHNICAL_DOCUMENTATION.md) - Translation experience
 
