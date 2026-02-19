@@ -102,12 +102,28 @@ v7-json-as-xlsx    → Detail refinement (convergence)
 
 The `static var` pattern with `nonisolated(unsafe)` achieves the same lazy-loading + caching pattern as CoffeeScript's class-side programming, without the complexity of inheritance chains.
 
+### Why `nonisolated(unsafe)` is Appropriate
+
+The runtime constraints make thread-safety concerns irrelevant:
+
+| Constraint | Implication |
+|------------|-------------|
+| One branch = One project | Only one case runs at a time |
+| Data separated by file elements | No concurrent access to same data |
+| Consulting workflow | Sequential processing, no parallelism needed |
+
+> **Design Principle**: Use design to make complex things impossible to occur, while keeping an open mind to experiment on new possibilities.
+
+Don't over-engineer for problems you don't have. The original CoffeeScript design was minimalist; the Swift translation should maintain that simplicity.
+
 ### Future Exploration Directions
 
-1. **Swift Concurrency** — Can `actor` provide better cache handling?
-2. **Type Safety** — Enhance types while maintaining flexibility?
-3. **Cross-platform** — Linux/Windows support
-4. **Performance** — Large dataset processing
+1. **Swift Concurrency** — Can `actor` provide better cache handling? (if multi-case support needed)
+2. **Protocol stored properties** — If Swift adds this feature, reduce boilerplate
+3. **Swift Macros** — `@CaseSingleton` macro for automatic code generation
+4. **Type Safety** — Enhance types while maintaining flexibility?
+5. **Cross-platform** — Linux/Windows support
+6. **Performance** — Large dataset processing
 
 ---
 
