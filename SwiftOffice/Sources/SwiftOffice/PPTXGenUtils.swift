@@ -1,5 +1,11 @@
 import Foundation
 
+// PPTXGenUtils uses pptxgenjs for PPT generation.
+// This is the ONLY supported PPT generator in SwiftOffice.
+// The officegen package was evaluated but contains bugs and is NOT used.
+// The original CoffeeScript implementation (hqcoffee) also uses pptxgenjs exclusively.
+// See: https://github.com/gitbrent/PptxGenJS
+
 open class PPTXGenUtils {
     
     public class func getPPTFilename(_ opts: [String: Any]) -> String {

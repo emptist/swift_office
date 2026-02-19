@@ -71,7 +71,9 @@ npm install
 Dependencies:
 - `convert-excel-to-json` - Excel reading
 - `json-as-xlsx` - Excel writing (matches hqcoffee reference)
-- `pptxgenjs` - PPT generation
+- `pptxgenjs` - PPT generation (ONLY supported PPT library)
+
+> **Note:** The `officegen` package was evaluated but contains bugs and is NOT used. Only `pptxgenjs` is supported for PPT generation. This matches the original CoffeeScript implementation (hqcoffee).
 
 ## Quick Start
 

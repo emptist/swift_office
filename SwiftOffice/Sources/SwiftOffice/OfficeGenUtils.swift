@@ -1,5 +1,11 @@
 import Foundation
 
+// DEPRECATED: officegen package contains bugs and is NOT used.
+// Only pptxgenjs is supported for PPT generation.
+// See PPTXGenUtils.swift and SwiftOfficeAPI.swift for the active implementation.
+// This file is kept for reference only.
+
+@available(*, deprecated, message: "officegen contains bugs. Use PPTXGenUtils with pptxgenjs instead.")
 open class OfficeGenUtils {
     
     public class func getPPTFilename(_ opts: [String: Any]) -> String {
@@ -11,16 +17,12 @@ open class OfficeGenUtils {
     public class func createPPT(_ opts: [String: Any]) async throws {
         let pptname = getPPTFilename(opts)
         
-        // Note: Actual PPT generation would be done via NodeJS bridge
-        // using officegen package
-        // This is a placeholder for the structure
-        
+        print("WARNING: OfficeGenUtils is deprecated. Use PPTXGenUtils instead.")
         print("Creating PPT: \(pptname)")
     }
     
     public class func testChart(_ opts: [String: Any] = [:]) async throws {
-        // Test chart generation
-        // Note: This would use officegen's chart capabilities
+        print("WARNING: OfficeGenUtils is deprecated. Use PPTXGenUtils instead.")
         
         let chartData: [[String: Any]] = [
             [
@@ -34,7 +36,6 @@ open class OfficeGenUtils {
     }
     
     public class func test(_ opts: [String: Any] = [:]) async throws {
-        // Basic test for officegen
-        print("Testing OfficeGenUtils")
+        print("WARNING: OfficeGenUtils is deprecated. Use PPTXGenUtils instead.")
     }
 }

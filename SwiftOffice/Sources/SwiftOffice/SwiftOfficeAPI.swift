@@ -40,11 +40,14 @@ public enum SwiftOffice {
     
     // MARK: - PPT Generation
     
+    // NOTE: Only pptxgenjs is supported. The officegen package was evaluated but contains bugs.
+    // The original CoffeeScript implementation (hqcoffee) uses pptxgenjs exclusively.
+    // See: https://github.com/gitbrent/PptxGenJS
+    
     @available(macOS 10.15, *)
     public static func createPPT(
         slides: [[String: Any]],
-        outputPath: String,
-        generator: PPTGenerator = .pptxgen
+        outputPath: String
     ) async throws {
         let bridge = try NodeJSBridge(
             scriptsPath: URL(fileURLWithPath: "./Scripts")
@@ -161,13 +164,6 @@ public struct ExcelColumn {
     public func toDict() -> [String: String] {
         ["label": label, "value": value]
     }
-}
-
-// MARK: - PPT Generator Types
-
-public enum PPTGenerator: String, Sendable {
-    case pptxgen = "pg"
-    case officegen = "og"
 }
 
 // MARK: - Convenience Extensions
