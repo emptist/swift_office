@@ -166,6 +166,17 @@ public struct ExcelColumn {
     }
 }
 
+// MARK: - PPT Generator Types
+
+// NOTE: Only pptxgenjs is actively supported. The officegen package was evaluated but contains bugs.
+// The officegen case is kept for documentation purposes only.
+// The original CoffeeScript implementation (hqcoffee) uses pptxgenjs exclusively.
+
+public enum PPTGenerator: String, Sendable {
+    case pptxgen = "pg"      // Active: https://github.com/gitbrent/PptxGenJS
+    case officegen = "og"    // DEPRECATED: Contains bugs, not recommended
+}
+
 // MARK: - Convenience Extensions
 
 @available(macOS 10.15, *)
