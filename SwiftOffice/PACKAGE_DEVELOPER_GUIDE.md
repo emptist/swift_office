@@ -77,54 +77,7 @@ This case was selected as the example because:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Design Philosophy
-
-> **"文章本天成，妙手偶得之"** — Good design is not deliberately pursued, but naturally emerges through extensive practice.
-
-SwiftOffice is more than a code translation; it is a dialogue between two language paradigms.
-
-#### Original Design Intent (hqcoffee)
-
-The original CoffeeScript framework was designed for consulting companies providing data analysis services. Key requirements:
-
-1. **Easy to use** — Consultants (non-programmers) can use it
-2. **Secure** — Data integrity and access control
-3. **Historical authenticity** — Projects remain as they were
-4. **Traceable** — Every state can be reproduced
-5. **Adaptive evolution** — Business logic evolves over time
-
-The elegant solution: **One branch serves one consulting project.**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Git as Blockchain                        │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│   main ──► safe ──► goodhospital2021 (project branch)       │
-│              │                                               │
-│              └──► anotherhospital2022 (project branch)      │
-│                                                              │
-│   Each project branch = Time capsule, preserved as-is        │
-│   Git hash = Blockchain hash, traceable                      │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-#### Why "self"?
-
-- **self.swift** = The project itself
-- Customization needs are implemented here
-- Logic that doesn't need reuse goes here
-- Each project has its own self
-
-#### Shared vs. Project-Specific
-
-| Location | Purpose | Inheritance |
-|----------|---------|-------------|
-| `cases/` external | Shared technology | New projects auto-inherit |
-| `cases/project/self.swift` | Project-specific | Only for this project |
-
-#### The Exploration Journey
+### The Exploration Journey
 
 The path to the current design was not straight:
 
@@ -138,7 +91,7 @@ v6-static-var      → static var pattern (breakthrough!)
 v7-json-as-xlsx    → Detail refinement (convergence)
 ```
 
-#### Key Insight: struct's Lack of Inheritance is an Advantage
+### Key Insight: struct's Lack of Inheritance is an Advantage
 
 | CoffeeScript | Swift |
 |--------------|-------|
@@ -149,7 +102,7 @@ v7-json-as-xlsx    → Detail refinement (convergence)
 
 The `static var` pattern with `nonisolated(unsafe)` achieves the same lazy-loading + caching pattern as CoffeeScript's class-side programming, without the complexity of inheritance chains.
 
-#### Future Exploration Directions
+### Future Exploration Directions
 
 1. **Swift Concurrency** — Can `actor` provide better cache handling?
 2. **Type Safety** — Enhance types while maintaining flexibility?

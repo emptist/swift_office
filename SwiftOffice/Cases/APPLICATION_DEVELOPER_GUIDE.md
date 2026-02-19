@@ -25,6 +25,62 @@ A "Case" represents a complete data analysis and report generation project. Each
 
 The case structure mirrors the original CoffeeScript implementation in [hqcoffee](../../hqcoffee).
 
+### The Example Case: goodhospital2021
+
+This folder serves as both:
+
+1. **A real consulting project** — Originally delivered to a hospital client
+2. **A reference implementation** — Demonstrates the complete workflow
+
+This case was selected as the example because:
+- It represents a typical hospital data analysis project
+- It showcases all three stages (preparation, implementation, reporting)
+- It demonstrates the `self.swift` customization pattern
+- It has been sanitized for public use (no sensitive data)
+
+### Design Philosophy
+
+> **"文章本天成，妙手偶得之"** — Good design is not deliberately pursued, but naturally emerges through extensive practice.
+
+The original CoffeeScript framework was designed for consulting companies providing data analysis services. Key requirements:
+
+1. **Easy to use** — Consultants (non-programmers) can use it
+2. **Secure** — Data integrity and access control
+3. **Historical authenticity** — Projects remain as they were
+4. **Traceable** — Every state can be reproduced
+5. **Adaptive evolution** — Business logic evolves over time
+
+The elegant solution: **One branch serves one consulting project.**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Git as Blockchain                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│   main ──► safe ──► goodhospital2021 (project branch)       │
+│              │                                               │
+│              └──► anotherhospital2022 (project branch)      │
+│                                                              │
+│   Each project branch = Time capsule, preserved as-is        │
+│   Git hash = Blockchain hash, traceable                      │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Why "self"?
+
+- **self.swift** = The project itself
+- Customization needs are implemented here
+- Logic that doesn't need reuse goes here
+- Each project has its own self
+
+### Shared vs. Project-Specific
+
+| Location | Purpose | Inheritance |
+|----------|---------|-------------|
+| `cases/` external | Shared technology | New projects auto-inherit |
+| `cases/project/self.swift` | Project-specific | Only for this project |
+
 ---
 
 ## Workflow Stages
