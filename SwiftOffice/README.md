@@ -94,28 +94,41 @@ let correctedName = alias.adjustedName("内科*")  // Returns "内科"
 ### Excel Operations
 
 ```swift
-// Read Excel (via Node.js bridge)
+// Read Excel
 let excelData = try await SwiftOffice.readExcel(path: "data.xlsx")
 
-// Write Excel (via Node.js bridge with json-as-xlsx format)
-let bridge = try NodeJSBridge(scriptsPath: URL(fileURLWithPath: "./Scripts"))
-let params: [String: Any] = [
-    "fileName": "output",
-    "data": [
-        [
-            "sheet": "数据",
-            "columns": [
-                ["label": "名称", "value": "name"],
-                ["label": "数值", "value": "value"]
-            ],
-            "content": [
-                ["name": "产品A", "value": 100],
-                ["name": "产品B", "value": 200]
-            ]
+// Write Excel - High-level API (Recommended)
+let sheets: [ExcelSheet] = [
+    ExcelSheet(
+        sheet: "数据",
+        columns: [
+            ExcelColumn(label: "名称", value: "name"),
+            ExcelColumn(label: "数值", value: "value")
+        ],
+        content: [
+            ["name": "产品A", "value": 100],
+            ["name": "产品B", "value": 200]
+        ]
+    )
+]
+let fileName = try await SwiftOffice.writeExcelSheets(fileName: "output", sheets: sheets)
+// Creates: output.xlsx
+
+// Write Excel - Low-level API (for advanced use)
+let data: [[String: Any]] = [
+    [
+        "sheet": "数据",
+        "columns": [
+            ["label": "名称", "value": "name"],
+            ["label": "数值", "value": "value"]
+        ],
+        "content": [
+            ["name": "产品A", "value": 100],
+            ["name": "产品B", "value": 200]
         ]
     ]
 ]
-try await bridge.executeScript("writeExcel", params: params)
+try await SwiftOffice.writeExcel(fileName: "output", data: data)
 ```
 
 ### PPT Generation
@@ -129,6 +142,47 @@ try await SwiftOffice.createPPT(
     outputPath: "report.pptx"
 )
 ```
+
+## API Reference
+
+### SwiftOffice Main API
+
+| Method | Description |
+|--------|-------------|
+| `readJSON(from:)` | Read JSON file (native Swift) |
+| `writeJSON(_:to:)` | Write JSON file (native Swift) |
+| `readExcel(path:header:columnToKey:)` | Read Excel to JSON (async) |
+| `writeExcel(fileName:data:extraLength:)` | Write Excel from raw data (async) |
+| `writeExcelSheets(fileName:sheets:extraLength:)` | Write Excel from typed sheets (async, recommended) |
+| `createPPT(slides:outputPath:)` | Generate PPTX file (async) |
+
+### Excel Models
+
+```swift
+// ExcelSheet - Represents a single worksheet
+public struct ExcelSheet {
+    public let sheet: String              // Sheet name
+    public let columns: [ExcelColumn]     // Column definitions
+    public let content: [[String: Any]]   // Row data
+}
+
+// ExcelColumn - Defines a column
+public struct ExcelColumn {
+    public let label: String   // Column header text
+    public let value: String   // Key in content dictionary
+}
+```
+
+### PPTGenerator Enum
+
+```swift
+public enum PPTGenerator: String, Sendable {
+    case pptxgen = "pg"      // Active: https://github.com/gitbrent/PptxGenJS
+    case officegen = "og"    // DEPRECATED: Contains bugs, not recommended
+}
+```
+
+> **Note:** Only `pptxgenjs` is actively supported. The `officegen` case is preserved for documentation and future comparison purposes.
 
 ## Project Structure
 
@@ -203,6 +257,7 @@ All scripts use stdin/stdout JSON I/O for inter-process communication with Swift
 ## References
 
 - [hqcoffee](../hqcoffee) - Original CoffeeScript implementation
+- [Cases/DEVELOPER_GUIDE.md](Cases/DEVELOPER_GUIDE.md) - Step-by-step guide for creating new cases
 - [ARCHITECTURE.md](Sources/SwiftOffice/ARCHITECTURE.md) - Detailed architecture docs
 - [TECHNICAL_DOCUMENTATION.md](Sources/SwiftOffice/TECHNICAL_DOCUMENTATION.md) - Translation experience
 
