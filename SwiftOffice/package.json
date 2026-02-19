@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "convert-excel-to-json": "^1.7.0",
-    "exceljs": "^4.4.0",
+    "json-as-xlsx": "^2.3.10",
     "pptxgenjs": "^3.12.0"
   }
 }
