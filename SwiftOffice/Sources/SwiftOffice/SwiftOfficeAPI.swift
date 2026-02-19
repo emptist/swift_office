@@ -89,6 +89,78 @@ public enum SwiftOffice {
         let result = try await bridge.executeScript("readExcel", params: params)
         return result["data"] as? [String: Any] ?? [:]
     }
+    
+    @available(macOS 10.15, *)
+    public static func writeExcel(
+        fileName: String,
+        data: [[String: Any]],
+        extraLength: Int = 5
+    ) async throws -> String {
+        let bridge = try NodeJSBridge(
+            scriptsPath: URL(fileURLWithPath: "./Scripts")
+        )
+        
+        let params: [String: any Sendable & Codable] = [
+            "fileName": fileName,
+            "data": data,
+            "extraLength": extraLength
+        ]
+        
+        let result = try await bridge.executeScript("writeExcel", params: params)
+        
+        if let success = result["success"] as? Bool, success {
+            return result["fileName"] as? String ?? "\(fileName).xlsx"
+        } else {
+            let error = result["error"] as? String ?? "Unknown error"
+            throw SwiftOfficeError.excelGenerationFailed(error)
+        }
+    }
+    
+    @available(macOS 10.15, *)
+    public static func writeExcelSheets(
+        fileName: String,
+        sheets: [ExcelSheet],
+        extraLength: Int = 5
+    ) async throws -> String {
+        let data = sheets.map { $0.toDict() }
+        return try await writeExcel(fileName: fileName, data: data, extraLength: extraLength)
+    }
+}
+
+// MARK: - Excel Sheet Model
+
+public struct ExcelSheet {
+    public let sheet: String
+    public let columns: [ExcelColumn]
+    public let content: [[String: Any]]
+    
+    public init(sheet: String, columns: [ExcelColumn], content: [[String: Any]]) {
+        self.sheet = sheet
+        self.columns = columns
+        self.content = content
+    }
+    
+    public func toDict() -> [String: Any] {
+        [
+            "sheet": sheet,
+            "columns": columns.map { $0.toDict() },
+            "content": content
+        ]
+    }
+}
+
+public struct ExcelColumn {
+    public let label: String
+    public let value: String
+    
+    public init(label: String, value: String) {
+        self.label = label
+        self.value = value
+    }
+    
+    public func toDict() -> [String: String] {
+        ["label": label, "value": value]
+    }
 }
 
 // MARK: - PPT Generator Types

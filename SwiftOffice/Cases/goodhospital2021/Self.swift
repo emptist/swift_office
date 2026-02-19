@@ -297,3 +297,189 @@ public struct ReportGenerator {
         ]
     }
 }
+
+// MARK: - Stage 1: Data Collection Excel Generator
+
+public struct Stage1Generator {
+    
+    @available(macOS 10.15, *)
+    public static func generate项目指标填报表(outputPath: String) async throws -> String {
+        let json = 项目设置.cso
+        
+        let sheets: [ExcelSheet] = [
+            make一级指标Sheet(json: json),
+            make二级指标Sheet(json: json),
+            make三级指标Sheet(json: json),
+            make科室设置Sheet(json: json)
+        ]
+        
+        let fileName = outputPath.replacingOccurrences(of: ".xlsx", with: "")
+        return try await SwiftOffice.writeExcelSheets(fileName: fileName, sheets: sheets)
+    }
+    
+    private static func make一级指标Sheet(json: [String: Any]) -> ExcelSheet {
+        var content: [[String: Any]] = []
+        if let 一级指标设置 = json["一级指标设置"] as? [String: [String: Any]] {
+            for (key, value) in 一级指标设置 {
+                content.append([
+                    "数据名": key,
+                    "权重": value["权重"] ?? 0,
+                    "序号": value["序号"] ?? 0
+                ])
+            }
+            content.sort { ($0["权重"] as? Double ?? 0) > ($1["权重"] as? Double ?? 0) }
+        }
+        
+        return ExcelSheet(
+            sheet: "一级指标设置",
+            columns: [
+                ExcelColumn(label: "数据名", value: "数据名"),
+                ExcelColumn(label: "权重", value: "权重"),
+                ExcelColumn(label: "序号", value: "序号")
+            ],
+            content: content
+        )
+    }
+    
+    private static func make二级指标Sheet(json: [String: Any]) -> ExcelSheet {
+        var content: [[String: Any]] = []
+        if let 二级指标设置 = json["二级指标设置"] as? [String: [String: Any]] {
+            for (key, value) in 二级指标设置 {
+                content.append([
+                    "数据名": key,
+                    "权重": value["权重"] ?? 0,
+                    "序号": value["序号"] ?? 0,
+                    "上级指标": value["上级指标"] ?? ""
+                ])
+            }
+            content.sort { ($0["上级指标"] as? String ?? "") > ($1["上级指标"] as? String ?? "") }
+        }
+        
+        return ExcelSheet(
+            sheet: "二级指标设置",
+            columns: [
+                ExcelColumn(label: "数据名", value: "数据名"),
+                ExcelColumn(label: "权重", value: "权重"),
+                ExcelColumn(label: "序号", value: "序号"),
+                ExcelColumn(label: "上级指标", value: "上级指标")
+            ],
+            content: content
+        )
+    }
+    
+    private static func make三级指标Sheet(json: [String: Any]) -> ExcelSheet {
+        var content: [[String: Any]] = []
+        if let 三级指标设置 = json["三级指标设置"] as? [String: [String: Any]] {
+            for (key, value) in 三级指标设置 {
+                content.append([
+                    "数据名": key,
+                    "权重": value["权重"] ?? 0,
+                    "序号": value["序号"] ?? 0,
+                    "上级指标": value["上级指标"] ?? "",
+                    "院科通": value["院科通"] ?? "",
+                    "指或数": value["指或数"] ?? "",
+                    "指标导向": value["指标导向"] ?? "",
+                    "计量单位": value["计量单位"] ?? "",
+                    "指标来源": value["指标来源"] ?? "",
+                    "三级中医": value["三级中医"] ?? "",
+                    "三级综合": value["三级综合"] ?? "",
+                    "二级综合": value["二级综合"] ?? "",
+                    "指标说明": value["指标说明"] ?? ""
+                ])
+            }
+            content.sort { ($0["上级指标"] as? String ?? "") > ($1["上级指标"] as? String ?? "") }
+        }
+        
+        return ExcelSheet(
+            sheet: "三级指标设置",
+            columns: [
+                ExcelColumn(label: "数据名", value: "数据名"),
+                ExcelColumn(label: "权重", value: "权重"),
+                ExcelColumn(label: "序号", value: "序号"),
+                ExcelColumn(label: "上级指标", value: "上级指标"),
+                ExcelColumn(label: "院科通", value: "院科通"),
+                ExcelColumn(label: "指或数", value: "指或数"),
+                ExcelColumn(label: "指标导向", value: "指标导向"),
+                ExcelColumn(label: "计量单位", value: "计量单位"),
+                ExcelColumn(label: "指标来源", value: "指标来源"),
+                ExcelColumn(label: "三级中医", value: "三级中医"),
+                ExcelColumn(label: "三级综合", value: "三级综合"),
+                ExcelColumn(label: "二级综合", value: "二级综合"),
+                ExcelColumn(label: "指标说明", value: "指标说明")
+            ],
+            content: content
+        )
+    }
+    
+    private static func make科室设置Sheet(json: [String: Any]) -> ExcelSheet {
+        var content: [[String: Any]] = []
+        if let 科室设置 = json["科室设置"] as? [String: [String: Any]] {
+            for (key, value) in 科室设置 {
+                content.append([
+                    "数据名": key,
+                    "内外全": value["内外全"] ?? "",
+                    "序号": value["序号"] ?? 0
+                ])
+            }
+            content.sort { ($0["内外全"] as? String ?? "") > ($1["内外全"] as? String ?? "") }
+        }
+        
+        return ExcelSheet(
+            sheet: "科室设置",
+            columns: [
+                ExcelColumn(label: "数据名", value: "数据名"),
+                ExcelColumn(label: "内外全", value: "内外全"),
+                ExcelColumn(label: "序号", value: "序号")
+            ],
+            content: content
+        )
+    }
+    
+    @available(macOS 10.15, *)
+    public static func generate项目对标资料表(outputPath: String) async throws -> String {
+        let json = 项目设置.cso
+        
+        var content: [[String: Any]] = []
+        if let 三级指标设置 = json["三级指标设置"] as? [String: [String: Any]] {
+            for (key, _) in 三级指标设置 {
+                content.append([
+                    "数据名": key,
+                    "单位": "",
+                    "Y2021": "",
+                    "Y2020": "",
+                    "Y2019": ""
+                ])
+            }
+        }
+        
+        let sheet = ExcelSheet(
+            sheet: "对标数据",
+            columns: [
+                ExcelColumn(label: "数据名", value: "数据名"),
+                ExcelColumn(label: "单位", value: "单位"),
+                ExcelColumn(label: "Y2021", value: "Y2021"),
+                ExcelColumn(label: "Y2020", value: "Y2020"),
+                ExcelColumn(label: "Y2019", value: "Y2019")
+            ],
+            content: content
+        )
+        
+        let fileName = outputPath.replacingOccurrences(of: ".xlsx", with: "")
+        return try await SwiftOffice.writeExcelSheets(fileName: fileName, sheets: [sheet])
+    }
+    
+    @available(macOS 10.15, *)
+    public static func generateAllStage1Products(outputDir: String) async throws -> [String] {
+        var generatedFiles: [String] = []
+        
+        let 项目指标填报表Path = "\(outputDir)/项目指标填报表"
+        let file1 = try await generate项目指标填报表(outputPath: 项目指标填报表Path + ".xlsx")
+        generatedFiles.append(file1)
+        
+        let 项目对标资料表Path = "\(outputDir)/项目对标资料表"
+        let file2 = try await generate项目对标资料表(outputPath: 项目对标资料表Path + ".xlsx")
+        generatedFiles.append(file2)
+        
+        return generatedFiles
+    }
+}
