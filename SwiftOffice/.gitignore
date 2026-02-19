@@ -9,3 +9,4 @@ DerivedData/
 node_modules/
 *.xlsx
 !test_output/sample_data.xlsx
+!Cases/**/*.xlsx
