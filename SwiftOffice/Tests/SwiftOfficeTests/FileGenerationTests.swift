@@ -86,60 +86,37 @@ struct FileGenerationTests {
     @Test("Generate sample Excel via NodeJS")
     @available(macOS 10.15, *)
     func generateExcelSample() async throws {
-        // 先创建一个简单的 JSON 数据，然后用 NodeJS 写入 Excel
-        // 这里我们测试读取功能，先创建一个测试 Excel 文件
-        
         let excelPath = outputDir + "/sample_data.xlsx"
         
-        // 使用 NodeJS 创建 Excel 文件
         let bridge = try NodeJSBridge(
             scriptsPath: URL(fileURLWithPath: "./Scripts")
         )
         
-        // 创建一个简单的测试 Excel
-        let createScript = """
-        const ExcelJS = require('exceljs');
-        (async () => {
-            const workbook = new ExcelJS.Workbook();
-            const sheet = workbook.addWorksheet('数据');
-            
-            sheet.columns = [
-                { header: '名称', key: 'name' },
-                { header: '数值', key: 'value' },
-                { header: '备注', key: 'note' }
-            ];
-            
-            sheet.addRow({ name: '产品A', value: 100, note: '测试数据' });
-            sheet.addRow({ name: '产品B', value: 200, note: '测试数据' });
-            sheet.addRow({ name: '产品C', value: 150, note: '测试数据' });
-            
-            await workbook.xlsx.writeFile('\(excelPath)');
-            console.log(JSON.stringify({ success: true }));
-        })().catch(e => {
-            console.log(JSON.stringify({ success: false, error: e.message }));
-            process.exit(1);
-        });
-        """
+        let params: [String: Any] = [
+            "fileName": excelPath.replacingOccurrences(of: ".xlsx", with: ""),
+            "extraLength": 5,
+            "data": [
+                [
+                    "sheet": "数据",
+                    "columns": [
+                        ["label": "名称", "value": "name"],
+                        ["label": "数值", "value": "value"],
+                        ["label": "备注", "value": "note"]
+                    ],
+                    "content": [
+                        ["name": "产品A", "value": 100, "note": "测试数据"],
+                        ["name": "产品B", "value": 200, "note": "测试数据"],
+                        ["name": "产品C", "value": 150, "note": "测试数据"]
+                    ]
+                ]
+            ]
+        ]
         
-        // 写入临时脚本
-        let tempScriptPath = outputDir + "/create_excel.js"
-        try createScript.write(toFile: tempScriptPath, atomically: true, encoding: .utf8)
+        let result = try await bridge.executeScript("writeExcel", params: params)
         
-        // 执行脚本
-        let process = Foundation.Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/local/bin/node")
-        process.arguments = [tempScriptPath]
-        process.currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath + "/SwiftOffice")
-        
-        try process.run()
-        process.waitUntilExit()
-        
-        // 清理临时脚本
-        try FileManager.default.removeItem(atPath: tempScriptPath)
-        
-        // 如果 ExcelJS 不可用，跳过此测试
-        if !FileManager.default.fileExists(atPath: excelPath) {
-            print("⚠️ ExcelJS 未安装，跳过 Excel 测试")
+        guard let success = result["success"] as? Bool, success else {
+            let error = result["error"] as? String ?? "Unknown error"
+            print("⚠️ Excel 生成失败: \(error)")
             return
         }
         

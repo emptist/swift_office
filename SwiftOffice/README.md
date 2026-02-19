@@ -1,76 +1,30 @@
 # SwiftOffice
 
-A Swift library for Office document generation, inspired by CoffeeScript's class-side programming pattern.
+A Swift library for Office document generation, translating CoffeeScript's class-side programming pattern to Swift 6.2.
+
+## Overview
+
+SwiftOffice is a Swift translation of [hqcoffee](../hqcoffee), a CoffeeScript-based hospital data analysis and report generation system. The key insight from this translation:
+
+> **struct 无继承性 = 优势！** (struct's lack of inheritance is an advantage)
+
+By using `static var` with `nonisolated(unsafe)`, we achieve the same lazy-loading + caching pattern as CoffeeScript's `@cso: @dataPrepare?()` without the complexity of inheritance chains.
 
 ## Features
 
 - **Excel Operations**: Read/write Excel files via Node.js bridge
 - **PPTX Generation**: Create PowerPoint presentations with charts and tables
-- **JSON Database**: Simple JSON-based data storage
+- **JSON Database**: Native Swift JSON handling (no external dependencies)
 - **Static Var Pattern**: Elegant translation of CoffeeScript class-side to Swift
-
-## Installation
-
-Add to your `Package.swift`:
-
-```swift
-dependencies: [
-    .package(path: "path/to/SwiftOffice")
-]
-```
-
-## Quick Start
-
-### Basic Usage
-
-```swift
-import SwiftOffice
-
-// Create a cached entity
-let 项目设置 = CachedEntity(basename: "项目设置")
-let data = 项目设置.cso  // Lazy loaded
-
-// Alias handling
-let 别名 = AliasEntity(basename: "别名库")
-let correctName = 别名.adjustedName("内科*")  // Returns "内科"
-```
-
-### File Operations
-
-```swift
-// JSON file operations
-let filename = FileTools.getJSONFilename([
-    "dirname": "/path/to/dir",
-    "basename": "数据"
-])
-
-// Read/write JSON
-let data = FileTools.readFromJSON(filename)
-FileTools.write2JSON(filename, obj: ["key": "value"])
-```
-
-### PPT Generation
-
-```swift
-// Generate PPT with charts
-let api = SwiftOfficeAPI()
-try api.generatePPT(
-    output: "report.pptx",
-    slides: [
-        ["type": "title", "text": "报告标题"],
-        ["type": "barChart", "title": "数据对比", "data": [...]]
-    ]
-)
-```
 
 ## Architecture
 
-### Core Discovery: `static var` Pattern
+### Core Pattern: `static var` + Lazy Loading
 
 **CoffeeScript:**
 ```coffeescript
 class 项目设置
-  @cso: @dataPrepare?()
+  @cso: @dataPrepare?()  # Lazy load + cache
 ```
 
 **Swift:**
@@ -85,60 +39,171 @@ struct 项目设置 {
 }
 ```
 
-### Key Insight
+### Why struct > class for this use case
 
-**struct 无继承性 = 优势！**
+| Aspect | class (inheritance) | struct (static var) |
+|--------|---------------------|---------------------|
+| Inheritance chain | Up to 6 levels deep | None needed |
+| Override complexity | Required | Not applicable |
+| State management | Instance + static | Static only |
+| Thread safety | Manual | `nonisolated(unsafe)` |
+| Simplicity | Medium | High |
 
-- No inheritance chain to consider
-- No override needed
-- Each struct is independent
-- Direct `static var` simulates class-side
+## Installation
 
-## Core Components
+### Swift Package
 
-| Component | Description |
-|-----------|-------------|
-| `FileTools` | File operations (JSON, Excel) |
-| `DatabaseEntity` | Database operations |
-| `CachedEntity` | Lazy loading + caching |
-| `AliasEntity` | Name alias handling |
-| `SwiftOfficeAPI` | Unified API entry point |
-
-## Multi-Version Output
-
-Build different report versions from the same data:
+Add to your `Package.swift`:
 
 ```swift
-// Section blocks (reusable components)
-enum 章节积木 {
-    case 扉页(String)
-    case 总体概述
-    case 科室对比
-    case 结论建议
-}
+dependencies: [
+    .package(path: "path/to/SwiftOffice")
+]
+```
 
-// Compose versions
-let 简化版 = 报告版本(
-    name: "简化版",
-    blocks: [.扉页("报告"), .总体概述, .结论建议]
+### Node.js Dependencies
+
+```bash
+cd SwiftOffice
+npm install
+```
+
+Dependencies:
+- `convert-excel-to-json` - Excel reading
+- `json-as-xlsx` - Excel writing (matches hqcoffee reference)
+- `pptxgenjs` - PPT generation
+
+## Quick Start
+
+### Basic Usage
+
+```swift
+import SwiftOffice
+
+// JSON operations (native Swift, no Node.js)
+let data = SwiftOffice.readJSON(from: "data.json")
+SwiftOffice.writeJSON(["key": "value"], to: "output.json")
+
+// Entity access with caching
+let alias = SwiftOffice.别名库
+let correctedName = alias.adjustedName("内科*")  // Returns "内科"
+```
+
+### Excel Operations
+
+```swift
+// Read Excel (via Node.js bridge)
+let excelData = try await SwiftOffice.readExcel(path: "data.xlsx")
+
+// Write Excel (via Node.js bridge with json-as-xlsx format)
+let bridge = try NodeJSBridge(scriptsPath: URL(fileURLWithPath: "./Scripts"))
+let params: [String: Any] = [
+    "fileName": "output",
+    "data": [
+        [
+            "sheet": "数据",
+            "columns": [
+                ["label": "名称", "value": "name"],
+                ["label": "数值", "value": "value"]
+            ],
+            "content": [
+                ["name": "产品A", "value": 100],
+                ["name": "产品B", "value": 200]
+            ]
+        ]
+    ]
+]
+try await bridge.executeScript("writeExcel", params: params)
+```
+
+### PPT Generation
+
+```swift
+try await SwiftOffice.createPPT(
+    slides: [
+        ["title": "报告标题", "content": "内容"],
+        ["type": "barChart", "title": "数据对比", "data": [...]]
+    ],
+    outputPath: "report.pptx"
 )
 ```
+
+## Project Structure
+
+```
+SwiftOffice/
+├── Scripts/                    # Node.js utility scripts
+│   ├── pptx.js                # PPT generation (pptxgenjs)
+│   ├── readExcel.js           # Excel reading (convert-excel-to-json)
+│   └── writeExcel.js          # Excel writing (json-as-xlsx)
+├── Sources/SwiftOffice/
+│   ├── Protocols/
+│   │   └── FileHandling.swift # Core protocols
+│   ├── Implementations/
+│   │   ├── Entities.swift     # v1 class-based entities
+│   │   ├── Handlers.swift     # v2 protocol+struct
+│   │   └── RefinedEntities.swift # v3 refined
+│   ├── JSONSimple.swift       # Base JSON operations
+│   ├── JSONDatabase.swift     # Database layer
+│   ├── StormDBSingleton.swift # Singleton pattern
+│   ├── NodeJSBridge.swift     # Swift ↔ Node.js IPC
+│   ├── SwiftOfficeAPI.swift   # Unified API entry
+│   └── V4ProtocolStruct.swift # Protocol inheritance chain
+├── Tests/SwiftOfficeTests/    # Test suite
+├── deprecated_experiments/     # Archived experiments
+└── test_output/               # Test output files
+```
+
+## Node.js Scripts
+
+| Script | Purpose | Input | Output |
+|--------|---------|-------|--------|
+| `readExcel.js` | Read Excel to JSON | stdin: `{path, header, columnToKey}` | stdout: `{success, data}` |
+| `writeExcel.js` | Write JSON to Excel | stdin: `{fileName, data}` | stdout: `{success, fileName}` |
+| `pptx.js` | Generate PPTX | stdin: `{action, slides, path}` | stdout: `{success}` |
+
+All scripts use stdin/stdout JSON I/O for inter-process communication with Swift.
+
+## Version History
+
+### v1.0.1 (adjust branch) - Excel Package Switch
+
+- Switched from `exceljs` to `json-as-xlsx` (matches hqcoffee reference)
+- Added `Scripts/writeExcel.js` using `json-as-xlsx` format
+- Moved `stormdb.js` to `deprecated_experiments/` (native Swift implementation exists)
+- Updated `.gitignore` for generated files
+
+### v1.0.0 - `static var` Pattern
+
+- Core entity pattern with `nonisolated(unsafe) static var`
+- Native Swift JSON operations (no Node.js dependency for JSON)
+- Excel read/write via Node.js bridge
+- PPTX generation via Node.js bridge
+
+### Branch History
+
+| Branch | Purpose | Status |
+|--------|---------|--------|
+| **adjust** | Switch to `json-as-xlsx` | **Current** |
+| v6-static-var-refactor | `static var` pattern | Base for adjust |
+| v5-first-principles | First principles analysis | Merged |
+| v4-protocol-struct | Deep protocol chain | Superseded |
+| v3-refined | Class + Protocol hybrid | Superseded |
+| v2-pop | Protocol-Oriented | Superseded |
+| v1-class-side | Class inheritance | Superseded |
 
 ## Requirements
 
 - Swift 6.2+
 - macOS 14.0+
-- Node.js (for Excel/PPTX operations)
+- Node.js 18+ (for Excel/PPTX operations)
+
+## References
+
+- [hqcoffee](../hqcoffee) - Original CoffeeScript implementation
+- [ARCHITECTURE.md](Sources/SwiftOffice/ARCHITECTURE.md) - Detailed architecture docs
+- [TECHNICAL_DOCUMENTATION.md](Sources/SwiftOffice/TECHNICAL_DOCUMENTATION.md) - Translation experience
 
 ## License
 
 MIT
-
-## Version History
-
-### v1.0.0 (Current)
-- Core entity pattern with `static var`
-- File operations (JSON, Excel)
-- PPTX generation via Node.js bridge
-- Multi-version report output
-- Comprehensive test coverage

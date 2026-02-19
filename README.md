@@ -1,66 +1,78 @@
 # Swift For Office
 
-A Swift library for Office document generation, inspired by CoffeeScript's class-side programming pattern.
+A Swift library for Office document generation, translating CoffeeScript's class-side programming pattern to Swift 6.2.
 
-## Overview
+## Project Structure
 
-SwiftOffice enables Swift applications to generate Office documents (Excel, PPTX) by leveraging Node.js packages through a bridge pattern. The core discovery is that **struct + static var** provides an elegant translation of CoffeeScript's class-side programming.
-
-## Quick Start
-
-```swift
-import SwiftOffice
-
-// Create a cached entity
-let 项目设置 = CachedEntity(basename: "项目设置")
-let data = 项目设置.cso  // Lazy loaded
-
-// Generate PPT
-let api = SwiftOfficeAPI()
-try api.generatePPT(output: "report.pptx", slides: [...])
+```
+swift_office/
+├── SwiftOffice/           # Main library
+│   ├── Sources/           # Swift source code
+│   ├── Scripts/           # Node.js utility scripts
+│   ├── Tests/             # Test suite
+│   └── README.md          # Detailed documentation
+├── SwiftOfficeValidator/  # Foundation exploration (created first)
+│   ├── Sources/
+│   ├── Scripts/
+│   └── Tests/
+└── references/            # Design documentation
 ```
 
-## Core Discovery
+## Packages
 
-| CoffeeScript | Swift |
-|--------------|-------|
-| `项目设置.cso` | `项目设置.cso` ✅ |
-| class-side | static var |
-| class inheritance | struct (no inheritance needed) |
+### SwiftOffice
 
-**Key Insight**: struct's lack of inheritance is actually an advantage - no override needed, each struct is independent.
+The main library for Office document generation.
 
-## Features
+**Key Features:**
+- Excel read/write via Node.js bridge (`json-as-xlsx`)
+- PPTX generation via `pptxgenjs`
+- Native Swift JSON handling
+- `static var` pattern for lazy-loading + caching
 
-- ✅ Excel read/write (via Node.js bridge)
-- ✅ PPTX generation with charts
-- ✅ JSON database
-- ✅ Multi-version report output
-- ✅ Alias handling for Chinese names
-
-## Installation
-
-```swift
-dependencies: [
-    .package(path: "path/to/SwiftOffice")
-]
+**Quick Start:**
+```bash
+cd SwiftOffice
+npm install
+swift build
+swift test
 ```
+
+See [SwiftOffice/README.md](SwiftOffice/README.md) for full documentation.
+
+### SwiftOfficeValidator
+
+**Created first as a foundation** to understand the core of Swift ↔ CoffeeScript translation. This package served as the exploration ground for:
+
+- Understanding Swift's type system vs CoffeeScript's dynamic nature
+- Prototyping the Node.js bridge pattern (stdin/stdout JSON I/O)
+- Testing Excel/PPT generation before main implementation
+- Discovering how to achieve CoffeeScript-level patterns in Swift
+
+See [SwiftOfficeValidator/](SwiftOfficeValidator/) for details.
+
+## Development History
+
+1. **SwiftOfficeValidator** - Foundation exploration, understanding Swift ↔ CoffeeScript patterns
+2. **SwiftOffice v1-v5** - Multiple approaches (class inheritance, POP, hybrid)
+3. **SwiftOffice v6** - `static var` pattern discovery (final approach)
+4. **v7-json-as-xlsx** - Switch to `json-as-xlsx` (matches hqcoffee reference)
 
 ## Requirements
 
 - Swift 6.2+
 - macOS 14.0+
-- Node.js (for Excel/PPTX operations)
+- Node.js 18+
 
-## Documentation
+## Origin
 
-- [SwiftOffice/README.md](SwiftOffice/README.md) - Package documentation
-- [EXPERIMENTAL_RESULTS.md](SwiftOffice/Sources/SwiftOffice/EXPERIMENTAL_RESULTS.md) - Core discovery
-- [TECHNICAL_DOCUMENTATION.md](SwiftOffice/Sources/SwiftOffice/TECHNICAL_DOCUMENTATION.md) - Full technical details
+This project is a Swift translation of [hqcoffee](../hqcoffee), a CoffeeScript-based hospital data analysis and report generation system.
 
-## Version
+## Key Insight
 
-**v1.0.0** - [Release Notes](https://github.com/your-repo/swift_office/releases/tag/v1.0.0)
+> **struct's lack of inheritance is an advantage**
+
+By using `static var` with `nonisolated(unsafe)`, we achieve the same lazy-loading + caching pattern as CoffeeScript's `@cso: @dataPrepare?()` without the complexity of inheritance chains.
 
 ## License
 
