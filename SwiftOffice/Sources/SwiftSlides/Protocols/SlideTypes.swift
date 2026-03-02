@@ -678,4 +678,17 @@ public struct 双栏页: Slide {
     
     public var notes: String? = nil
     public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "leftContent": 左栏内容,
+            "rightContent": 右栏内容
+        ]
+        if let 左栏标题 = 左栏标题 { dict["leftTitle"] = 左栏标题 }
+        if let 右栏标题 = 右栏标题 { dict["rightTitle"] = 右栏标题 }
+        return dict
+    }
 }

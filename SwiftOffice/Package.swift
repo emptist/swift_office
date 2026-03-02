@@ -13,6 +13,10 @@ let package = Package(
             name: "PreviousDesign",
             targets: ["PreviousDesign"]
         ),
+        .executable(
+            name: "SwiftSlidesDemo",
+            targets: ["SwiftSlidesDemo"]
+        ),
     ],
     targets: [
         .target(
@@ -22,6 +26,11 @@ let package = Package(
         .target(
             name: "PreviousDesign",
             path: "Sources/PreviousDesign"
+        ),
+        .executableTarget(
+            name: "SwiftSlidesDemo",
+            dependencies: ["SwiftSlides"],
+            path: "Sources/SwiftSlidesDemo"
         ),
         .testTarget(
             name: "SwiftSlidesTests",

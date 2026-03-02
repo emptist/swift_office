@@ -8,6 +8,17 @@ public protocol Section: Identifiable, Sendable {
 }
 
 @available(macOS 10.15, *)
+public extension Section {
+    func toDict() -> [String: Any] {
+        [
+            "id": id.uuidString,
+            "title": title,
+            "slides": slides.map { $0.toDict() }
+        ]
+    }
+}
+
+@available(macOS 10.15, *)
 public struct 章节: Section {
     public let id = UUID()
     public var title: String

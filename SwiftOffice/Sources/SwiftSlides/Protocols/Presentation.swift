@@ -9,6 +9,25 @@ public protocol Presentation: Identifiable, Sendable {
 }
 
 @available(macOS 10.15, *)
+public extension Presentation {
+    func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "id": id.uuidString,
+            "title": title,
+            "sections": sections.map { $0.toDict() }
+        ]
+        if let author = author { dict["author"] = author }
+        return dict
+    }
+    
+    func toJSON() throws -> String {
+        let dict = toDict()
+        let data = try JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted, .sortedKeys])
+        return String(data: data, encoding: .utf8) ?? "{}"
+    }
+}
+
+@available(macOS 10.15, *)
 public struct 演示文稿: Presentation {
     public let id = UUID()
     public var title: String
