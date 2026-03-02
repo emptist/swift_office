@@ -9,6 +9,7 @@ public enum SwiftOfficeError: Error, CustomStringConvertible, LocalizedError {
     case jsonParseFailed(rawData: String, reason: String)
     case dataFormatError(expected: String, actual: String)
     case nodeError(message: String, stack: String?)
+    case excelGenerationFailed(String)
     
     public var description: String {
         switch self {
@@ -42,6 +43,8 @@ public enum SwiftOfficeError: Error, CustomStringConvertible, LocalizedError {
                 result += "\nStack:\n\(stack)"
             }
             return result
+        case .excelGenerationFailed(let message):
+            return "Excel generation failed: \(message)"
         }
     }
     

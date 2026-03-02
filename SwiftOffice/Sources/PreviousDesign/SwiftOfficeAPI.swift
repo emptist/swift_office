@@ -103,9 +103,12 @@ public enum SwiftOffice {
             scriptsPath: URL(fileURLWithPath: "./Scripts")
         )
         
+        let dataJSON = try JSONSerialization.data(withJSONObject: data)
+        let dataString = String(data: dataJSON, encoding: .utf8) ?? "[]"
+        
         let params: [String: any Sendable & Codable] = [
             "fileName": fileName,
-            "data": data,
+            "dataJSON": dataString,
             "extraLength": extraLength
         ]
         
