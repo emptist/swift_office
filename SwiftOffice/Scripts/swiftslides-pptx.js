@@ -2,6 +2,7 @@
 
 const pptxgen = require('pptxgenjs');
 const https = require('https');
+const pako = require('pako');
 
 let input = '';
 
@@ -24,18 +25,23 @@ process.stdin.on('end', async () => {
 });
 
 function encodeMermaid(code) {
-    return Buffer.from(code, 'utf-8').toString('base64')
+    const compressed = pako.deflate(code, { level: 9, to: 'string' });
+    return Buffer.from(compressed).toString('base64')
         .replace(/\+/g, '-').replace(/\//g, '_');
 }
 
 async function fetchMermaidImage(code, format = 'svg') {
     const encodedCode = encodeMermaid(code);
-    const url = format === 'png' 
-        ? `https://mermaid.ink/png/${encodedCode}?type=png&scale=2`
-        : `https://mermaid.ink/svg/${encodedCode}`;
+    const url = `https://mermaid.ink/${format}/${encodedCode}`;
     
     return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+            resolve(null);
+        }, 15000);
+        
         https.get(url, (res) => {
+            clearTimeout(timeout);
+            
             if (res.statusCode === 200) {
                 const chunks = [];
                 res.on('data', chunk => chunks.push(chunk));
@@ -45,7 +51,8 @@ async function fetchMermaidImage(code, format = 'svg') {
                     resolve(`data:${mimeType};base64,${buffer.toString('base64')}`);
                 });
             } else if (res.statusCode === 302 || res.statusCode === 301) {
-                https.get(res.headers.location, (res2) => {
+                const redirectUrl = res.headers.location;
+                https.get(redirectUrl, (res2) => {
                     const chunks = [];
                     res2.on('data', chunk => chunks.push(chunk));
                     res2.on('end', () => {
@@ -53,11 +60,14 @@ async function fetchMermaidImage(code, format = 'svg') {
                         const mimeType = format === 'png' ? 'image/png' : 'image/svg+xml';
                         resolve(`data:${mimeType};base64,${buffer.toString('base64')}`);
                     });
-                }).on('error', reject);
+                }).on('error', () => resolve(null));
             } else {
                 resolve(null);
             }
-        }).on('error', () => resolve(null));
+        }).on('error', () => {
+            clearTimeout(timeout);
+            resolve(null);
+        });
     });
 }
 
