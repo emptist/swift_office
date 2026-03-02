@@ -1,59 +1,159 @@
 # SwiftOffice
 
-A Swift library for Office document generation, translating CoffeeScript's class-side programming pattern to Swift 6.2.
+A Swift library for Office document generation using Protocol-Oriented Programming (POP) with Swift 6.2.
 
-## Overview
+## SwiftSlides - PowerPoint Generation Framework
 
-SwiftOffice is a Swift translation of [hqcoffee](../hqcoffee), a CoffeeScript-based hospital data analysis and report generation system. The key insight from this translation:
+SwiftSlides is a powerful, natural language-like Swift framework for generating PowerPoint presentations. It uses Protocol-Oriented Programming (POP) principles and supports Chinese identifiers for intuitive content creation.
 
-> **struct 无继承性 = 优势！** (struct's lack of inheritance is an advantage)
+### Features
 
-By using `static var` with `nonisolated(unsafe)`, we achieve the same lazy-loading + caching pattern as CoffeeScript's `@cso: @dataPrepare?()` without the complexity of inheritance chains.
+- **23 Slide Types** - Cover, section, list, table, chart, timeline, flowchart, etc.
+- **Data-Driven API** - Create slides from arrays, CSV, TSV, or JSON data
+- **8 Predefined Themes** - Professional blue, business green, tech purple, etc.
+- **4 Presentation Templates** - Project report, training course, annual summary, data analysis
+- **Mermaid Diagrams** - Flowcharts, sequence diagrams, Gantt charts
+- **Chinese Identifiers** - Natural language-like API in Chinese
 
-## Features
+### Quick Start
 
-- **Excel Operations**: Read/write Excel files via Node.js bridge
-- **PPTX Generation**: Create PowerPoint presentations with charts and tables
-- **JSON Database**: Native Swift JSON handling (no external dependencies)
-- **Static Var Pattern**: Elegant translation of CoffeeScript class-side to Swift
+```swift
+import SwiftSlides
+
+let presentation = 演示文稿(标题: "项目报告", 作者: "张三", 主题: .专业蓝) {
+    章节(标题: "概述") {
+        封面页(标题: "项目进展报告", 副标题: "2024年度", 渐变: .蓝色)
+        
+        幻灯片.概览(项目: [
+            ("项目周期", "6个月"),
+            ("团队成员", "12人"),
+            ("完成进度", "85%"),
+        ])
+    }
+    
+    章节(标题: "数据分析") {
+        幻灯片.表格(标题: "数据汇总", 数据: [
+            ["类别", "数量", "占比"],
+            ["A类", "150", "30%"],
+            ["B类", "250", "50%"],
+        ])
+        
+        幻灯片.柱状图(标题: "月度趋势", 数据: [
+            ("一月", 85), ("二月", 92), ("三月", 88)
+        ], Y轴: "评分")
+    }
+}
+
+let json = try presentation.toJSON()
+```
+
+### Data Import
+
+```swift
+// From CSV
+let data = try 表格数据.从CSV内容("""
+月份,销售额,利润
+一月,125000,40000
+二月,138000,46000
+""")
+
+// Auto-generate slides
+幻灯片.表格(标题: "销售数据", 数据: data)
+幻灯片.柱状图(标题: "销售趋势", 数据: data, 标签列: "月份", 数值列: "销售额")
+```
+
+### Mermaid Diagrams
+
+```swift
+let flowchart = Mermaid流程图(
+    方向: .从上到下,
+    节点: [
+        Mermaid节点(id: "A", 标签: "开始", 形状: .圆形),
+        Mermaid节点(id: "B", 标签: "处理", 形状: .矩形),
+    ],
+    连线: [Mermaid连线(从: "A", 到: "B")],
+    配置: .大字体
+)
+
+Mermaid流程图页(标题: "业务流程", 流程图: flowchart)
+```
+
+### Templates
+
+```swift
+let config = 模板配置(
+    标题: "年度报告",
+    副标题: "2024年度总结",
+    作者: "财务部",
+    主题: .金融金,
+    数据: try 表格数据.从CSV内容(csvData)
+)
+
+let report = 模板库.年度总结.生成(配置: config)
+```
+
+### Generate PPTX
+
+```bash
+# Swift generates JSON
+swift run SwiftSlidesDemo
+
+# Node.js converts to PPTX
+node Scripts/swiftslides-pptx.js output/demo.pptx < output/demo.json
+```
+
+## Slide Types
+
+| Type | Chinese Name | Description |
+|------|--------------|-------------|
+| Cover | 封面页 | Title slide with gradient background |
+| Section | 章节页 | Section divider |
+| List | 列表页 | Bullet points |
+| Cards | 卡片页 | Grid of info cards |
+| Table | 表格页 | Data table |
+| Chart | 图表页 | Bar, line, pie, radar charts |
+| Definition | 定义页 | Term definition |
+| Architecture | 架构图页 | Layered architecture |
+| Flowchart | 流程图页 | Process steps |
+| Timeline | 时间线页 | Event timeline |
+| Quote | 引用页 | Quotation |
+| Comparison | 对比页 | Side-by-side comparison |
+| Pyramid | 金字塔页 | Pyramid structure |
+| Matrix | 矩阵页 | 2D matrix |
+| Pareto | 柏拉图页 | Pareto analysis |
+| TwoColumn | 双栏页 | Two-column layout |
+| Image | 图片页 | Image with caption |
+| Mermaid Flowchart | Mermaid流程图页 | Mermaid flowchart |
+| Mermaid Sequence | Mermaid时序图页 | Mermaid sequence diagram |
+| Mermaid Gantt | Mermaid甘特图页 | Mermaid Gantt chart |
+| End | 结束页 | Thank you slide |
+
+## Themes
+
+| Theme | Chinese Name | Primary Color |
+|-------|--------------|---------------|
+| Professional Blue | 专业蓝 | #1F4E79 |
+| Business Green | 商务绿 | #2E7D32 |
+| Tech Purple | 科技紫 | #6A1B9A |
+| Active Orange | 活力橙 | #E65100 |
+| Classic Red | 经典红 | #C62828 |
+| Medical Blue | 医疗蓝 | #0D47A1 |
+| Education Teal | 教育青 | #00695C |
+| Financial Gold | 金融金 | #F9A825 |
 
 ## Architecture
 
-### Core Pattern: `static var` + Lazy Loading
+SwiftSlides uses Protocol-Oriented Programming (POP) with the following core protocols:
 
-**CoffeeScript:**
-```coffeescript
-class 项目设置
-  @cso: @dataPrepare?()  # Lazy load + cache
-```
+- `Slide` - Base protocol for all slide types
+- `Section` - Container for slides
+- `Presentation` - Top-level container
 
-**Swift:**
-```swift
-struct 项目设置 {
-    nonisolated(unsafe) static var _cso: [String: Any]?
-    
-    static var cso: [String: Any] {
-        if _cso == nil { _cso = dataPrepare() }
-        return _cso!
-    }
-}
-```
-
-### Why struct > class for this use case
-
-| Aspect | class (inheritance) | struct (static var) |
-|--------|---------------------|---------------------|
-| Inheritance chain | Up to 6 levels deep | None needed |
-| Override complexity | Required | Not applicable |
-| State management | Instance + static | Static only |
-| Thread safety | Manual | `nonisolated(unsafe)` |
-| Simplicity | Medium | High |
+All types are `Sendable` for thread safety and use value semantics (structs) for predictability.
 
 ## Installation
 
 ### Swift Package
-
-Add to your `Package.swift`:
 
 ```swift
 dependencies: [
@@ -69,198 +169,45 @@ npm install
 ```
 
 Dependencies:
+- `pptxgenjs` - PPTX generation
 - `convert-excel-to-json` - Excel reading
-- `json-as-xlsx` - Excel writing (matches hqcoffee reference)
-- `pptxgenjs` - PPT generation (ONLY supported PPT library)
-
-> **Note:** The `officegen` package was evaluated but contains bugs and is NOT used. Only `pptxgenjs` is supported for PPT generation. This matches the original CoffeeScript implementation (hqcoffee).
-
-## Quick Start
-
-### Basic Usage
-
-```swift
-import SwiftOffice
-
-// JSON operations (native Swift, no Node.js)
-let data = SwiftOffice.readJSON(from: "data.json")
-SwiftOffice.writeJSON(["key": "value"], to: "output.json")
-
-// Entity access with caching
-let alias = SwiftOffice.别名库
-let correctedName = alias.adjustedName("内科*")  // Returns "内科"
-```
-
-### Excel Operations
-
-```swift
-// Read Excel
-let excelData = try await SwiftOffice.readExcel(path: "data.xlsx")
-
-// Write Excel - High-level API (Recommended)
-let sheets: [ExcelSheet] = [
-    ExcelSheet(
-        sheet: "数据",
-        columns: [
-            ExcelColumn(label: "名称", value: "name"),
-            ExcelColumn(label: "数值", value: "value")
-        ],
-        content: [
-            ["name": "产品A", "value": 100],
-            ["name": "产品B", "value": 200]
-        ]
-    )
-]
-let fileName = try await SwiftOffice.writeExcelSheets(fileName: "output", sheets: sheets)
-// Creates: output.xlsx
-
-// Write Excel - Low-level API (for advanced use)
-let data: [[String: Any]] = [
-    [
-        "sheet": "数据",
-        "columns": [
-            ["label": "名称", "value": "name"],
-            ["label": "数值", "value": "value"]
-        ],
-        "content": [
-            ["name": "产品A", "value": 100],
-            ["name": "产品B", "value": 200]
-        ]
-    ]
-]
-try await SwiftOffice.writeExcel(fileName: "output", data: data)
-```
-
-### PPT Generation
-
-```swift
-try await SwiftOffice.createPPT(
-    slides: [
-        ["title": "报告标题", "content": "内容"],
-        ["type": "barChart", "title": "数据对比", "data": [...]]
-    ],
-    outputPath: "report.pptx"
-)
-```
-
-## API Reference
-
-### SwiftOffice Main API
-
-| Method | Description |
-|--------|-------------|
-| `readJSON(from:)` | Read JSON file (native Swift) |
-| `writeJSON(_:to:)` | Write JSON file (native Swift) |
-| `readExcel(path:header:columnToKey:)` | Read Excel to JSON (async) |
-| `writeExcel(fileName:data:extraLength:)` | Write Excel from raw data (async) |
-| `writeExcelSheets(fileName:sheets:extraLength:)` | Write Excel from typed sheets (async, recommended) |
-| `createPPT(slides:outputPath:)` | Generate PPTX file (async) |
-
-### Excel Models
-
-```swift
-// ExcelSheet - Represents a single worksheet
-public struct ExcelSheet {
-    public let sheet: String              // Sheet name
-    public let columns: [ExcelColumn]     // Column definitions
-    public let content: [[String: Any]]   // Row data
-}
-
-// ExcelColumn - Defines a column
-public struct ExcelColumn {
-    public let label: String   // Column header text
-    public let value: String   // Key in content dictionary
-}
-```
-
-### PPTGenerator Enum
-
-```swift
-public enum PPTGenerator: String, Sendable {
-    case pptxgen = "pg"      // Active: https://github.com/gitbrent/PptxGenJS
-    case officegen = "og"    // DEPRECATED: Contains bugs, not recommended
-}
-```
-
-> **Note:** Only `pptxgenjs` is actively supported. The `officegen` case is preserved for documentation and future comparison purposes.
+- `json-as-xlsx` - Excel writing
 
 ## Project Structure
 
 ```
 SwiftOffice/
-├── Scripts/                    # Node.js utility scripts
-│   ├── pptx.js                # PPT generation (pptxgenjs)
-│   ├── readExcel.js           # Excel reading (convert-excel-to-json)
-│   └── writeExcel.js          # Excel writing (json-as-xlsx)
-├── Sources/SwiftOffice/
-│   ├── Protocols/
-│   │   └── FileHandling.swift # Core protocols
-│   ├── Implementations/
-│   │   ├── Entities.swift     # v1 class-based entities
-│   │   ├── Handlers.swift     # v2 protocol+struct
-│   │   └── RefinedEntities.swift # v3 refined
-│   ├── JSONSimple.swift       # Base JSON operations
-│   ├── JSONDatabase.swift     # Database layer
-│   ├── StormDBSingleton.swift # Singleton pattern
-│   ├── NodeJSBridge.swift     # Swift ↔ Node.js IPC
-│   ├── SwiftOfficeAPI.swift   # Unified API entry
-│   └── V4ProtocolStruct.swift # Protocol inheritance chain
-├── Tests/SwiftOfficeTests/    # Test suite
-├── deprecated_experiments/     # Archived experiments
-└── test_output/               # Test output files
+├── Sources/
+│   ├── SwiftSlides/
+│   │   ├── Protocols/           # Core protocols
+│   │   │   ├── Slide.swift
+│   │   │   ├── Section.swift
+│   │   │   ├── Presentation.swift
+│   │   │   ├── SlideTypes.swift
+│   │   │   ├── Builders.swift
+│   │   │   ├── SlideFactory.swift
+│   │   │   └── Supporting/
+│   │   │       └── Theme.swift
+│   │   ├── DataImport/          # CSV/TSV/JSON import
+│   │   │   ├── DataImporter.swift
+│   │   │   └── CSVParser.swift
+│   │   ├── Templates/           # Presentation templates
+│   │   │   ├── PresentationTemplate.swift
+│   │   │   └── BuiltInTemplates.swift
+│   │   └── Mermaid/             # Mermaid diagram generation
+│   │       └── MermaidGenerator.swift
+│   └── SwiftSlidesDemo/         # Demo application
+├── Scripts/
+│   └── swiftslides-pptx.js      # JSON to PPTX converter
+├── output/                       # Generated files
+└── Package.swift
 ```
-
-## Node.js Scripts
-
-| Script | Purpose | Input | Output |
-|--------|---------|-------|--------|
-| `readExcel.js` | Read Excel to JSON | stdin: `{path, header, columnToKey}` | stdout: `{success, data}` |
-| `writeExcel.js` | Write JSON to Excel | stdin: `{fileName, data}` | stdout: `{success, fileName}` |
-| `pptx.js` | Generate PPTX | stdin: `{action, slides, path}` | stdout: `{success}` |
-
-All scripts use stdin/stdout JSON I/O for inter-process communication with Swift.
-
-## Version History
-
-### v1.0.1 (adjust branch) - Excel Package Switch
-
-- Switched from `exceljs` to `json-as-xlsx` (matches hqcoffee reference)
-- Added `Scripts/writeExcel.js` using `json-as-xlsx` format
-- Moved `stormdb.js` to `deprecated_experiments/` (native Swift implementation exists)
-- Updated `.gitignore` for generated files
-
-### v1.0.0 - `static var` Pattern
-
-- Core entity pattern with `nonisolated(unsafe) static var`
-- Native Swift JSON operations (no Node.js dependency for JSON)
-- Excel read/write via Node.js bridge
-- PPTX generation via Node.js bridge
-
-### Branch History
-
-| Branch | Purpose | Status |
-|--------|---------|--------|
-| **adjust** | Switch to `json-as-xlsx` | **Current** |
-| v6-static-var-refactor | `static var` pattern | Base for adjust |
-| v5-first-principles | First principles analysis | Merged |
-| v4-protocol-struct | Deep protocol chain | Superseded |
-| v3-refined | Class + Protocol hybrid | Superseded |
-| v2-pop | Protocol-Oriented | Superseded |
-| v1-class-side | Class inheritance | Superseded |
 
 ## Requirements
 
 - Swift 6.2+
-- macOS 14.0+
-- Node.js 18+ (for Excel/PPTX operations)
-
-## References
-
-- [hqcoffee](../hqcoffee) - Original CoffeeScript implementation
-- [Cases/APPLICATION_DEVELOPER_GUIDE.md](Cases/APPLICATION_DEVELOPER_GUIDE.md) - Step-by-step guide for creating new cases
-- [PACKAGE_DEVELOPER_GUIDE.md](PACKAGE_DEVELOPER_GUIDE.md) - Guide for package contributors
-- [ARCHITECTURE.md](Sources/SwiftOffice/ARCHITECTURE.md) - Detailed architecture docs
-- [TECHNICAL_DOCUMENTATION.md](Sources/SwiftOffice/TECHNICAL_DOCUMENTATION.md) - Translation experience
+- macOS 10.15+
+- Node.js 18+ (for PPTX generation)
 
 ## License
 

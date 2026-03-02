@@ -43,12 +43,49 @@ public enum 幻灯片 {
         卡片页(标题: 标题, 卡片: 卡片, 列数: 列数)
     }
     
+    public static func 卡片(
+        标题: String,
+        列数: Int = 2,
+        数据: [(标题: String, 内容: String)]
+    ) -> 卡片页 {
+        let 卡片列表 = 数据.map { SwiftSlides.卡片(标题: $0.标题, 内容: $0.内容) }
+        return 卡片页(标题: 标题, 卡片: 卡片列表, 列数: 列数)
+    }
+    
+    public static func 概览(
+        标题: String = "概览",
+        项目: [(标题: String, 内容: String)]
+    ) -> 卡片页 {
+        let 卡片列表 = 项目.map { SwiftSlides.卡片(标题: $0.标题, 内容: $0.内容) }
+        return 卡片页(标题: 标题, 卡片: 卡片列表, 列数: 2)
+    }
+    
     public static func 表格(
         标题: String,
         表头: [String],
         行: [[String]]
     ) -> 表格页 {
         表格页(标题: 标题, 表头: 表头, 行: 行)
+    }
+    
+    public static func 表格(
+        标题: String,
+        数据: [[String]]
+    ) -> 表格页 {
+        guard let 表头 = 数据.first else {
+            return 表格页(标题: 标题, 表头: [], 行: [])
+        }
+        let 行 = Array(数据.dropFirst())
+        return 表格页(标题: 标题, 表头: 表头, 行: 行)
+    }
+    
+    public static func 表格< T: CustomStringConvertible>(
+        标题: String,
+        列名: [String],
+        数据: [[T]]
+    ) -> 表格页 {
+        let 行 = 数据.map { $0.map { $0.description } }
+        return 表格页(标题: 标题, 表头: 列名, 行: 行)
     }
     
     public static func 引用(
@@ -181,5 +218,112 @@ public enum 幻灯片 {
         右栏内容: [String]
     ) -> 双栏页 {
         双栏页(标题: 标题, 左栏标题: 左栏标题, 左栏内容: 左栏内容, 右栏标题: 右栏标题, 右栏内容: 右栏内容)
+    }
+    
+    public static func 图表(
+        标题: String,
+        类型: 图表类型,
+        标签: [String],
+        系列: [图表数据系列],
+        X轴: String? = nil,
+        Y轴: String? = nil,
+        图例: Bool = true
+    ) -> 图表页 {
+        图表页(标题: 标题, 类型: 类型, 标签: 标签, 系列: 系列, X轴: X轴, Y轴: Y轴, 图例: 图例)
+    }
+    
+    public static func 柱状图(
+        标题: String,
+        标签: [String],
+        系列: [图表数据系列],
+        Y轴: String? = nil
+    ) -> 图表页 {
+        图表页(标题: 标题, 类型: .柱状图, 标签: 标签, 系列: 系列, Y轴: Y轴)
+    }
+    
+    public static func 折线图(
+        标题: String,
+        标签: [String],
+        系列: [图表数据系列],
+        Y轴: String? = nil
+    ) -> 图表页 {
+        图表页(标题: 标题, 类型: .折线图, 标签: 标签, 系列: 系列, Y轴: Y轴)
+    }
+    
+    public static func 饼图(
+        标题: String,
+        标签: [String],
+        数值: [Double]
+    ) -> 图表页 {
+        图表页(标题: 标题, 类型: .饼图, 标签: 标签, 系列: [图表数据系列(名称: "数值", 数值: 数值)], 图例: true)
+    }
+    
+    public static func 雷达图(
+        标题: String,
+        标签: [String],
+        系列: [图表数据系列]
+    ) -> 图表页 {
+        图表页(标题: 标题, 类型: .雷达图, 标签: 标签, 系列: 系列, 图例: true)
+    }
+    
+    public static func 创建数据系列(名称: String, 数值: [Double]) -> 图表数据系列 {
+        图表数据系列(名称: 名称, 数值: 数值)
+    }
+    
+    public static func 数据系列(_ 名称: String, _ 数值: Double...) -> 图表数据系列 {
+        图表数据系列(名称: 名称, 数值: 数值)
+    }
+    
+    public static func 柱状图(
+        标题: String,
+        数据: [(标签: String, 数值: Double)],
+        Y轴: String? = nil
+    ) -> 图表页 {
+        let 标签 = 数据.map { $0.标签 }
+        let 数值 = 数据.map { $0.数值 }
+        return 图表页(标题: 标题, 类型: .柱状图, 标签: 标签, 系列: [图表数据系列(名称: "数值", 数值: 数值)], Y轴: Y轴)
+    }
+    
+    public static func 饼图(
+        标题: String,
+        数据: [(标签: String, 数值: Double)]
+    ) -> 图表页 {
+        let 标签 = 数据.map { $0.标签 }
+        let 数值 = 数据.map { $0.数值 }
+        return 图表页(标题: 标题, 类型: .饼图, 标签: 标签, 系列: [图表数据系列(名称: "数值", 数值: 数值)], 图例: true)
+    }
+    
+    public static func 折线图(
+        标题: String,
+        数据: [(标签: String, 数值: Double)],
+        Y轴: String? = nil
+    ) -> 图表页 {
+        let 标签 = 数据.map { $0.标签 }
+        let 数值 = 数据.map { $0.数值 }
+        return 图表页(标题: 标题, 类型: .折线图, 标签: 标签, 系列: [图表数据系列(名称: "数值", 数值: 数值)], Y轴: Y轴)
+    }
+    
+    public static func 从CSV(路径: String) throws -> 表格数据 {
+        try 表格数据.从CSV(路径: 路径)
+    }
+    
+    public static func 从CSV内容(_ 内容: String) throws -> 表格数据 {
+        try 表格数据.从CSV内容(内容)
+    }
+    
+    public static func 表格(标题: String, 数据: 表格数据) -> 表格页 {
+        数据.转换为表格页(标题: 标题)
+    }
+    
+    public static func 柱状图(标题: String, 数据: 表格数据, 标签列: String, 数值列: String, Y轴: String? = nil) -> 图表页? {
+        数据.转换为柱状图(标题: 标题, 标签列: 标签列, 数值列: 数值列, Y轴: Y轴)
+    }
+    
+    public static func 饼图(标题: String, 数据: 表格数据, 标签列: String, 数值列: String) -> 图表页? {
+        数据.转换为饼图(标题: 标题, 标签列: 标签列, 数值列: 数值列)
+    }
+    
+    public static func 折线图(标题: String, 数据: 表格数据, 标签列: String, 数值列: String, Y轴: String? = nil) -> 图表页? {
+        数据.转换为折线图(标题: 标题, 标签列: 标签列, 数值列: 数值列, Y轴: Y轴)
     }
 }

@@ -54,3 +54,10 @@ public extension 章节 {
         self.init(标题: 标题, slides: slides())
     }
 }
+
+@available(macOS 10.15, *)
+public extension 演示文稿 {
+    init(标题: String, 作者: String? = nil, 主题: 主题? = nil, @SectionBuilder sections: () -> [any Section]) {
+        self.init(标题: 标题, 作者: 作者, 主题: 主题, sections: sections())
+    }
+}

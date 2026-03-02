@@ -692,3 +692,159 @@ public struct 双栏页: Slide {
         return dict
     }
 }
+
+@available(macOS 10.15, *)
+public enum 图表类型: String, Sendable {
+    case 柱状图 = "bar"
+    case 折线图 = "line"
+    case 饼图 = "pie"
+    case 环形图 = "doughnut"
+    case 雷达图 = "radar"
+    case 散点图 = "scatter"
+}
+
+@available(macOS 10.15, *)
+public struct 图表数据系列: Sendable {
+    public let 名称: String
+    public let 数值: [Double]
+    
+    public init(名称: String, 数值: [Double]) {
+        self.名称 = 名称
+        self.数值 = 数值
+    }
+    
+    public func toDict() -> [String: Any] {
+        ["name": 名称, "values": 数值]
+    }
+}
+
+@available(macOS 10.15, *)
+public struct 图表页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var 图表类型值: 图表类型
+    public var 标签列表: [String]
+    public var 数据系列: [图表数据系列]
+    public var X轴标题: String?
+    public var Y轴标题: String?
+    public var 显示图例: Bool
+    
+    public var slideType: String { "图表页" }
+    
+    public init(
+        标题: String,
+        类型: 图表类型,
+        标签: [String],
+        系列: [图表数据系列],
+        X轴: String? = nil,
+        Y轴: String? = nil,
+        图例: Bool = true
+    ) {
+        self.title = 标题
+        self.图表类型值 = 类型
+        self.标签列表 = 标签
+        self.数据系列 = 系列
+        self.X轴标题 = X轴
+        self.Y轴标题 = Y轴
+        self.显示图例 = 图例
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "chartType": 图表类型值.rawValue,
+            "labels": 标签列表,
+            "series": 数据系列.map { $0.toDict() },
+            "showLegend": 显示图例
+        ]
+        if let X轴标题 = X轴标题 { dict["xAxisTitle"] = X轴标题 }
+        if let Y轴标题 = Y轴标题 { dict["yAxisTitle"] = Y轴标题 }
+        return dict
+    }
+}
+
+@available(macOS 10.15, *)
+public struct Mermaid流程图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var 流程图: Mermaid流程图
+    
+    public var slideType: String { "Mermaid流程图页" }
+    
+    public init(标题: String, 流程图: Mermaid流程图) {
+        self.title = 标题
+        self.流程图 = 流程图
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "mermaidCode": 流程图.生成语法(),
+            "diagramType": "flowchart"
+        ]
+    }
+}
+
+@available(macOS 10.15, *)
+public struct Mermaid时序图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var 时序图: Mermaid时序图
+    
+    public var slideType: String { "Mermaid时序图页" }
+    
+    public init(标题: String, 时序图: Mermaid时序图) {
+        self.title = 标题
+        self.时序图 = 时序图
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "mermaidCode": 时序图.生成语法(),
+            "diagramType": "sequence"
+        ]
+    }
+}
+
+@available(macOS 10.15, *)
+public struct Mermaid甘特图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var 甘特图: Mermaid甘特图
+    
+    public var slideType: String { "Mermaid甘特图页" }
+    
+    public init(标题: String, 甘特图: Mermaid甘特图) {
+        self.title = 标题
+        self.甘特图 = 甘特图
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "mermaidCode": 甘特图.生成语法(),
+            "diagramType": "gantt"
+        ]
+    }
+}

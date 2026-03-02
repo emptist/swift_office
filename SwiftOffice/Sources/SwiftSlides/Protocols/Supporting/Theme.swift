@@ -1,164 +1,94 @@
 import Foundation
 
-public protocol Theme: Codable, Sendable {
-    var id: UUID { get }
-    var name: String { get set }
-    var colorScheme: ThemeColorScheme { get set }
-    var fontScheme: ThemeFontScheme { get set }
-    var formatScheme: ThemeFormatScheme { get set }
-}
-
-public struct ThemeColorScheme: Codable, Sendable, Hashable {
-    public let primary: Color
-    public let secondary: Color
-    public let accent1: Color
-    public let accent2: Color
-    public let accent3: Color
-    public let accent4: Color
-    public let background: Color
-    public let text: Color
-    public let hyperlink: Color
-    public let followedHyperlink: Color
+@available(macOS 10.15, *)
+public struct 主题: Sendable {
+    public let 名称: String
+    public let 主色: String
+    public let 辅色: String
+    public let 强调色: String
+    public let 文字色: String
+    public let 浅文字色: String
+    public let 背景色: String
     
-    public init(
-        primary: Color,
-        secondary: Color,
-        accent1: Color,
-        accent2: Color,
-        accent3: Color,
-        accent4: Color,
-        background: Color = .white,
-        text: Color = .black,
-        hyperlink: Color = Color(hex: "0000FF"),
-        followedHyperlink: Color = Color(hex: "800080")
-    ) {
-        self.primary = primary
-        self.secondary = secondary
-        self.accent1 = accent1
-        self.accent2 = accent2
-        self.accent3 = accent3
-        self.accent4 = accent4
-        self.background = background
-        self.text = text
-        self.hyperlink = hyperlink
-        self.followedHyperlink = followedHyperlink
+    public init(名称: String, 主色: String, 辅色: String, 强调色: String, 文字色: String = "333333", 浅文字色: String = "666666", 背景色: String = "FFFFFF") {
+        self.名称 = 名称
+        self.主色 = 主色
+        self.辅色 = 辅色
+        self.强调色 = 强调色
+        self.文字色 = 文字色
+        self.浅文字色 = 浅文字色
+        self.背景色 = 背景色
     }
     
-    public static let `default` = ThemeColorScheme(
-        primary: Color(hex: "4472C4"),
-        secondary: Color(hex: "ED7D31"),
-        accent1: Color(hex: "A5A5A5"),
-        accent2: Color(hex: "FFC000"),
-        accent3: Color(hex: "5B9BD5"),
-        accent4: Color(hex: "70AD47")
-    )
-    
-    public static let dark = ThemeColorScheme(
-        primary: Color(hex: "4472C4"),
-        secondary: Color(hex: "ED7D31"),
-        accent1: Color(hex: "A5A5A5"),
-        accent2: Color(hex: "FFC000"),
-        accent3: Color(hex: "5B9BD5"),
-        accent4: Color(hex: "70AD47"),
-        background: Color(hex: "1F1F1F"),
-        text: Color(hex: "FFFFFF")
-    )
-}
-
-public struct ThemeFontScheme: Codable, Sendable, Hashable {
-    public let headingFont: Font
-    public let bodyFont: Font
-    public let titleFont: Font
-    public let subtitleFont: Font
-    
-    public init(
-        headingFont: Font = Font(name: "Arial", size: 24, isBold: true),
-        bodyFont: Font = Font(name: "Arial", size: 14),
-        titleFont: Font = Font(name: "Arial", size: 36, isBold: true),
-        subtitleFont: Font = Font(name: "Arial", size: 20)
-    ) {
-        self.headingFont = headingFont
-        self.bodyFont = bodyFont
-        self.titleFont = titleFont
-        self.subtitleFont = subtitleFont
-    }
-    
-    public static let `default` = ThemeFontScheme()
-    public static let serif = ThemeFontScheme(
-        headingFont: Font(name: "Times New Roman", size: 24, isBold: true),
-        bodyFont: Font(name: "Times New Roman", size: 14),
-        titleFont: Font(name: "Times New Roman", size: 36, isBold: true),
-        subtitleFont: Font(name: "Times New Roman", size: 20)
-    )
-}
-
-public struct ThemeFormatScheme: Codable, Sendable, Hashable {
-    public let fillStyles: [Fill]
-    public let lineStyles: [Stroke]
-    public let effectStyles: [Shadow]
-    
-    public init(
-        fillStyles: [Fill] = [],
-        lineStyles: [Stroke] = [],
-        effectStyles: [Shadow] = []
-    ) {
-        self.fillStyles = fillStyles
-        self.lineStyles = lineStyles
-        self.effectStyles = effectStyles
-    }
-    
-    public static let `default` = ThemeFormatScheme(
-        fillStyles: [
-            Fill.solid(Color(hex: "4472C4")),
-            Fill.solid(Color(hex: "ED7D31")),
-            Fill.solid(Color(hex: "A5A5A5"))
-        ],
-        lineStyles: [
-            Stroke(color: Color(hex: "4472C4"), width: 1.0),
-            Stroke(color: Color(hex: "ED7D31"), width: 2.0),
-            Stroke(color: Color(hex: "A5A5A5"), width: 1.0)
-        ],
-        effectStyles: [
-            Shadow.defaultShadow
+    public func toDict() -> [String: Any] {
+        [
+            "name": 名称,
+            "primary": 主色,
+            "secondary": 辅色,
+            "accent": 强调色,
+            "text": 文字色,
+            "lightText": 浅文字色,
+            "background": 背景色
         ]
-    )
+    }
 }
 
-public struct DefaultTheme: Theme {
-    public let id: UUID
-    public var name: String
-    public var colorScheme: ThemeColorScheme
-    public var fontScheme: ThemeFontScheme
-    public var formatScheme: ThemeFormatScheme
-    
-    public init(
-        id: UUID = UUID(),
-        name: String = "Default",
-        colorScheme: ThemeColorScheme = .default,
-        fontScheme: ThemeFontScheme = .default,
-        formatScheme: ThemeFormatScheme = .default
-    ) {
-        self.id = id
-        self.name = name
-        self.colorScheme = colorScheme
-        self.fontScheme = fontScheme
-        self.formatScheme = formatScheme
-    }
-    
-    public static let standard = DefaultTheme()
-    public static let dark = DefaultTheme(
-        name: "Dark",
-        colorScheme: .dark
+@available(macOS 10.15, *)
+public extension 主题 {
+    static let 专业蓝 = 主题(
+        名称: "专业蓝",
+        主色: "1F4E79",
+        辅色: "2E75B6",
+        强调色: "5B9BD5"
     )
-    public static let minimal = DefaultTheme(
-        name: "Minimal",
-        colorScheme: ThemeColorScheme(
-            primary: Color(hex: "000000"),
-            secondary: Color(hex: "666666"),
-            accent1: Color(hex: "333333"),
-            accent2: Color(hex: "999999"),
-            accent3: Color(hex: "CCCCCC"),
-            accent4: Color(hex: "EEEEEE")
-        )
+    
+    static let 商务绿 = 主题(
+        名称: "商务绿",
+        主色: "2E7D32",
+        辅色: "388E3C",
+        强调色: "66BB6A"
+    )
+    
+    static let 科技紫 = 主题(
+        名称: "科技紫",
+        主色: "6A1B9A",
+        辅色: "8E24AA",
+        强调色: "AB47BC"
+    )
+    
+    static let 活力橙 = 主题(
+        名称: "活力橙",
+        主色: "E65100",
+        辅色: "F57C00",
+        强调色: "FF9800"
+    )
+    
+    static let 经典红 = 主题(
+        名称: "经典红",
+        主色: "C62828",
+        辅色: "D32F2F",
+        强调色: "EF5350"
+    )
+    
+    static let 医疗蓝 = 主题(
+        名称: "医疗蓝",
+        主色: "0D47A1",
+        辅色: "1565C0",
+        强调色: "42A5F5"
+    )
+    
+    static let 教育青 = 主题(
+        名称: "教育青",
+        主色: "00695C",
+        辅色: "00897B",
+        强调色: "4DB6AC"
+    )
+    
+    static let 金融金 = 主题(
+        名称: "金融金",
+        主色: "F9A825",
+        辅色: "FBC02D",
+        强调色: "FFEB3B",
+        文字色: "333333"
     )
 }

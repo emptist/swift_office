@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js scripts for SwiftOffice",
   "private": true,
+  "scripts": {
+    "generate-pptx": "node Scripts/swiftslides-pptx.js"
+  },
   "dependencies": {
     "convert-excel-to-json": "^1.7.0",
     "json-as-xlsx": "^2.3.10",
