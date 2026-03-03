@@ -9,6 +9,8 @@ public protocol Section: Identifiable, Sendable {
 
 @available(macOS 10.15, *)
 public extension Section {
+    var id: UUID { UUID() }
+    
     func toDict() -> [String: Any] {
         [
             "id": id.uuidString,

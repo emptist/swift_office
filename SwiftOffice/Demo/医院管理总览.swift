@@ -284,9 +284,17 @@ let semaphore = DispatchSemaphore(value: 0)
 
 Task {
     let presentation = 医院管理总览()
+    
+    // 创建 outputs 目录
+    let fileManager = FileManager.default
+    let outputsDir = fileManager.currentDirectoryPath + "/outputs"
+    try? fileManager.createDirectory(atPath: outputsDir, withIntermediateDirectories: true)
+    
+    let outputPath = outputsDir + "/医院管理总览.pptx"
+    
     do {
-        try await presentation.generatePPTX(outputPath: "医院管理总览.pptx")
-        print("✅ 生成成功: 医院管理总览.pptx")
+        try await presentation.generatePPTX(outputPath: outputPath)
+        print("✅ 生成成功: \(outputPath)")
     } catch {
         print("❌ 生成失败: \(error)")
         print("💡 提示：需要安装 Node.js 和 pptxgenjs")

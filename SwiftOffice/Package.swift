@@ -20,6 +20,10 @@ let package = Package(
             name: "SwiftSlidesDemo",
             targets: ["SwiftSlidesDemo"]
         ),
+        .executable(
+            name: "UserPresentation",
+            targets: ["UserPresentation"]
+        ),
     ],
     dependencies: [
         .package(url: "git@github.com:lukilabs/beautiful-mermaid-swift.git", from: "0.1.0"),
@@ -50,6 +54,11 @@ let package = Package(
             name: "PreviousDesignTests",
             dependencies: ["PreviousDesign"],
             path: "Tests/SwiftOfficeTests"
+        ),
+        .executableTarget(
+            name: "UserPresentation",
+            dependencies: ["SwiftSlides"],
+            path: "Sources/UserPresentation"
         ),
     ]
 )

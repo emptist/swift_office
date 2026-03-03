@@ -11,6 +11,8 @@ public protocol Presentation: Identifiable, Sendable {
 
 @available(macOS 10.15, *)
 public extension Presentation {
+    var id: UUID { UUID() }
+    
     func toDict() -> [String: Any] {
         var dict: [String: Any] = [
             "id": id.uuidString,
@@ -74,3 +76,11 @@ public struct 演示文稿: Presentation {
 
 @available(macOS 10.15, *)
 public typealias PresentationBase = 演示文稿
+
+// 添加 generatePPTX 作为 toPPTX 的别名，方便使用
+@available(macOS 10.15, *)
+public extension Presentation {
+    func generatePPTX(outputPath: String) async throws {
+        try await toPPTX(outputPath: outputPath)
+    }
+}
