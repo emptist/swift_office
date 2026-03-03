@@ -147,17 +147,31 @@ public enum ContentParser {
 
 // MARK: - 基础样式协议
 
-/// 封面样式协议
+/// Cover style protocol
 @available(macOS 10.15, *)
 public protocol CoverStyle: Slide {
     var subtitle: String? { get }
     var author: String? { get }
 }
 
-/// 章节首页样式协议
+@available(macOS 10.15, *)
+public extension CoverStyle {
+    var subtitle: String? { contents["Subtitle"]?.asString }
+    var author: String? { contents["Author"]?.asString }
+}
+
+/// Chapter cover style protocol
 @available(macOS 10.15, *)
 public protocol ChapterCoverStyle: Slide {
     var chapterNumber: Int? { get }
+}
+
+@available(macOS 10.15, *)
+public extension ChapterCoverStyle {
+    var chapterNumber: Int? { 
+        guard let str = contents["ChapterNumber"]?.asString else { return nil }
+        return Int(str)
+    }
 }
 
 /// contents样式协议
@@ -778,4 +792,65 @@ public extension 四象限矩阵样式 {
     var xAxisHighLabel: String { "高" }
     var yAxisLowLabel: String { "低" }
     var yAxisHighLabel: String { "高" }
+}
+
+// MARK: - English Chart Style Protocols
+
+/// Hierarchy style protocol
+@available(macOS 10.15, *)
+public protocol HierarchyStyle: Slide {
+    var hierarchyLevels: [[String]] { get }
+}
+
+@available(macOS 10.15, *)
+public extension HierarchyStyle {
+    var hierarchyLevels: [[String]] {
+        if let levels = contents["levels"]?.asStringArray {
+            return [levels]
+        }
+        if let levels = contents["levels"]?.asStringTable {
+            return levels
+        }
+        return []
+    }
+}
+
+/// Cycle flow style protocol
+@available(macOS 10.15, *)
+public protocol CycleFlowStyle: Slide {
+    var cycleItems: [[String: String]] { get }
+}
+
+@available(macOS 10.15, *)
+public extension CycleFlowStyle {
+    var cycleItems: [[String: String]] {
+        let items = contents["items"]?.asContentsArray ?? []
+        return items.map { item in
+            var result: [String: String] = [:]
+            if let id = item["id"]?.asString { result["id"] = id }
+            if let title = item["title"]?.asString { result["title"] = title }
+            if let desc = item["description"]?.asString { result["description"] = desc }
+            return result
+        }
+    }
+}
+
+/// Pareto style protocol
+@available(macOS 10.15, *)
+public protocol ParetoStyle: Slide {
+    var paretoItems: [[String: Any]] { get }
+}
+
+@available(macOS 10.15, *)
+public extension ParetoStyle {
+    var paretoItems: [[String: Any]] {
+        let items = contents["items"]?.asContentsArray ?? []
+        return items.map { item in
+            var result: [String: Any] = [:]
+            if let label = item["label"]?.asString { result["label"] = label }
+            if let value = item["value"]?.dict["value"] as? Int { result["value"] = value }
+            if let value = item["value"]?.dict["value"] as? Double { result["value"] = value }
+            return result
+        }
+    }
 }

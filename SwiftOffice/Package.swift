@@ -16,10 +16,6 @@ let package = Package(
             name: "SwiftSlidesDemo",
             targets: ["SwiftSlidesDemo"]
         ),
-        .executable(
-            name: "C01医管教程",
-            targets: ["C01医管教程"]
-        ),
     ],
     dependencies: [
         .package(url: "git@github.com:lukilabs/beautiful-mermaid-swift.git", from: "0.1.0"),
@@ -36,12 +32,6 @@ let package = Package(
             name: "SwiftSlidesDemo",
             dependencies: ["SwiftSlides"],
             path: "B_SwiftSlides/Demo"
-        ),
-        .executableTarget(
-            name: "C01医管教程",
-            dependencies: ["SwiftSlides"],
-            path: "Cases/医管教程",
-            exclude: ["C01_医疗质量与安全管理字典化.swift"]
         ),
         .testTarget(
             name: "SwiftSlidesTests",

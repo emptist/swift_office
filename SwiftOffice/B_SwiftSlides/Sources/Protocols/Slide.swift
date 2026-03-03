@@ -74,6 +74,30 @@ public struct Contents: Sendable, ExpressibleByDictionaryLiteral {
         }
         return []
     }
+    
+    public func toJSONDict() -> [String: Any] {
+        var result: [String: Any] = [:]
+        for (key, value) in dict {
+            result[key] = convertToJSONValue(value)
+        }
+        return result
+    }
+    
+    private func convertToJSONValue(_ value: Any) -> Any {
+        if let str = value as? String {
+            return str
+        } else if let num = value as? NSNumber {
+            return num
+        } else if let arr = value as? [Any] {
+            return arr.map { convertToJSONValue($0) }
+        } else if let dict = value as? [String: Any] {
+            return dict.mapValues { convertToJSONValue($0) }
+        } else if let contents = value as? Contents {
+            return contents.toJSONDict()
+        } else {
+            return String(describing: value)
+        }
+    }
 }
 
 extension Contents: Codable {
@@ -164,7 +188,7 @@ public extension Slide {
         var dict: [String: Any] = [
             "id": id.uuidString,
             "title": title,
-            "contents": contents as Any,
+            "contents": contents.toJSONDict(),
             "notes": notes as Any,
             "hidden": hidden
         ]
