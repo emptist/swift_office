@@ -1,0 +1,244 @@
+{
+  "author" : "SwiftSlides 框架演示",
+  "id" : "B8773EE8-B1DD-4FA3-88E7-44968D88BE36",
+  "sections" : [
+    {
+      "id" : "CE0007C9-0A78-4963-9364-B3718EE52D63",
+      "slides" : [
+        {
+          "gradient" : "蓝色",
+          "id" : "71AAB4F1-5E18-49C4-85E0-FD58F26DE860",
+          "subtitle" : "基于goodhospital2021案例",
+          "title" : "医院管理数据分析报告",
+          "type" : "封面页"
+        },
+        {
+          "cards" : [
+            {
+              "content" : "14家医疗机构",
+              "title" : "参评机构"
+            },
+            {
+              "content" : "76个部门",
+              "title" : "参评学科"
+            },
+            {
+              "content" : "2021年12月-2022年6月",
+              "title" : "评价周期"
+            },
+            {
+              "content" : "全部校验通过",
+              "title" : "数据质量"
+            }
+          ],
+          "columns" : 2,
+          "id" : "174DB615-7FC5-42C3-839F-E1ED751FCFDB",
+          "title" : "概览",
+          "type" : "卡片页"
+        },
+        {
+          "headers" : [
+            "分组",
+            "学科数量",
+            "说明"
+          ],
+          "id" : "FA3D5BCD-3C0F-42E0-97D1-27201767CBB8",
+          "rows" : [
+            [
+              "A组",
+              "15",
+              "综合评分前20%"
+            ],
+            [
+              "B组",
+              "30",
+              "综合评分中段"
+            ],
+            [
+              "C组",
+              "31",
+              "综合评分后段"
+            ]
+          ],
+          "title" : "学科分组结果",
+          "type" : "表格页"
+        }
+      ],
+      "title" : "第一部分：数据展示风格"
+    },
+    {
+      "id" : "E6339574-7CF4-4F58-8F0B-E4099C2305A7",
+      "slides" : [
+        {
+          "id" : "C30275D7-2686-42CF-8752-46E10BF050E9",
+          "number" : "第二部分",
+          "subtitle" : "基于md_sources教案",
+          "title" : "文字图表风格",
+          "type" : "章节页"
+        },
+        {
+          "definition" : "医疗质量是指医疗服务在满足患者及其家属健康需求方面所达到的程度，包括医疗技术质量和服务质量。\n\n狭义：诊疗质量\n广义：技术+服务+管理+环境",
+          "id" : "9EF18DE0-55EA-4CDE-9AA3-E7D63F8693CF",
+          "title" : "医疗质量概念",
+          "type" : "定义页"
+        },
+        {
+          "id" : "21207591-5872-411B-8CEA-D7CFA3E287C1",
+          "layers" : [
+            {
+              "items" : [
+                "质量方针",
+                "质量目标",
+                "质量文化"
+              ],
+              "level" : "top"
+            },
+            {
+              "items" : [
+                "质量组织",
+                "质量制度",
+                "质量流程"
+              ],
+              "level" : "middle"
+            },
+            {
+              "items" : [
+                "质量控制",
+                "质量保证",
+                "质量改进"
+              ],
+              "level" : "bottom"
+            }
+          ],
+          "title" : "医疗质量管理体系架构",
+          "type" : "架构图页"
+        },
+        {
+          "id" : "4DCAC309-CBAD-40F0-AF88-DB2DA1EAEAAC",
+          "isLoop" : true,
+          "steps" : [
+            "计划",
+            "执行",
+            "检查",
+            "处理"
+          ],
+          "title" : "PDCA循环",
+          "type" : "流程图页"
+        },
+        {
+          "chartType" : "bar",
+          "id" : "FE1E6585-3B22-4965-A9FD-A52268FCB19E",
+          "labels" : [
+            "A组",
+            "B组",
+            "C组"
+          ],
+          "series" : [
+            {
+              "name" : "平均分",
+              "values" : [
+                92.5,
+                85.299999999999997,
+                78.599999999999994
+              ]
+            },
+            {
+              "name" : "最高分",
+              "values" : [
+                98.200000000000003,
+                94.099999999999994,
+                89.5
+              ]
+            }
+          ],
+          "showLegend" : true,
+          "title" : "学科评分分布",
+          "type" : "图表页",
+          "yAxisTitle" : "分数"
+        },
+        {
+          "chartType" : "pie",
+          "id" : "A46C8AC4-5123-4A43-BE15-8961881916BA",
+          "labels" : [
+            "内科",
+            "外科",
+            "妇产",
+            "儿科"
+          ],
+          "series" : [
+            {
+              "name" : "数值",
+              "values" : [
+                35,
+                28,
+                20,
+                17
+              ]
+            }
+          ],
+          "showLegend" : true,
+          "title" : "学科分布",
+          "type" : "图表页"
+        },
+        {
+          "chartType" : "bar",
+          "id" : "B4D7790E-8E19-45C7-84EA-E51D0ACF5990",
+          "labels" : [
+            "一月",
+            "二月",
+            "三月",
+            "四月",
+            "五月",
+            "六月"
+          ],
+          "series" : [
+            {
+              "name" : "数值",
+              "values" : [
+                85,
+                92,
+                88,
+                95,
+                91,
+                97
+              ]
+            }
+          ],
+          "showLegend" : true,
+          "title" : "月度趋势",
+          "type" : "图表页",
+          "yAxisTitle" : "评分"
+        }
+      ],
+      "title" : "第二部分：文字图表风格"
+    },
+    {
+      "id" : "5A783319-55C9-4CC4-8CDE-636DD3B062B5",
+      "slides" : [
+        {
+          "author" : "课程寄语",
+          "id" : "EEFF51BF-1C41-4C02-B19D-CAC509F8DB97",
+          "quote" : "医院管理者的使命，是在变革中把握方向，在挑战中创造价值。",
+          "type" : "引用页"
+        },
+        {
+          "id" : "7CB93B56-57F7-4831-BBEB-D98138B5C311",
+          "subtitle" : "SwiftSlides 框架演示",
+          "title" : "谢谢！",
+          "type" : "结束页"
+        }
+      ],
+      "title" : "总结"
+    }
+  ],
+  "theme" : {
+    "accent" : "42A5F5",
+    "background" : "FFFFFF",
+    "lightText" : "666666",
+    "name" : "医疗蓝",
+    "primary" : "0D47A1",
+    "secondary" : "1565C0",
+    "text" : "333333"
+  },
+  "title" : "综合演示报告"
+}

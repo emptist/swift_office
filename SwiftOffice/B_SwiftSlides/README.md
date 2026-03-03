@@ -1,12 +1,10 @@
-# SwiftOffice
+# SwiftSlides
 
 A Swift library for Office document generation using Protocol-Oriented Programming (POP) with Swift 6.2.
 
-## SwiftSlides - PowerPoint Generation Framework
-
 SwiftSlides is a powerful, natural language-like Swift framework for generating PowerPoint presentations. It uses Protocol-Oriented Programming (POP) principles and supports Chinese identifiers for intuitive content creation.
 
-### Features
+## Features
 
 - **Protocol Composition** - Mix and match slide styles using protocols
 - **Data/Presentation Separation** - Clean separation between content and styling
@@ -18,13 +16,63 @@ SwiftSlides is a powerful, natural language-like Swift framework for generating 
 - **Mermaid Diagrams** - Flowcharts, sequence diagrams, Gantt charts
 - **Chinese Identifiers** - Natural language-like API in Chinese
 
+## Project Structure
+
+```
+B_SwiftSlides/
+├── Sources/                    # Framework source code
+│   ├── Protocols/              # Core protocols
+│   │   ├── Elements/           # Element protocols (Chart, Image, Table, etc.)
+│   │   ├── Supporting/         # Supporting types (Enums, Theme, SlideMaster)
+│   │   ├── Builders.swift      # Builder DSL
+│   │   ├── Presentation.swift  # Presentation protocol
+│   │   ├── Section.swift       # Section protocol
+│   │   ├── Slide.swift         # Slide protocol
+│   │   ├── SlideFactory.swift  # Slide factory
+│   │   ├── SlideStyleProtocols.swift  # Style protocols (封面样式, 章节样式, 内容样式)
+│   │   └── SlideTypes.swift    # Slide type definitions
+│   ├── DataImport/             # CSV/TSV/JSON import
+│   │   ├── CSVParser.swift
+│   │   └── DataImporter.swift
+│   ├── Gantt/                  # Gantt chart generation
+│   │   ├── GanttModel.swift
+│   │   ├── GanttRenderer.swift
+│   │   └── GanttView.swift
+│   ├── Mermaid/                # Mermaid diagram generation
+│   │   └── MermaidGenerator.swift
+│   ├── Supporting/             # Supporting utilities
+│   │   ├── NodeJSBridge.swift
+│   │   ├── SwiftSlidesError.swift
+│   │   └── fakecode.swift
+│   └── Templates/              # Presentation templates
+│       ├── BuiltInTemplates.swift
+│       └── PresentationTemplate.swift
+├── Demo/                       # Usage examples
+│   ├── main.swift              # Builder mode demo
+│   └── ProtocolCompositionDemo.swift  # Protocol composition demo
+├── Tests/                      # Test suite
+│   └── SwiftSlidesSerializationTests.swift
+├── Docs/                       # Documentation
+│   ├── ARCHITECTURE_UNDERSTANDING.md
+│   ├── DESIGN_PHILOSOPHY.md
+│   └── DESIGN_SPECIFICATION.md
+├── Scripts/                    # Node.js scripts
+│   └── swiftslides-pptx.js     # JSON to PPTX converter
+├── Outputs/                    # Generated output examples
+├── kimi/                       # AI-assisted exploration
+│   ├── Demo/                   # Additional demos
+│   ├── Experiments/            # Experimental implementations
+│   └── USER_GUIDE.md           # User guide
+└── README.md                   # This file
+```
+
 ## Quick Start (Protocol Composition Mode)
 
 The recommended way to use SwiftSlides with clean separation between content and tools:
 
 ### 1. Define Your Content
 
-Edit `Sources/UserPresentation/main.swift`:
+See `Demo/ProtocolCompositionDemo.swift` for a complete example:
 
 ```swift
 import SwiftSlides
@@ -97,7 +145,7 @@ struct AutoRunner {
 ### 2. Generate PPTX
 
 ```bash
-swift run UserPresentation
+swift run
 ```
 
 Output: `outputs/医院管理总览.pptx`
@@ -247,6 +295,7 @@ SwiftSlides uses Protocol-Oriented Programming (POP) with the following core pro
 - `Slide` - Base protocol for all slide types
 - `Section` - Container for slides
 - `Presentation` - Top-level container
+- `封面样式`, `章节样式`, `内容样式` - Style protocols for protocol composition
 
 All types are `Sendable` for thread safety and use value semantics (structs) for predictability.
 
@@ -256,14 +305,14 @@ All types are `Sendable` for thread safety and use value semantics (structs) for
 
 ```swift
 dependencies: [
-    .package(path: "path/to/SwiftOffice")
+    .package(path: "path/to/SwiftOffice/B_SwiftSlides")
 ]
 ```
 
 ### Node.js Dependencies
 
 ```bash
-cd SwiftOffice
+cd B_SwiftSlides
 npm install
 ```
 
@@ -272,35 +321,12 @@ Dependencies:
 - `convert-excel-to-json` - Excel reading
 - `json-as-xlsx` - Excel writing
 
-## Project Structure
+## Documentation
 
-```
-SwiftOffice/
-├── Sources/
-│   ├── SwiftSlides/
-│   │   ├── Protocols/           # Core protocols
-│   │   │   ├── Slide.swift
-│   │   │   ├── Section.swift
-│   │   │   ├── Presentation.swift
-│   │   │   ├── SlideTypes.swift
-│   │   │   ├── Builders.swift
-│   │   │   ├── SlideFactory.swift
-│   │   │   └── Supporting/
-│   │   │       └── Theme.swift
-│   │   ├── DataImport/          # CSV/TSV/JSON import
-│   │   │   ├── DataImporter.swift
-│   │   │   └── CSVParser.swift
-│   │   ├── Templates/           # Presentation templates
-│   │   │   ├── PresentationTemplate.swift
-│   │   │   └── BuiltInTemplates.swift
-│   │   └── Mermaid/             # Mermaid diagram generation
-│   │       └── MermaidGenerator.swift
-│   └── SwiftSlidesDemo/         # Demo application
-├── Scripts/
-│   └── swiftslides-pptx.js      # JSON to PPTX converter
-├── output/                       # Generated files
-└── Package.swift
-```
+- [ARCHITECTURE_UNDERSTANDING.md](Docs/ARCHITECTURE_UNDERSTANDING.md) - Architecture overview
+- [DESIGN_PHILOSOPHY.md](Docs/DESIGN_PHILOSOPHY.md) - Design philosophy
+- [DESIGN_SPECIFICATION.md](Docs/DESIGN_SPECIFICATION.md) - Detailed specification
+- [kimi/USER_GUIDE.md](kimi/USER_GUIDE.md) - User guide
 
 ## Requirements
 
