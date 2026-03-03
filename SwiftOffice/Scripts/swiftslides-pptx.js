@@ -12,8 +12,10 @@ process.stdin.on('data', chunk => {
 
 process.stdin.on('end', async () => {
     try {
-        const presentation = JSON.parse(input);
-        await generatePPTX(presentation);
+        const params = JSON.parse(input);
+        const presentation = JSON.parse(params.presentation);
+        const outputPath = params.outputPath || `${presentation.title || 'presentation'}.pptx`;
+        await generatePPTX(presentation, outputPath);
     } catch (error) {
         console.log(JSON.stringify({ 
             success: false, 
@@ -63,7 +65,7 @@ async function fetchMermaidImage(code, format = 'png') {
     });
 }
 
-async function generatePPTX(data) {
+async function generatePPTX(data, outputPath) {
     const pres = new pptxgen();
     
     pres.layout = 'LAYOUT_16x9';
@@ -92,7 +94,6 @@ async function generatePPTX(data) {
         }
     }
     
-    const outputPath = process.argv[2] || `${data.title || 'presentation'}.pptx`;
     await pres.writeFile({ fileName: outputPath });
     
     console.log(JSON.stringify({ 

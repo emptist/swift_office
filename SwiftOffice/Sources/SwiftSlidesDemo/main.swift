@@ -4,7 +4,7 @@ import SwiftSlides
 @main
 @available(macOS 13.0, *)
 struct SwiftSlidesDemo {
-    static func main() throws {
+    static func main() async throws {
         let demo = 创建综合演示()
         let json = try demo.toJSON()
         
@@ -12,16 +12,22 @@ struct SwiftSlidesDemo {
         try FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
         
         let jsonPath = "\(outputDir)/demo.json"
-        try json.write(toFile: jsonPath, atomically: true, encoding: .utf8)
+        try json.write(toFile: jsonPath, atomically: true, encoding: String.Encoding.utf8)
         
         print("JSON saved to: \(jsonPath)")
         print("Sections: \(demo.sections.count)")
         print("Total slides: \(demo.sections.reduce(0) { $0 + $1.slides.count })")
         
-        try 创建CSV演示()
+        try await 创建CSV演示()
+        
+        try await 创建Gantt演示()
+        
+        print("\nGenerating PPTX files...")
+        try await demo.toPPTX(outputPath: "output/demo.pptx")
+        print("PPTX generated: output/demo.pptx")
     }
     
-    static func 创建CSV演示() throws {
+    static func 创建CSV演示() async throws {
         let csv内容 = """
         月份,销售额,成本,利润
         一月,125000,85000,40000
@@ -51,14 +57,14 @@ struct SwiftSlidesDemo {
         }
         
         let json = try presentation.toJSON()
-        try json.write(toFile: "output/csv_demo.json", atomically: true, encoding: .utf8)
+        try json.write(toFile: "output/csv_demo.json", atomically: true, encoding: String.Encoding.utf8)
         print("\nCSV Demo saved to: output/csv_demo.json")
         print("CSV Demo slides: \(presentation.sections.reduce(0) { $0 + $1.slides.count })")
         
-        try 创建模板演示()
+        try await 创建模板演示()
     }
     
-    static func 创建模板演示() throws {
+    static func 创建模板演示() async throws {
         let csv内容 = """
         季度,收入,支出,利润
         Q1,1250000,850000,400000
@@ -69,25 +75,25 @@ struct SwiftSlidesDemo {
         
         let 数据 = try 表格数据.从CSV内容(csv内容)
         
-        let 配置 = 模板配置(
-            标题: "2024年度财务报告",
-            副标题: "财务部年度总结",
-            作者: "财务部",
-            主题: .金融金,
-            数据: 数据
-        )
+        let presentation = 演示文稿(标题: "模板演示", 作者: "SwiftSlides", 主题: .专业蓝) {
+            章节(标题: "模板展示") {
+                封面页(标题: "模板功能演示", 副标题: "快速创建专业演示文稿", 渐变: .蓝色)
+                
+                幻灯片.表格(标题: "季度财务数据", 数据: 数据)
+                
+                幻灯片.柱状图(标题: "季度收入", 数据: 数据, 标签列: "季度", 数值列: "收入", Y轴: "金额(元)")!
+                
+                结束页(标题: "完成！", 副标题: "模板功能展示")
+            }
+        }
         
-        let 年度报告 = 模板库.年度总结.生成(配置: 配置)
-        
-        let json = try 年度报告.toJSON()
-        try json.write(toFile: "output/template_demo.json", atomically: true, encoding: .utf8)
+        let json = try presentation.toJSON()
+        try json.write(toFile: "output/template_demo.json", atomically: true, encoding: String.Encoding.utf8)
         print("\nTemplate Demo saved to: output/template_demo.json")
-        print("Template Demo slides: \(年度报告.sections.reduce(0) { $0 + $1.slides.count })")
-        
-        try 创建Mermaid演示()
+        print("Template Demo slides: \(presentation.sections.reduce(0) { $0 + $1.slides.count })")
     }
     
-    static func 创建Mermaid演示() throws {
+    static func 创建Mermaid演示() async throws {
         let 流程图 = Mermaid流程图(
             方向: .从上到下,
             节点: [
@@ -144,14 +150,14 @@ struct SwiftSlidesDemo {
         }
         
         let mermaidJson = try presentation.toJSON()
-        try mermaidJson.write(toFile: "output/mermaid_demo.json", atomically: true, encoding: .utf8)
+        try mermaidJson.write(toFile: "output/mermaid_demo.json", atomically: true, encoding: String.Encoding.utf8)
         print("\nMermaid Demo saved to: output/mermaid_demo.json")
         print("Mermaid Demo slides: \(presentation.sections.reduce(0) { $0 + $1.slides.count })")
         
-        try 创建Gantt演示()
+        try await 创建Gantt演示()
     }
     
-    static func 创建Gantt演示() throws {
+    static func 创建Gantt演示() async throws {
         let 日历 = Calendar.current
         let 今天 = Date()
         
@@ -178,7 +184,7 @@ struct SwiftSlidesDemo {
         }
         
         let ganttJson = try presentation.toJSON()
-        try ganttJson.write(toFile: "output/gantt_demo.json", atomically: true, encoding: .utf8)
+        try ganttJson.write(toFile: "output/gantt_demo.json", atomically: true, encoding: String.Encoding.utf8)
         print("\nGantt Demo saved to: output/gantt_demo.json")
         print("Gantt Demo slides: \(presentation.sections.reduce(0) { $0 + $1.slides.count })")
     }

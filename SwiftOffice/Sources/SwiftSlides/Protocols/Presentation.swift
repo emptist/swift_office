@@ -27,6 +27,28 @@ public extension Presentation {
         let data = try JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted, .sortedKeys])
         return String(data: data, encoding: .utf8) ?? "{}"
     }
+    
+    func toPPTX(outputPath: String? = nil) async throws {
+        let bridge = try NodeJSBridge(scriptsPath: URL(fileURLWithPath: "./Scripts"))
+        
+        let presentationJSON = try toJSON()
+        
+        let params: [String: any Sendable & Codable] = [
+            "presentation": presentationJSON,
+            "outputPath": outputPath ?? "\(title).pptx"
+        ]
+        
+        let result = try await bridge.executeScript("swiftslides-pptx", params: params)
+        
+        guard let success = result["success"] as? Bool, success else {
+            throw SwiftSlidesError.scriptExecutionFailed(
+                script: "swiftslides-pptx",
+                exitCode: 1,
+                output: "",
+                errorOutput: result["error"] as? String ?? "Unknown error"
+            )
+        }
+    }
 }
 
 @available(macOS 10.15, *)
