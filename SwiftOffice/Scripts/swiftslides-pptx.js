@@ -170,6 +170,7 @@ async function addSlide(pres, slide, theme) {
         case 'Mermaid流程图页':
         case 'Mermaid时序图页':
         case 'Mermaid甘特图页':
+        case 'Gantt图页':
             await addMermaidSlide(slideObj, slide, theme);
             break;
         default:
@@ -739,35 +740,67 @@ async function addMermaidSlide(slide, data, theme) {
     const mermaidCode = data.mermaidCode || '';
     const diagramType = data.diagramType || 'flowchart';
     
-    if (mermaidCode) {
+    if (data.imageData) {
+        const imageData = `data:image/png;base64,${data.imageData}`;
+        
+        const imgWidth = data.imageWidth || 800;
+        const imgHeight = data.imageHeight || 600;
+        const aspectRatio = imgWidth / imgHeight;
+        
+        const maxWidth = 9.4;
+        const maxHeight = 4.8;
+        
+        let displayWidth, displayHeight;
+        
+        if (aspectRatio > maxWidth / maxHeight) {
+            displayWidth = maxWidth;
+            displayHeight = maxWidth / aspectRatio;
+        } else {
+            displayHeight = maxHeight;
+            displayWidth = maxHeight * aspectRatio;
+        }
+        
+        const x = (10 - displayWidth) / 2;
+        const y = 1.0 + (maxHeight - displayHeight) / 2;
+        
+        slide.addImage({
+            data: imageData,
+            x: x, y: y, w: displayWidth, h: displayHeight
+        });
+    } else if (mermaidCode && diagramType !== 'gantt') {
         const imageData = await fetchMermaidImage(mermaidCode, 'png');
         
         if (imageData) {
             slide.addImage({
                 data: imageData,
-                x: 0.3, y: 1.2, w: 9.4, h: 4.5,
-                sizing: { type: 'contain', w: 9.4, h: 4.5 }
+                x: 0.3, y: 1.2, w: 9.4, h: 4.5
             });
         } else {
-            slide.addShape('rect', {
-                x: 0.5, y: 1.5, w: 9, h: 4,
-                fill: { color: 'F8F8F8' },
-                line: { color: theme.accent, width: 1, dashType: 'dash' }
-            });
-            
-            slide.addText('图表渲染中...', {
-                x: 0.5, y: 2.5, w: 9, h: 2,
-                fontSize: 18, color: theme.lightText,
-                align: 'center', valign: 'middle'
-            });
-            
-            slide.addText(mermaidCode, {
-                x: 0.7, y: 1.7, w: 8.6, h: 3.6,
-                fontSize: 10, fontFace: 'Courier New', color: theme.text,
-                valign: 'top'
-            });
+            addMermaidFallback(slide, mermaidCode, theme);
         }
+    } else if (mermaidCode) {
+        addMermaidFallback(slide, mermaidCode, theme);
     }
+}
+
+function addMermaidFallback(slide, mermaidCode, theme) {
+    slide.addShape('rect', {
+        x: 0.5, y: 1.5, w: 9, h: 4,
+        fill: { color: 'F8F8F8' },
+        line: { color: theme.accent, width: 1, dashType: 'dash' }
+    });
+    
+    slide.addText('Mermaid Diagram', {
+        x: 0.5, y: 1.6, w: 9, h: 0.4,
+        fontSize: 14, color: theme.lightText,
+        align: 'center'
+    });
+    
+    slide.addText(mermaidCode, {
+        x: 0.7, y: 2.1, w: 8.6, h: 3.2,
+        fontSize: 10, fontFace: 'Courier New', color: theme.text,
+        valign: 'top'
+    });
 }
 
 function addTwoColumnSlide(slide, data, theme) {

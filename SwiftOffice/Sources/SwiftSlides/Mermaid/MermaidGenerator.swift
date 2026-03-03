@@ -1,4 +1,107 @@
 import Foundation
+import BeautifulMermaid
+import AppKit
+
+@available(macOS 12.0, *)
+public enum Mermaid渲染器 {
+    
+    public static let 默认缩放: CGFloat = 5.0
+    
+    public static func 渲染图片(mermaid代码: String, 主题: DiagramTheme = .default, 缩放: CGFloat? = nil) throws -> Data {
+        let result = try 渲染图片带尺寸(mermaid代码: mermaid代码, 主题: 主题, 缩放: 缩放)
+        return result.data
+    }
+    
+    public static func 渲染图片带尺寸(mermaid代码: String, 主题: DiagramTheme = .default, 缩放: CGFloat? = nil) throws -> (data: Data, width: Int, height: Int) {
+        let scale = 缩放 ?? 默认缩放
+        guard let image = try MermaidRenderer.renderImage(source: mermaid代码, theme: 主题, scale: scale) else {
+            throw MermaidError.renderingFailed("Failed to render image")
+        }
+        guard let tiffData = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmap.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) else {
+            throw MermaidError.imageConversionFailed
+        }
+        return (pngData, bitmap.pixelsWide, bitmap.pixelsHigh)
+    }
+    
+    public static func 渲染流程图带尺寸(_ 流程图: Mermaid流程图, 主题: DiagramTheme = .default, 缩放: CGFloat? = nil) throws -> (data: Data, width: Int, height: Int) {
+        let 实际流程图 = 流程图.是纵向 ? 流程图.横向版本 : 流程图
+        let 代码 = 实际流程图.生成语法()
+        return try 渲染图片带尺寸(mermaid代码: 代码, 主题: 主题, 缩放: 缩放)
+    }
+    
+    public static func 渲染流程图(_ 流程图: Mermaid流程图, 主题: DiagramTheme = .default, 缩放: CGFloat? = nil) throws -> Data {
+        let 实际流程图 = 流程图.是纵向 ? 流程图.横向版本 : 流程图
+        let 代码 = 实际流程图.生成语法()
+        return try 渲染图片(mermaid代码: 代码, 主题: 主题, 缩放: 缩放)
+    }
+    
+    public static func 渲染时序图带尺寸(_ 时序图: Mermaid时序图, 主题: DiagramTheme = .default, 缩放: CGFloat? = nil) throws -> (data: Data, width: Int, height: Int) {
+        let 代码 = 时序图.生成语法()
+        return try 渲染图片带尺寸(mermaid代码: 代码, 主题: 主题, 缩放: 缩放)
+    }
+    
+    public static func 渲染时序图(_ 时序图: Mermaid时序图, 主题: DiagramTheme = .default, 缩放: CGFloat? = nil) throws -> Data {
+        let 代码 = 时序图.生成语法()
+        return try 渲染图片(mermaid代码: 代码, 主题: 主题, 缩放: 缩放)
+    }
+    
+    public static func 保存图片(数据: Data, 路径: String) throws {
+        let 目录 = (路径 as NSString).deletingLastPathComponent
+        try FileManager.default.createDirectory(atPath: 目录, withIntermediateDirectories: true)
+        try 数据.write(to: URL(fileURLWithPath: 路径))
+    }
+}
+
+@available(macOS 12.0, *)
+public extension Mermaid渲染器 {
+    
+    static func 转换主题(_ 配置: Mermaid配置?) -> DiagramTheme {
+        guard let 配置 = 配置 else { return .default }
+        
+        let 主题映射: [String: DiagramTheme] = [
+            "default": .default,
+            "tokyoNight": .tokyoNight,
+            "tokyoNightStorm": .tokyoNightStorm,
+            "tokyoNightLight": .tokyoNightLight,
+            "catppuccinMocha": .catppuccinMocha,
+            "catppuccinLatte": .catppuccinLatte,
+            "nord": .nord,
+            "nordLight": .nordLight,
+            "dracula": .dracula,
+            "githubLight": .githubLight,
+            "githubDark": .githubDark,
+            "solarizedLight": .solarizedLight,
+            "solarizedDark": .solarizedDark,
+            "oneDark": .oneDark,
+            "zincLight": .zincLight,
+            "zincDark": .zincDark,
+            "dark": .dracula,
+            "forest": .nord,
+            "neutral": .zincLight,
+        ]
+        
+        return 主题映射[配置.主题] ?? .tokyoNight
+    }
+}
+
+public enum MermaidError: Error, LocalizedError {
+    case imageConversionFailed
+    case unsupportedDiagramType(String)
+    case renderingFailed(String)
+    
+    public var errorDescription: String? {
+        switch self {
+        case .imageConversionFailed:
+            return "Failed to convert image to PNG data"
+        case .unsupportedDiagramType(let type):
+            return "Unsupported diagram type: \(type)"
+        case .renderingFailed(let message):
+            return "Mermaid rendering failed: \(message)"
+        }
+    }
+}
 
 @available(macOS 10.15, *)
 public enum Mermaid方向: String, Sendable {
@@ -164,6 +267,27 @@ public struct Mermaid流程图: Sendable {
         self.连线列表 = 连线
         self.子图列表 = 子图
         self.配置 = 配置
+    }
+    
+    public var 是纵向: Bool {
+        方向 == .从上到下 || 方向 == .从下到上
+    }
+    
+    public var 横向版本: Mermaid流程图 {
+        let 新方向: Mermaid方向
+        switch 方向 {
+        case .从上到下: 新方向 = .从左到右
+        case .从下到上: 新方向 = .从右到左
+        case .从左到右: 新方向 = .从上到下
+        case .从右到左: 新方向 = .从下到上
+        }
+        return Mermaid流程图(
+            方向: 新方向,
+            节点: 节点列表,
+            连线: 连线列表,
+            子图: 子图列表,
+            配置: 配置
+        )
     }
     
     public func 生成语法() -> String {

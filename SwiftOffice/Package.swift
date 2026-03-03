@@ -4,6 +4,9 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftOffice",
+    platforms: [
+        .macOS(.v12),
+    ],
     products: [
         .library(
             name: "SwiftSlides",
@@ -18,9 +21,15 @@ let package = Package(
             targets: ["SwiftSlidesDemo"]
         ),
     ],
+    dependencies: [
+        .package(url: "git@github.com:lukilabs/beautiful-mermaid-swift.git", from: "0.1.0"),
+    ],
     targets: [
         .target(
             name: "SwiftSlides",
+            dependencies: [
+                .product(name: "BeautifulMermaid", package: "beautiful-mermaid-swift"),
+            ],
             path: "Sources/SwiftSlides"
         ),
         .target(

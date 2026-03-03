@@ -1,4 +1,5 @@
 import Foundation
+import BeautifulMermaid
 
 @available(macOS 10.15, *)
 public struct 封面页: Slide {
@@ -768,57 +769,77 @@ public struct 图表页: Slide {
     }
 }
 
-@available(macOS 10.15, *)
+@available(macOS 12.0, *)
 public struct Mermaid流程图页: Slide {
     public let id = UUID()
     public var title: String
     public var 流程图: Mermaid流程图
+    public var 主题: DiagramTheme
     
     public var slideType: String { "Mermaid流程图页" }
     
-    public init(标题: String, 流程图: Mermaid流程图) {
+    public init(标题: String, 流程图: Mermaid流程图, 主题: DiagramTheme = .default) {
         self.title = 标题
         self.流程图 = 流程图
+        self.主题 = 主题
     }
     
     public var notes: String? = nil
     public var hidden: Bool = false
     
     public func toDict() -> [String: Any] {
-        [
+        var dict: [String: Any] = [
             "type": slideType,
             "id": id.uuidString,
             "title": title,
             "mermaidCode": 流程图.生成语法(),
             "diagramType": "flowchart"
         ]
+        
+        if let result = try? Mermaid渲染器.渲染流程图带尺寸(流程图, 主题: 主题) {
+            dict["imageData"] = result.data.base64EncodedString()
+            dict["imageWidth"] = result.width
+            dict["imageHeight"] = result.height
+        }
+        
+        return dict
     }
 }
 
-@available(macOS 10.15, *)
+@available(macOS 12.0, *)
 public struct Mermaid时序图页: Slide {
     public let id = UUID()
     public var title: String
     public var 时序图: Mermaid时序图
+    public var 主题: DiagramTheme
     
     public var slideType: String { "Mermaid时序图页" }
     
-    public init(标题: String, 时序图: Mermaid时序图) {
+    public init(标题: String, 时序图: Mermaid时序图, 主题: DiagramTheme = .default) {
         self.title = 标题
         self.时序图 = 时序图
+        self.主题 = 主题
     }
     
     public var notes: String? = nil
     public var hidden: Bool = false
     
     public func toDict() -> [String: Any] {
-        [
+        var dict: [String: Any] = [
             "type": slideType,
             "id": id.uuidString,
             "title": title,
             "mermaidCode": 时序图.生成语法(),
             "diagramType": "sequence"
         ]
+        
+        if let result = try? Mermaid渲染器.渲染时序图带尺寸(时序图, 主题: 主题) {
+            dict["imageData"] = result.data.base64EncodedString()
+            dict["imageWidth"] = result.width
+            dict["imageHeight"] = result.height
+        }
+        
+        return dict
     }
 }
 
@@ -846,5 +867,145 @@ public struct Mermaid甘特图页: Slide {
             "mermaidCode": 甘特图.生成语法(),
             "diagramType": "gantt"
         ]
+    }
+}
+
+@available(macOS 12.0, *)
+public struct Mermaid状态图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var 状态代码: String
+    public var 主题: DiagramTheme
+    
+    public var slideType: String { "Mermaid状态图页" }
+    
+    public init(标题: String, 代码: String, 主题: DiagramTheme = .default) {
+        self.title = 标题
+        self.状态代码 = 代码
+        self.主题 = 主题
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "mermaidCode": 状态代码,
+            "diagramType": "state"
+        ]
+        
+        if let imageData = try? Mermaid渲染器.渲染图片(mermaid代码: 状态代码, 主题: 主题) {
+            dict["imageData"] = imageData.base64EncodedString()
+        }
+        
+        return dict
+    }
+}
+
+@available(macOS 12.0, *)
+public struct Mermaid类图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var 类代码: String
+    public var 主题: DiagramTheme
+    
+    public var slideType: String { "Mermaid类图页" }
+    
+    public init(标题: String, 代码: String, 主题: DiagramTheme = .default) {
+        self.title = 标题
+        self.类代码 = 代码
+        self.主题 = 主题
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "mermaidCode": 类代码,
+            "diagramType": "class"
+        ]
+        
+        if let imageData = try? Mermaid渲染器.渲染图片(mermaid代码: 类代码, 主题: 主题) {
+            dict["imageData"] = imageData.base64EncodedString()
+        }
+        
+        return dict
+    }
+}
+
+@available(macOS 12.0, *)
+public struct MermaidER图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public var ER代码: String
+    public var 主题: DiagramTheme
+    
+    public var slideType: String { "MermaidER图页" }
+    
+    public init(标题: String, 代码: String, 主题: DiagramTheme = .default) {
+        self.title = 标题
+        self.ER代码 = 代码
+        self.主题 = 主题
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "mermaidCode": ER代码,
+            "diagramType": "er"
+        ]
+        
+        if let imageData = try? Mermaid渲染器.渲染图片(mermaid代码: ER代码, 主题: 主题) {
+            dict["imageData"] = imageData.base64EncodedString()
+        }
+        
+        return dict
+    }
+}
+
+@available(macOS 13.0, *)
+public struct Gantt图页: Slide {
+    public let id = UUID()
+    public var title: String
+    public let 甘特图: Gantt图表
+    
+    public var slideType: String { "Gantt图页" }
+    
+    public init(标题: String, 甘特图: Gantt图表) {
+        self.title = 标题
+        self.甘特图 = 甘特图
+    }
+    
+    public var notes: String? = nil
+    public var hidden: Bool = false
+    
+    public func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "type": slideType,
+            "id": id.uuidString,
+            "title": title,
+            "diagramType": "gantt"
+        ]
+        
+        let result = Gantt渲染器.同步渲染(甘特图)
+        if let result = result {
+            dict["imageData"] = result.data.base64EncodedString()
+            dict["imageWidth"] = result.width
+            dict["imageHeight"] = result.height
+        }
+        
+        return dict
     }
 }

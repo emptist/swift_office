@@ -2,7 +2,7 @@ import Foundation
 import SwiftSlides
 
 @main
-@available(macOS 10.15, *)
+@available(macOS 13.0, *)
 struct SwiftSlidesDemo {
     static func main() throws {
         let demo = 创建综合演示()
@@ -147,6 +147,40 @@ struct SwiftSlidesDemo {
         try mermaidJson.write(toFile: "output/mermaid_demo.json", atomically: true, encoding: .utf8)
         print("\nMermaid Demo saved to: output/mermaid_demo.json")
         print("Mermaid Demo slides: \(presentation.sections.reduce(0) { $0 + $1.slides.count })")
+        
+        try 创建Gantt演示()
+    }
+    
+    static func 创建Gantt演示() throws {
+        let 日历 = Calendar.current
+        let 今天 = Date()
+        
+        let gantt图表 = Gantt图表(
+            标题: "项目开发计划",
+            任务: [
+                Gantt任务(名称: "需求分析", 开始日期: 日历.date(byAdding: .day, value: 0, to: 今天)!, 结束日期: 日历.date(byAdding: .day, value: 6, to: 今天)!, 进度: 1.0),
+                Gantt任务(名称: "架构设计", 开始日期: 日历.date(byAdding: .day, value: 5, to: 今天)!, 结束日期: 日历.date(byAdding: .day, value: 12, to: 今天)!, 进度: 0.8),
+                Gantt任务(名称: "前端开发", 开始日期: 日历.date(byAdding: .day, value: 10, to: 今天)!, 结束日期: 日历.date(byAdding: .day, value: 25, to: 今天)!, 进度: 0.5),
+                Gantt任务(名称: "后端开发", 开始日期: 日历.date(byAdding: .day, value: 10, to: 今天)!, 结束日期: 日历.date(byAdding: .day, value: 28, to: 今天)!, 进度: 0.3),
+                Gantt任务(名称: "测试验收", 开始日期: 日历.date(byAdding: .day, value: 26, to: 今天)!, 结束日期: 日历.date(byAdding: .day, value: 35, to: 今天)!, 进度: 0),
+                Gantt任务(名称: "部署上线", 开始日期: 日历.date(byAdding: .day, value: 34, to: 今天)!, 结束日期: 日历.date(byAdding: .day, value: 40, to: 今天)!, 进度: 0),
+            ]
+        )
+        
+        let presentation = 演示文稿(标题: "SwiftUI甘特图演示", 作者: "SwiftSlides", 主题: .科技紫) {
+            章节(标题: "甘特图") {
+                封面页(标题: "SwiftUI甘特图", 副标题: "原生渲染，高清输出", 渐变: .绿色)
+                
+                Gantt图页(标题: "项目开发进度", 甘特图: gantt图表)
+                
+                结束页(标题: "完成！", 副标题: "SwiftUI绘图能力展示")
+            }
+        }
+        
+        let ganttJson = try presentation.toJSON()
+        try ganttJson.write(toFile: "output/gantt_demo.json", atomically: true, encoding: .utf8)
+        print("\nGantt Demo saved to: output/gantt_demo.json")
+        print("Gantt Demo slides: \(presentation.sections.reduce(0) { $0 + $1.slides.count })")
     }
     
     @SectionBuilder
