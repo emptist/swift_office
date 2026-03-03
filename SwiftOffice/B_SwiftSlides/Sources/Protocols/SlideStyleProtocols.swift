@@ -854,3 +854,39 @@ public extension ParetoStyle {
         }
     }
 }
+
+// MARK: - Container Style Protocol
+
+/// Container style protocol for combining multiple slides
+@available(macOS 10.15, *)
+public protocol ContainerStyle: Slide {
+    var containerLayout: ContainerLayout { get }
+    var containerRatio: [Double] { get }
+    var containerSlides: [any Slide] { get }
+}
+
+public enum ContainerLayout: String, Sendable, Codable {
+    case horizontal
+    case vertical
+}
+
+@available(macOS 10.15, *)
+public extension ContainerStyle {
+    var containerLayout: ContainerLayout {
+        if let layout = contents["layout"]?.asString {
+            return ContainerLayout(rawValue: layout) ?? .horizontal
+        }
+        return .horizontal
+    }
+    
+    var containerRatio: [Double] {
+        if let ratio = contents["ratio"]?.dict["items"] as? [Double] {
+            return ratio
+        }
+        return [0.5, 0.5]
+    }
+    
+    var containerSlides: [any Slide] {
+        return fellowSlides
+    }
+}
