@@ -8,6 +8,9 @@ SwiftSlides is a powerful, natural language-like Swift framework for generating 
 
 ### Features
 
+- **Protocol Composition** - Mix and match slide styles using protocols
+- **Data/Presentation Separation** - Clean separation between content and styling
+- **Script Mode Support** - Run directly with `swift run` or as scripts
 - **23 Slide Types** - Cover, section, list, table, chart, timeline, flowchart, etc.
 - **Data-Driven API** - Create slides from arrays, CSV, TSV, or JSON data
 - **8 Predefined Themes** - Professional blue, business green, tech purple, etc.
@@ -15,7 +18,103 @@ SwiftSlides is a powerful, natural language-like Swift framework for generating 
 - **Mermaid Diagrams** - Flowcharts, sequence diagrams, Gantt charts
 - **Chinese Identifiers** - Natural language-like API in Chinese
 
-### Quick Start
+## Quick Start (Protocol Composition Mode)
+
+The recommended way to use SwiftSlides with clean separation between content and tools:
+
+### 1. Define Your Content
+
+Edit `Sources/UserPresentation/main.swift`:
+
+```swift
+import SwiftSlides
+
+// Define your presentation structure
+struct 医院管理总览: Presentation {
+    var title = "医院管理总览"
+    var author: String? = "张三"
+    var sections: [any Section] = [
+        封面章节(),
+        历史沿革章节(),
+    ]
+}
+
+struct 封面章节: Section {
+    var title = "封面"
+    var slides: [any Slide] = [
+        封面页(),
+    ]
+}
+
+struct 历史沿革章节: Section {
+    var title = "历史沿革"
+    var slides: [any Slide] = [
+        章节首页(),
+        古代医院(),
+        现代医院(),
+    ]
+}
+
+// Define slides with protocol composition
+struct 封面页: Slide, 封面样式 {
+    var title = "医院管理总览"
+    var subtitle: String? = "2024年度报告"
+    var author: String? = "张三"
+}
+
+struct 章节首页: Slide, 章节样式 {
+    var title = "历史沿革"
+    var chapterNumber: Int? = 1
+}
+
+struct 古代医院: Slide, 内容样式 {
+    var title = "古代医院"
+    var items = [
+        "公元前400年：希波克拉底创立医学伦理",
+        "公元100年：罗马建立第一所公立医院",
+    ]
+}
+
+struct 现代医院: Slide, 内容样式 {
+    var title = "现代医院"
+    var items = [
+        "19世纪：无菌手术技术",
+        "20世纪：抗生素广泛应用",
+        "21世纪：数字化医疗",
+    ]
+}
+
+// Auto-generated runner (don't modify)
+@main
+struct AutoRunner {
+    static func main() async {
+        let presentation = 医院管理总览()
+        try? await presentation.generatePPTX(outputPath: "outputs/\(presentation.title).pptx")
+    }
+}
+```
+
+### 2. Generate PPTX
+
+```bash
+swift run UserPresentation
+```
+
+Output: `outputs/医院管理总览.pptx`
+
+### Style Protocols
+
+Use protocol composition to style your slides:
+
+| Protocol | Properties | Purpose |
+|----------|------------|---------|
+| `封面样式` | `subtitle`, `author` | Cover slides |
+| `章节样式` | `chapterNumber` | Section dividers |
+| `内容样式` | `items: [String]` | Bullet point lists |
+
+## Alternative: Builder Mode
+
+For more complex presentations with built-in slide types:
 
 ```swift
 import SwiftSlides
