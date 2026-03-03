@@ -90,7 +90,7 @@ async function generatePPTX(data, outputPath) {
     
     for (const section of data.sections || []) {
         for (const slide of section.slides || []) {
-            await addSlide(pres, slide, theme);
+            await processSlideRecursive(pres, slide, theme);
         }
     }
     
@@ -103,75 +103,113 @@ async function generatePPTX(data, outputPath) {
     }));
 }
 
+async function processSlideRecursive(pres, slide, theme) {
+    if (slide.fellowSlides && slide.fellowSlides.length > 0) {
+        for (const subSlide of slide.fellowSlides) {
+            await processSlideRecursive(pres, subSlide, theme);
+        }
+    } else {
+        await addSlide(pres, slide, theme);
+    }
+}
+
 async function addSlide(pres, slide, theme) {
-    const type = slide.type;
+    const type = slide.slideType || slide.type;
     const slideObj = pres.addSlide();
     
     switch (type) {
+        case 'cover':
         case '封面页':
             addCoverSlide(slideObj, slide, theme);
             break;
+        case 'chapterCover':
         case '章节页':
             addSectionSlide(slideObj, slide, theme);
             break;
+        case 'content':
         case '列表页':
             addListSlide(slideObj, slide, theme);
             break;
+        case 'text':
+        case '定义页':
+            addTextSlide(slideObj, slide, theme);
+            break;
+        case 'cards':
         case '卡片页':
             addCardSlide(slideObj, slide, theme);
             break;
+        case 'table':
         case '表格页':
             addTableSlide(slideObj, slide, theme);
             break;
+        case 'quote':
         case '引用页':
             addQuoteSlide(slideObj, slide, theme);
             break;
+        case 'twoColumn':
         case '对比页':
             addComparisonSlide(slideObj, slide, theme);
             break;
+        case 'timeline':
         case '时间线页':
             addTimelineSlide(slideObj, slide, theme);
             break;
+        case 'flowchart':
         case '流程页':
             addProcessSlide(slideObj, slide, theme);
             break;
-        case '结构图页':
-            addStructureSlide(slideObj, slide, theme);
-            break;
+        case 'end':
         case '结束页':
             addEndSlide(slideObj, slide, theme);
             break;
-        case '定义页':
-            addDefinitionSlide(slideObj, slide, theme);
-            break;
-        case '架构图页':
-            addArchitectureSlide(slideObj, slide, theme);
-            break;
-        case '流程图页':
-            addFlowchartSlide(slideObj, slide, theme);
-            break;
-        case '金字塔页':
-            addPyramidSlide(slideObj, slide, theme);
-            break;
-        case '矩阵页':
-            addMatrixSlide(slideObj, slide, theme);
-            break;
-        case '柏拉图页':
-            addParetoSlide(slideObj, slide, theme);
-            break;
-        case '图片页':
-            addImageSlide(slideObj, slide, theme);
-            break;
-        case '双栏页':
-            addTwoColumnSlide(slideObj, slide, theme);
-            break;
+        case 'chart':
         case '图表页':
             addChartSlide(slideObj, slide, theme, pres);
             break;
+        case 'image':
+        case '图片页':
+            addImageSlide(slideObj, slide, theme);
+            break;
+        case 'pyramid':
+        case '金字塔页':
+            addPyramidSlide(slideObj, slide, theme);
+            break;
+        case 'matrix':
+        case '矩阵页':
+            addMatrixSlide(slideObj, slide, theme);
+            break;
+        case 'pareto':
+        case '柏拉图页':
+            addParetoSlide(slideObj, slide, theme);
+            break;
+        case 'hierarchy':
+        case '架构图页':
+            addHierarchySlide(slideObj, slide, theme);
+            break;
+        case 'cycleFlow':
+            addCycleFlowSlide(slideObj, slide, theme);
+            break;
+        case 'boxDiagram':
+            addBoxDiagramSlide(slideObj, slide, theme);
+            break;
+        case 'branchedHierarchy':
+            addBranchedHierarchySlide(slideObj, slide, theme);
+            break;
+        case 'quadrantMatrix':
+            addQuadrantMatrixSlide(slideObj, slide, theme);
+            break;
+        case 'mermaidFlowchart':
         case 'Mermaid流程图页':
+            await addMermaidSlide(slideObj, slide, theme);
+            break;
+        case 'mermaidSequence':
         case 'Mermaid时序图页':
-        case 'Mermaid甘特图页':
+            await addMermaidSlide(slideObj, slide, theme);
+            break;
+        case 'gantt':
+        case 'mermaidGantt':
         case 'Gantt图页':
+        case 'Mermaid甘特图页':
             await addMermaidSlide(slideObj, slide, theme);
             break;
         default:
@@ -594,7 +632,7 @@ function addFlowchartSlide(slide, data, theme) {
 function addPyramidSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const levels = data.levels || [];
+    const levels = data.pyramidLevels || [];
     const baseY = 4.5;
     const levelHeight = 0.8;
     
@@ -603,14 +641,20 @@ function addPyramidSlide(slide, data, theme) {
         const x = (10 - width) / 2;
         const y = baseY - index * levelHeight;
         
+        const levelColor = level.color || theme.primary;
+        
         slide.addShape('trapezoid', {
             x, y, w: width, h: levelHeight,
-            fill: { color: theme.primary }
+            fill: { color: levelColor }
         });
         
-        slide.addText(level, {
+        const text = level.items && level.items.length > 0 
+            ? `${level.title}\n${level.items.join(', ')}`
+            : level.title || level;
+        
+        slide.addText(text, {
             x, y, w: width, h: levelHeight,
-            fontSize: 12, color: 'FFFFFF',
+            fontSize: 11, color: 'FFFFFF',
             align: 'center', valign: 'middle'
         });
     });
@@ -619,9 +663,11 @@ function addPyramidSlide(slide, data, theme) {
 function addMatrixSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const rows = data.rows || [];
-    const columns = data.columns || [];
-    const cells = data.cells || [];
+    const rows = data.rowHeaders || [];
+    const columns = data.colHeaders || [];
+    const cells = data.matrixCells || [];
+    const matrixRows = data.matrixRows || rows.length;
+    const matrixCols = data.matrixCols || columns.length;
     
     const colWidth = 8 / (columns.length + 1);
     const rowHeight = 0.8;
@@ -644,13 +690,15 @@ function addMatrixSlide(slide, data, theme) {
         });
         
         columns.forEach((col, colIndex) => {
-            const cell = cells.find(c => c.row === row && c.column === col);
+            const cell = cells.find(c => c.rowHeader === row && c.colHeader === col);
+            
+            const cellColor = cell?.color || 'E8F4FD';
             
             slide.addShape('rect', {
                 x: 0.5 + (colIndex + 1) * colWidth,
                 y: 2.3 + rowIndex * rowHeight,
                 w: colWidth, h: rowHeight,
-                fill: { color: cell ? 'E8F4FD' : 'F5F5F5' },
+                fill: { color: cell ? cellColor : 'F5F5F5' },
                 line: { color: 'CCCCCC', width: 0.5 }
             });
             
@@ -670,47 +718,221 @@ function addMatrixSlide(slide, data, theme) {
 function addParetoSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const items = data.items || [];
-    const threshold = data.threshold || 80;
+    const items = data.paretoItems || [];
+    if (items.length === 0) return;
     
-    const chartData = [{
-        name: '数值',
-        labels: items.map(i => i.label),
-        values: items.map(i => i.value)
-    }];
-    
-    slide.addChart(pres.ChartType.bar, chartData, {
-        x: 0.5, y: 1.5, w: 5, h: 3.5,
-        showTitle: false,
-        showValue: true,
-        barDir: 'bar'
-    });
-    
-    let cumulative = 0;
-    const total = items.reduce((sum, i) => sum + i.value, 0);
+    const maxVal = Math.max(...items.map(i => i.value));
+    const barHeight = 0.4;
+    const startY = 1.8;
+    const barMaxWidth = 5;
     
     items.forEach((item, index) => {
-        cumulative += item.value;
-        const percent = (cumulative / total * 100).toFixed(1);
-        const isCore = item.isCoreProblem || percent <= threshold;
+        const y = startY + index * (barHeight + 0.15);
+        const barWidth = (item.value / maxVal) * barMaxWidth;
         
-        const y = 1.5 + index * 0.5;
+        const isCore = item.cumulativePercent <= 80;
         
         slide.addShape('rect', {
-            x: 6, y, w: 0.3, h: 0.4,
+            x: 2, y: y, w: barWidth, h: barHeight,
             fill: { color: isCore ? theme.primary : 'CCCCCC' }
         });
         
-        slide.addText(`${percent}%`, {
-            x: 6.4, y, w: 0.8, h: 0.4,
-            fontSize: 10, color: theme.text
+        slide.addText(item.category, {
+            x: 0.5, y: y, w: 1.4, h: barHeight,
+            fontSize: 10, color: theme.text,
+            align: 'right', valign: 'middle'
+        });
+        
+        slide.addText(`${item.value}`, {
+            x: 2 + barWidth + 0.1, y: y, w: 0.8, h: barHeight,
+            fontSize: 10, color: theme.text, valign: 'middle'
+        });
+        
+        slide.addText(`${item.cumulativePercent}%`, {
+            x: 7.5, y: y, w: 1, h: barHeight,
+            fontSize: 10, color: theme.lightText, valign: 'middle'
         });
     });
     
-    slide.addText(`阈值: ${threshold}%`, {
-        x: 6, y: 5, w: 3, h: 0.3,
+    slide.addShape('line', {
+        x: 7.5, y: startY, w: 0, h: items.length * (barHeight + 0.15),
+        line: { color: theme.accent, width: 1 }
+    });
+    
+    slide.addText('累计%', {
+        x: 7.5, y: startY - 0.3, w: 1, h: 0.3,
         fontSize: 10, color: theme.lightText
     });
+}
+
+function addBranchedHierarchySlide(slide, data, theme) {
+    addSlideTitle(slide, data.title, theme);
+    
+    const root = data.branchRoot;
+    if (!root) return;
+    
+    const layout = data.branchLayout || 'pyramid';
+    const levelColors = [theme.primary, theme.secondary, theme.accent, '4A90A4', '6B8E23'];
+    
+    function renderPyramidNode(node, x, y, width, level) {
+        if (!node) return;
+        
+        const height = 0.7;
+        const color = levelColors[level % levelColors.length];
+        
+        slide.addShape('rect', {
+            x: x, y: y, w: width, h: height,
+            fill: { color: color },
+            line: { color: 'FFFFFF', width: 1 }
+        });
+        
+        let text = node.title;
+        if (node.subtitle) {
+            text += '\n' + node.subtitle;
+        }
+        
+        slide.addText(text, {
+            x: x, y: y, w: width, h: height,
+            fontSize: 10, color: 'FFFFFF',
+            align: 'center', valign: 'middle'
+        });
+        
+        if (node.annotation) {
+            slide.addText(node.annotation, {
+                x: x + width + 0.1, y: y + height / 2 - 0.15, w: 1.5, h: 0.3,
+                fontSize: 8, color: theme.lightText
+            });
+        }
+        
+        if (node.children && node.children.length > 0) {
+            const childWidth = width / node.children.length - 0.2;
+            const startX = x + (width - (childWidth + 0.2) * node.children.length) / 2;
+            
+            node.children.forEach((child, index) => {
+                const childX = startX + index * (childWidth + 0.2);
+                const childY = y + height + 0.5;
+                
+                slide.addShape('line', {
+                    x: x + width / 2, y: y + height, w: 0, h: 0.25,
+                    line: { color: theme.lightText, width: 1 }
+                });
+                
+                renderPyramidNode(child, childX, childY, childWidth, level + 1);
+            });
+        }
+    }
+    
+    const rootWidth = 3;
+    const startX = (10 - rootWidth) / 2;
+    renderPyramidNode(root, startX, 1.5, rootWidth, 0);
+}
+
+function addQuadrantMatrixSlide(slide, data, theme) {
+    addSlideTitle(slide, data.title, theme);
+    
+    const cells = data.quadrantCells || [];
+    const xAxisLabel = data.xAxisLabel || '';
+    const yAxisLabel = data.yAxisLabel || '';
+    const xAxisLow = data.xAxisLowLabel || '低';
+    const xAxisHigh = data.xAxisHighLabel || '高';
+    const yAxisLow = data.yAxisLowLabel || '低';
+    const yAxisHigh = data.yAxisHighLabel || '高';
+    
+    const matrixX = 1.5;
+    const matrixY = 1.5;
+    const matrixW = 7;
+    const matrixH = 3.6;
+    const cellW = matrixW / 2;
+    const cellH = matrixH / 2;
+    
+    const quadrantColors = {
+        'topLeft': 'E8F4FD',
+        'topRight': 'D4EDDA',
+        'bottomLeft': 'FFF3CD',
+        'bottomRight': 'F8D7DA'
+    };
+    
+    slide.addShape('line', {
+        x: matrixX, y: matrixY + cellH, w: matrixW, h: 0,
+        line: { color: 'CCCCCC', width: 1 }
+    });
+    
+    slide.addShape('line', {
+        x: matrixX + cellW, y: matrixY, w: 0, h: matrixH,
+        line: { color: 'CCCCCC', width: 1 }
+    });
+    
+    cells.forEach(cell => {
+        let x, y;
+        switch (cell.quadrant) {
+            case 'topLeft':
+                x = matrixX; y = matrixY;
+                break;
+            case 'topRight':
+                x = matrixX + cellW; y = matrixY;
+                break;
+            case 'bottomLeft':
+                x = matrixX; y = matrixY + cellH;
+                break;
+            case 'bottomRight':
+                x = matrixX + cellW; y = matrixY + cellH;
+                break;
+        }
+        
+        const bgColor = cell.color || quadrantColors[cell.quadrant];
+        
+        slide.addShape('rect', {
+            x: x + 0.1, y: y + 0.1, w: cellW - 0.2, h: cellH - 0.2,
+            fill: { color: bgColor },
+            line: { color: 'CCCCCC', width: 0.5 }
+        });
+        
+        let text = cell.title;
+        if (cell.subtitle) {
+            text += '\n' + cell.subtitle;
+        }
+        
+        slide.addText(text, {
+            x: x + 0.1, y: y + 0.1, w: cellW - 0.2, h: cellH - 0.2,
+            fontSize: 12, color: theme.text,
+            align: 'center', valign: 'middle'
+        });
+    });
+    
+    slide.addText(yAxisHigh, {
+        x: matrixX - 0.8, y: matrixY, w: 0.7, h: 0.3,
+        fontSize: 9, color: theme.lightText, align: 'center'
+    });
+    
+    slide.addText(yAxisLow, {
+        x: matrixX - 0.8, y: matrixY + matrixH - 0.3, w: 0.7, h: 0.3,
+        fontSize: 9, color: theme.lightText, align: 'center'
+    });
+    
+    slide.addText(xAxisLow, {
+        x: matrixX, y: matrixY + matrixH + 0.1, w: 0.5, h: 0.3,
+        fontSize: 9, color: theme.lightText, align: 'center'
+    });
+    
+    slide.addText(xAxisHigh, {
+        x: matrixX + matrixW - 0.5, y: matrixY + matrixH + 0.1, w: 0.5, h: 0.3,
+        fontSize: 9, color: theme.lightText, align: 'center'
+    });
+    
+    if (yAxisLabel) {
+        slide.addText(yAxisLabel, {
+            x: 0.3, y: matrixY + matrixH / 2 - 0.2, w: 0.8, h: 0.4,
+            fontSize: 10, color: theme.text, bold: true,
+            rotate: 270, align: 'center'
+        });
+    }
+    
+    if (xAxisLabel) {
+        slide.addText(xAxisLabel, {
+            x: matrixX + matrixW / 2 - 0.5, y: matrixY + matrixH + 0.2, w: 1, h: 0.3,
+            fontSize: 10, color: theme.text, bold: true, align: 'center'
+        });
+    }
 }
 
 function addImageSlide(slide, data, theme) {
@@ -912,4 +1134,278 @@ function addSlideTitle(slide, title, theme) {
         x: 0.5, y: 1, w: 9, h: 0,
         line: { color: theme.accent, width: 1 }
     });
+}
+
+function addTextSlide(slide, data, theme) {
+    addSlideTitle(slide, data.title, theme);
+    
+    if (data.content) {
+        slide.addShape('rect', {
+            x: 0.5, y: 1.5, w: 9, h: 3.5,
+            fill: { color: 'F8F8F8' },
+            line: { color: theme.accent, width: 1 }
+        });
+        
+        slide.addText(data.content, {
+            x: 0.8, y: 1.8, w: 8.4, h: 3,
+            fontSize: 14, color: theme.text,
+            valign: 'top'
+        });
+    }
+}
+
+function addHierarchySlide(slide, data, theme) {
+    addSlideTitle(slide, data.title, theme);
+    
+    const root = data.hierarchyRoot;
+    if (!root) return;
+    
+    const direction = data.hierarchyDirection || 'topDown';
+    const isHorizontal = direction === 'leftToRight' || direction === 'rightToLeft';
+    
+    function renderNodeHorizontal(node, x, y, level) {
+        const width = 2.2;
+        const height = 1.2;
+        const colors = [theme.primary, theme.secondary, theme.accent];
+        
+        slide.addShape('rect', {
+            x: x, y: y, w: width, h: height,
+            fill: { color: colors[level % colors.length] },
+            line: { color: 'FFFFFF', width: 1 }
+        });
+        
+        let text = node.title;
+        if (node.subtitle) {
+            text += '\n' + node.subtitle;
+        }
+        
+        slide.addText(text, {
+            x: x, y: y, w: width, h: height,
+            fontSize: 10, color: 'FFFFFF',
+            align: 'center', valign: 'middle'
+        });
+        
+        if (node.children && node.children.length > 0) {
+            const childX = x + width + 0.5;
+            const childSpacing = height + 0.3;
+            const startY = y - (node.children.length - 1) * childSpacing / 2 + height / 2 - 0.6;
+            
+            node.children.forEach((child, i) => {
+                const childY = startY + i * childSpacing;
+                
+                slide.addShape('line', {
+                    x: x + width, y: y + height / 2,
+                    w: 0.25, h: 0,
+                    line: { color: theme.accent, width: 1 }
+                });
+                
+                slide.addShape('line', {
+                    x: x + width + 0.25,
+                    y: Math.min(y + height / 2, childY + height / 2),
+                    w: 0,
+                    h: Math.abs(y + height / 2 - childY - height / 2),
+                    line: { color: theme.accent, width: 1 }
+                });
+                
+                slide.addShape('line', {
+                    x: x + width + 0.25, y: childY + height / 2,
+                    w: 0.25, h: 0,
+                    line: { color: theme.accent, width: 1 }
+                });
+                
+                renderNodeHorizontal(child, childX, childY, level + 1);
+            });
+        }
+    }
+    
+    function renderNodeVertical(node, x, y, level) {
+        const width = 2.8;
+        const height = 0.7;
+        const colors = [theme.primary, theme.secondary, theme.accent];
+        
+        slide.addShape('rect', {
+            x: x, y: y, w: width, h: height,
+            fill: { color: colors[level % colors.length] },
+            line: { color: 'FFFFFF', width: 1 }
+        });
+        
+        let text = node.title;
+        if (node.subtitle) {
+            text += '\n' + node.subtitle;
+        }
+        
+        slide.addText(text, {
+            x: x, y: y, w: width, h: height,
+            fontSize: 10, color: 'FFFFFF',
+            align: 'center', valign: 'middle'
+        });
+        
+        if (node.children && node.children.length > 0) {
+            const childY = y + height + 0.4;
+            const childSpacing = width + 0.4;
+            const startX = x - (node.children.length - 1) * childSpacing / 2;
+            
+            node.children.forEach((child, i) => {
+                const childX = startX + i * childSpacing;
+                
+                slide.addShape('line', {
+                    x: x + width / 2, y: y + height,
+                    w: 0, h: 0.2,
+                    line: { color: theme.accent, width: 1 }
+                });
+                
+                slide.addShape('line', {
+                    x: Math.min(x + width / 2, childX + width / 2),
+                    y: y + height + 0.2,
+                    w: Math.abs(x + width / 2 - childX - width / 2),
+                    h: 0,
+                    line: { color: theme.accent, width: 1 }
+                });
+                
+                slide.addShape('line', {
+                    x: childX + width / 2, y: y + height + 0.2,
+                    w: 0, h: 0.2,
+                    line: { color: theme.accent, width: 1 }
+                });
+                
+                renderNodeVertical(child, childX, childY, level + 1);
+            });
+        }
+    }
+    
+    if (isHorizontal) {
+        const startX = 0.5;
+        const startY = 2.5;
+        renderNodeHorizontal(root, startX, startY, 0);
+    } else {
+        const startX = (10 - 2.8) / 2;
+        const startY = 1.5;
+        renderNodeVertical(root, startX, startY, 0);
+    }
+}
+
+function addCycleFlowSlide(slide, data, theme) {
+    addSlideTitle(slide, data.title, theme);
+    
+    const steps = data.cycleSteps || [];
+    if (steps.length === 0) return;
+    
+    const centerX = 5;
+    const centerY = 3.2;
+    const radius = 1.8;
+    const angleStep = (2 * Math.PI) / steps.length;
+    
+    steps.forEach((step, index) => {
+        const angle = index * angleStep - Math.PI / 2;
+        const x = centerX + radius * Math.cos(angle) - 0.7;
+        const y = centerY + radius * Math.sin(angle) - 0.4;
+        
+        const colors = [theme.primary, theme.secondary, theme.accent, 'E65100'];
+        
+        slide.addShape('ellipse', {
+            x: x, y: y, w: 1.4, h: 0.8,
+            fill: { color: colors[index % colors.length] }
+        });
+        
+        let text = step.title;
+        if (step.description) {
+            text += '\n' + step.description.substring(0, 10) + '...';
+        }
+        
+        slide.addText(text, {
+            x: x, y: y, w: 1.4, h: 0.8,
+            fontSize: 9, color: 'FFFFFF',
+            align: 'center', valign: 'middle'
+        });
+    });
+    
+    slide.addText('↻', {
+        x: centerX - 0.3, y: centerY - 0.3, w: 0.6, h: 0.6,
+        fontSize: 24, color: theme.accent,
+        align: 'center', valign: 'middle'
+    });
+}
+
+function addBoxDiagramSlide(slide, data, theme) {
+    addSlideTitle(slide, data.title, theme);
+    
+    const boxes = data.boxes || [];
+    const layout = data.boxLayout || 'horizontal';
+    
+    if (layout === 'horizontal') {
+        const boxWidth = Math.min(1.5, 9 / boxes.length);
+        const boxHeight = 3;
+        const startX = (10 - boxes.length * boxWidth) / 2;
+        
+        boxes.forEach((box, index) => {
+            const x = startX + index * boxWidth;
+            const y = 1.5;
+            
+            slide.addShape('rect', {
+                x: x + 0.05, y: y, w: boxWidth - 0.1, h: boxHeight,
+                fill: { color: 'F5F5F5' },
+                line: { color: theme.accent, width: 1 }
+            });
+            
+            if (box.title) {
+                slide.addText(box.title, {
+                    x: x + 0.1, y: y + 0.1, w: boxWidth - 0.2, h: 0.4,
+                    fontSize: 10, bold: true, color: theme.primary
+                });
+            }
+            
+            if (box.content && Array.isArray(box.content)) {
+                const contentText = box.content.join('\n');
+                slide.addText(contentText, {
+                    x: x + 0.1, y: y + 0.5, w: boxWidth - 0.2, h: boxHeight - 0.6,
+                    fontSize: 8, color: theme.text,
+                    valign: 'top'
+                });
+            }
+            
+            if (index < boxes.length - 1) {
+                slide.addShape('rightArrow', {
+                    x: x + boxWidth - 0.05, y: y + boxHeight / 2 - 0.15, w: 0.1, h: 0.3,
+                    fill: { color: theme.accent }
+                });
+            }
+        });
+    } else {
+        const boxWidth = 8;
+        const boxHeight = 0.8;
+        
+        boxes.forEach((box, index) => {
+            const y = 1.5 + index * (boxHeight + 0.1);
+            
+            slide.addShape('rect', {
+                x: 1, y: y, w: boxWidth, h: boxHeight,
+                fill: { color: 'F5F5F5' },
+                line: { color: theme.accent, width: 1 }
+            });
+            
+            if (box.title) {
+                slide.addText(box.title, {
+                    x: 1.1, y: y + 0.05, w: 2, h: boxHeight - 0.1,
+                    fontSize: 12, bold: true, color: theme.primary,
+                    valign: 'middle'
+                });
+            }
+            
+            if (box.content && Array.isArray(box.content)) {
+                const contentText = box.content.join(' | ');
+                slide.addText(contentText, {
+                    x: 3.2, y: y + 0.05, w: 5.7, h: boxHeight - 0.1,
+                    fontSize: 10, color: theme.text,
+                    valign: 'middle'
+                });
+            }
+            
+            if (index < boxes.length - 1) {
+                slide.addShape('downArrow', {
+                    x: 4.9, y: y + boxHeight, w: 0.2, h: 0.1,
+                    fill: { color: theme.accent }
+                });
+            }
+        });
+    }
 }

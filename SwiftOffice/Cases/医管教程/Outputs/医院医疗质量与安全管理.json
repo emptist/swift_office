@@ -1,0 +1,886 @@
+{
+  "author" : "医管培训中心",
+  "id" : "1782072E-6C29-4437-BB6E-3C1D38AA57CC",
+  "sections" : [
+    {
+      "id" : "B3976B3D-C14D-446F-89DA-D0F6F4E4321A",
+      "slides" : [
+        {
+          "author" : "医管培训中心",
+          "hidden" : false,
+          "id" : "D6A7D806-FF74-43B2-BC44-F454971DD8B5",
+          "notes" : null,
+          "slideType" : "cover",
+          "subtitle" : "医院管理核心模块课程 · 12小时",
+          "title" : "医院医疗质量与安全管理"
+        },
+        {
+          "hidden" : false,
+          "id" : "D90B0345-2A85-4618-9261-0AD07A5B939F",
+          "items" : [
+            "【知识】掌握质量管理体系、工具方法、安全目标",
+            "【能力】建立体系、运用工具、处理事件",
+            "【素质】质量安全意识、质量管理能力"
+          ],
+          "notes" : null,
+          "slideType" : "content",
+          "title" : "课程目标"
+        }
+      ],
+      "title" : "课程概述"
+    },
+    {
+      "id" : "26E509D6-B8F1-4D2E-B1FA-F95F3214554C",
+      "slides" : [
+        {
+          "chapterNumber" : 1,
+          "hidden" : false,
+          "id" : "ADC66EDF-D70D-4B7A-9504-63FF261658F0",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "医疗质量管理概述"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "content" : "医疗质量是指医疗服务在满足患者及其家属健康需求方面所达到的程度，包括医疗技术质量和服务质量。\n\n狭义：诊疗质量\n广义：技术+服务+管理+环境",
+              "hidden" : false,
+              "id" : "BCC9CDF1-1178-4FE6-9E2D-CD363056361B",
+              "notes" : null,
+              "slideType" : "text",
+              "title" : "医疗质量定义"
+            },
+            {
+              "headers" : [
+                "维度",
+                "内容"
+              ],
+              "hidden" : false,
+              "id" : "988AEB8B-4746-45D1-B491-480713865CB9",
+              "notes" : null,
+              "rows" : [
+                [
+                  "结构质量",
+                  "人员、设备、制度、环境"
+                ],
+                [
+                  "过程质量",
+                  "诊疗流程、操作规范"
+                ],
+                [
+                  "结果质量",
+                  "诊疗效果、患者结局"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "医疗质量维度"
+            }
+          ],
+          "hidden" : false,
+          "id" : "7E17FC85-03A5-42F7-BF97-949F2FBA8F84",
+          "notes" : null,
+          "title" : "医疗质量概念"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "hidden" : false,
+              "hierarchyDirection" : "topDown",
+              "hierarchyRoot" : {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "children" : [
+                          {
+                            "id" : "bottom",
+                            "subtitle" : "质量控制、质量保证、质量改进",
+                            "title" : "基层执行"
+                          }
+                        ],
+                        "id" : "mid",
+                        "subtitle" : "质量组织、质量制度、质量流程",
+                        "title" : "中层管理"
+                      }
+                    ],
+                    "id" : "top",
+                    "subtitle" : "质量方针、质量目标、质量文化",
+                    "title" : "顶层设计"
+                  }
+                ],
+                "id" : "root",
+                "subtitle" : null,
+                "title" : "医疗质量管理体系"
+              },
+              "id" : "2EB84E2D-6640-435D-8B16-A8333AC5E78D",
+              "notes" : null,
+              "slideType" : "hierarchy",
+              "title" : "质量管理体系架构"
+            }
+          ],
+          "hidden" : false,
+          "id" : "5A8A5E82-2AC3-44BA-9745-6256E34FDE59",
+          "notes" : null,
+          "title" : "医疗质量管理体系"
+        },
+        {
+          "headers" : [
+            "趋势",
+            "内容"
+          ],
+          "hidden" : false,
+          "id" : "9EADF3A7-21DD-4458-874C-02CA8BBAFA6A",
+          "notes" : null,
+          "rows" : [
+            [
+              "科学化",
+              "数据驱动、循证决策"
+            ],
+            [
+              "精细化",
+              "精准诊疗、个体化"
+            ],
+            [
+              "信息化",
+              "智能质控、实时监测"
+            ],
+            [
+              "患者为中心",
+              "体验、质量、安全"
+            ]
+          ],
+          "slideType" : "table",
+          "title" : "管理发展趋势"
+        }
+      ],
+      "title" : "第一章"
+    },
+    {
+      "id" : "49B03D6F-0233-432A-A08E-A56A18339ECF",
+      "slides" : [
+        {
+          "chapterNumber" : 2,
+          "hidden" : false,
+          "id" : "E427E796-C763-4491-BFAE-192DBF92698C",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "医疗质量管理体系"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "原则",
+                "说明"
+              ],
+              "hidden" : false,
+              "id" : "20216FCC-A16F-40FF-B16D-DD78943D8435",
+              "notes" : null,
+              "rows" : [
+                [
+                  "患者导向",
+                  "以患者安全为中心"
+                ],
+                [
+                  "领导重视",
+                  "最高管理者主导"
+                ],
+                [
+                  "全员参与",
+                  "质量安全，人人有责"
+                ],
+                [
+                  "过程方法",
+                  "关注过程、关注结果"
+                ],
+                [
+                  "持续改进",
+                  "永无止境、追求卓越"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "质量管理原则"
+            },
+            {
+              "hidden" : false,
+              "id" : "AA9F82EE-5B7F-439F-A97E-CCF1E553378C",
+              "items" : [
+                "第一层：质量手册（质量方针、质量目标、体系框架）",
+                "第二层：程序文件（管理制度、操作流程）",
+                "第三层：作业指导书（操作规范、技术标准）",
+                "第四层：质量记录（表单、报表、档案）"
+              ],
+              "notes" : null,
+              "slideType" : "content",
+              "title" : "质量管理体系文件层级"
+            }
+          ],
+          "hidden" : false,
+          "id" : "06C0A184-E6A9-4A30-A95B-1FAA528A238B",
+          "notes" : null,
+          "title" : "质量管理体系架构"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "组织",
+                "职责"
+              ],
+              "hidden" : false,
+              "id" : "34FBDB28-DC9B-40BD-A10E-ED28BAC69958",
+              "notes" : null,
+              "rows" : [
+                [
+                  "质量管理委员会",
+                  "决策、统筹"
+                ],
+                [
+                  "质控部门",
+                  "日常管理"
+                ],
+                [
+                  "科室质控小组",
+                  "科室落实"
+                ],
+                [
+                  "全院职工",
+                  "具体执行"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "质量管理组织"
+            },
+            {
+              "hidden" : false,
+              "id" : "7013AEDA-FAE7-48A6-85BC-AF7F9311CB44",
+              "items" : [
+                "院级层面：制定方针目标、配置资源保障、考核评价监督",
+                "职能部门：落实质量制度、日常监督检查、问题分析改进",
+                "科室层面：执行诊疗规范、科室自查自纠、持续改进提高"
+              ],
+              "notes" : null,
+              "slideType" : "content",
+              "title" : "各层级质量职责"
+            }
+          ],
+          "hidden" : false,
+          "id" : "C91A36CD-6F14-41F1-8CAD-9CB39D3628BB",
+          "notes" : null,
+          "title" : "组织架构与职责"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "类别",
+                "制度"
+              ],
+              "hidden" : false,
+              "id" : "47992D50-EF0D-48DB-9887-DC15E9E27F08",
+              "notes" : null,
+              "rows" : [
+                [
+                  "首诊负责",
+                  "首诊负责制度"
+                ],
+                [
+                  "三级查房",
+                  "三级查房制度"
+                ],
+                [
+                  "会诊制度",
+                  "科间会诊、多学科会诊"
+                ],
+                [
+                  "手术安全",
+                  "手术安全核查制度"
+                ],
+                [
+                  "病历书写",
+                  "病历书写规范"
+                ],
+                [
+                  "危急值",
+                  "危急值报告制度"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "核心制度（18项医疗质量安全核心制度）"
+            },
+            {
+              "headers" : [
+                "规范类型",
+                "内容"
+              ],
+              "hidden" : false,
+              "id" : "13E0F414-B047-43FD-BEC7-80EBA4BD5F30",
+              "notes" : null,
+              "rows" : [
+                [
+                  "临床路径",
+                  "标准化诊疗流程"
+                ],
+                [
+                  "诊疗指南",
+                  "疾病诊疗规范"
+                ],
+                [
+                  "操作常规",
+                  "技术操作标准"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "诊疗规范"
+            }
+          ],
+          "hidden" : false,
+          "id" : "7FAEF780-8BC4-42B7-A85A-C9AA50D04533",
+          "notes" : null,
+          "title" : "质量管理制度"
+        }
+      ],
+      "title" : "第二章"
+    },
+    {
+      "id" : "67A9A895-6B08-4EF3-9A88-94FA0271E0DA",
+      "slides" : [
+        {
+          "chapterNumber" : 3,
+          "hidden" : false,
+          "id" : "7DAFAD90-173A-4A6F-ABBF-0B9832B915BA",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "质量管理工具与方法"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "cycleDirection" : "clockwise",
+              "cycleSteps" : [
+                {
+                  "description" : "计划：分析现状、找问题、制定计划",
+                  "id" : "P",
+                  "title" : "PLAN"
+                },
+                {
+                  "description" : "执行：实施计划、落实措施",
+                  "id" : "D",
+                  "title" : "DO"
+                },
+                {
+                  "description" : "检查：检查效果、发现问题",
+                  "id" : "C",
+                  "title" : "CHECK"
+                },
+                {
+                  "description" : "处理：总结经验、标准化",
+                  "id" : "A",
+                  "title" : "ACTION"
+                }
+              ],
+              "hidden" : false,
+              "id" : "3E94382A-CA48-4D54-9901-5B8FA4693FA8",
+              "notes" : null,
+              "slideType" : "cycleFlow",
+              "title" : "PDCA循环"
+            },
+            {
+              "headers" : [
+                "阶段",
+                "主要活动"
+              ],
+              "hidden" : false,
+              "id" : "43F384E6-4CC9-43A2-9263-943C9F1E7A84",
+              "notes" : null,
+              "rows" : [
+                [
+                  "P 计划",
+                  "分析现状、找问题、分析原因、制定计划"
+                ],
+                [
+                  "D 执行",
+                  "实施计划、落实措施"
+                ],
+                [
+                  "C 检查",
+                  "检查效果、发现问题"
+                ],
+                [
+                  "A 处理",
+                  "总结经验、标准化、遗留问题入下轮"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "PDCA应用"
+            }
+          ],
+          "hidden" : false,
+          "id" : "E725E314-9C2D-4B7B-8E66-56DF2C3DA508",
+          "notes" : null,
+          "title" : "PDCA循环"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "用途",
+                "分析问题原因"
+              ],
+              "hidden" : false,
+              "id" : "C5AED172-4691-49B9-B3E8-9D10CF1B119F",
+              "notes" : null,
+              "rows" : [
+                [
+                  "类别",
+                  "人、机、料、法、环、测"
+                ],
+                [
+                  "应用",
+                  "质量问题根因分析"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "鱼骨图（因果图）"
+            },
+            {
+              "headers" : [
+                "类型",
+                "用途"
+              ],
+              "hidden" : false,
+              "id" : "E21F3F73-8FCC-44FF-A4E0-517C9B39F0AF",
+              "notes" : null,
+              "rows" : [
+                [
+                  "流程图",
+                  "描述过程步骤"
+                ],
+                [
+                  "泳道图",
+                  "多部门流程"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "流程图"
+            },
+            {
+              "hidden" : false,
+              "id" : "00597A80-68E8-406C-B1D7-663165B7A2B0",
+              "notes" : null,
+              "paretoItems" : [
+                {
+                  "category" : "核心问题",
+                  "cumulativePercent" : 80,
+                  "value" : 80
+                },
+                {
+                  "category" : "次要问题A",
+                  "cumulativePercent" : 92,
+                  "value" : 12
+                },
+                {
+                  "category" : "次要问题B",
+                  "cumulativePercent" : 97,
+                  "value" : 5
+                },
+                {
+                  "category" : "其他问题",
+                  "cumulativePercent" : 100,
+                  "value" : 3
+                }
+              ],
+              "paretoTitle" : null,
+              "showCumulativeLine" : true,
+              "slideType" : "pareto",
+              "title" : "柏拉图（二八法则）"
+            }
+          ],
+          "hidden" : false,
+          "id" : "49B40968-75E1-48B5-80E1-55A298FABAD3",
+          "notes" : null,
+          "title" : "常用质量管理工具"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "要素",
+                "说明"
+              ],
+              "hidden" : false,
+              "id" : "F318B0FE-DBEC-43A1-B7E6-46754D420426",
+              "notes" : null,
+              "rows" : [
+                [
+                  "定义",
+                  "标准化诊疗流程"
+                ],
+                [
+                  "目标",
+                  "规范诊疗、保证质量、控制费用"
+                ],
+                [
+                  "适用范围",
+                  "常见病、多发病"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "临床路径概念"
+            },
+            {
+              "headers" : [
+                "指标",
+                "要求"
+              ],
+              "hidden" : false,
+              "id" : "2B26C48B-AE1E-4BB1-9BC7-DA43534878F1",
+              "notes" : null,
+              "rows" : [
+                [
+                  "入径率",
+                  "≥70%"
+                ],
+                [
+                  "完成率",
+                  "≥80%"
+                ],
+                [
+                  "变异率",
+                  "≤10%"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "实施要点"
+            },
+            {
+              "headers" : [
+                "评价维度",
+                "内容"
+              ],
+              "hidden" : false,
+              "id" : "5BE20A01-3C8A-4159-AA9E-A6395FEF86FE",
+              "notes" : null,
+              "rows" : [
+                [
+                  "医疗质量",
+                  "诊疗规范性"
+                ],
+                [
+                  "医疗效率",
+                  "平均住院日"
+                ],
+                [
+                  "医疗费用",
+                  "次均费用"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "效果评价"
+            }
+          ],
+          "hidden" : false,
+          "id" : "26EFF1C7-3CBA-4271-A40C-3A13284C3EC4",
+          "notes" : null,
+          "title" : "临床路径管理"
+        }
+      ],
+      "title" : "第三章"
+    },
+    {
+      "id" : "13E825FF-E00F-4E1A-924A-121F580385D8",
+      "slides" : [
+        {
+          "chapterNumber" : 4,
+          "hidden" : false,
+          "id" : "BA2D9E9B-146B-4C2D-83CA-00D545F39B46",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "患者安全目标与措施"
+        },
+        {
+          "hidden" : false,
+          "id" : "D10AE75A-44AE-4979-8C68-50E4997841E3",
+          "items" : [
+            "1. 正确识别患者身份",
+            "2. 强化手术安全核查",
+            "3. 确保用药安全",
+            "4. 减少医院相关性感染",
+            "5. 落实患者安全不良事件报告制度",
+            "6. 加强孕产妇和新生儿安全",
+            "7. 预防和减少患者跌倒\/坠床",
+            "8. 加强医疗器械安全监管",
+            "9. 提升用药安全水平",
+            "10. 营造安全文化"
+          ],
+          "notes" : null,
+          "slideType" : "content",
+          "title" : "患者安全目标（2023版）"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "类型",
+                "例子"
+              ],
+              "hidden" : false,
+              "id" : "F728B310-6824-488B-88A7-E16E1C9A4C92",
+              "notes" : null,
+              "rows" : [
+                [
+                  "医源性伤害",
+                  "手术并发症、院内感染"
+                ],
+                [
+                  "非医源性伤害",
+                  "患者跌倒、坠床"
+                ],
+                [
+                  "系统错误",
+                  "流程缺陷、设备故障"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "不良事件类型"
+            },
+            {
+              "hidden" : false,
+              "id" : "2715407A-E341-4714-93E5-62FBA186E914",
+              "items" : [
+                "1. 不良事件报告（自愿报告、强制报告）",
+                "2. 风险评估（事前评估、定期评估）",
+                "3. 监督检查（日常巡查、专项检查）"
+              ],
+              "notes" : null,
+              "slideType" : "content",
+              "title" : "医疗安全风险识别方法"
+            }
+          ],
+          "hidden" : false,
+          "id" : "6EA3B332-BEE6-467A-B131-9096CA12BEC8",
+          "notes" : null,
+          "title" : "医疗安全风险"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "headers" : [
+                "报告类型",
+                "内容"
+              ],
+              "hidden" : false,
+              "id" : "C42E8FCA-9A33-490D-8736-1E62CA570565",
+              "notes" : null,
+              "rows" : [
+                [
+                  "可疑不良事件",
+                  "应当报告"
+                ],
+                [
+                  "严重不良事件",
+                  "立即报告"
+                ],
+                [
+                  "药品不良反应",
+                  "专门报告"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "报告制度"
+            },
+            {
+              "boxes" : [
+                {
+                  "backgroundColor" : null,
+                  "borderColor" : null,
+                  "content" : [
+                    "发现事件",
+                    "填写报告",
+                    "提交系统"
+                  ],
+                  "title" : "1. 事件报告"
+                },
+                {
+                  "backgroundColor" : null,
+                  "borderColor" : null,
+                  "content" : [
+                    "收集信息",
+                    "核实情况",
+                    "初步判断"
+                  ],
+                  "title" : "2. 初步调查"
+                },
+                {
+                  "backgroundColor" : null,
+                  "borderColor" : null,
+                  "content" : [
+                    "鱼骨图分析",
+                    "5Why分析",
+                    "确定根因"
+                  ],
+                  "title" : "3. 根本原因分析"
+                },
+                {
+                  "backgroundColor" : null,
+                  "borderColor" : null,
+                  "content" : [
+                    "制定方案",
+                    "落实整改",
+                    "跟踪验证"
+                  ],
+                  "title" : "4. 改进措施"
+                },
+                {
+                  "backgroundColor" : null,
+                  "borderColor" : null,
+                  "content" : [
+                    "指标对比",
+                    "效果确认",
+                    "经验总结"
+                  ],
+                  "title" : "5. 效果评估"
+                },
+                {
+                  "backgroundColor" : null,
+                  "borderColor" : null,
+                  "content" : [
+                    "制度修订",
+                    "流程优化",
+                    "培训推广"
+                  ],
+                  "title" : "6. 标准化"
+                }
+              ],
+              "boxLayout" : "horizontal",
+              "hidden" : false,
+              "id" : "8B4649D6-B720-42C5-B115-5499453BBB3E",
+              "notes" : null,
+              "slideType" : "boxDiagram",
+              "title" : "不良事件闭环管理"
+            }
+          ],
+          "hidden" : false,
+          "id" : "D1E82F2E-BFE8-45B8-8EB8-34775807EB46",
+          "notes" : null,
+          "title" : "不良事件管理"
+        }
+      ],
+      "title" : "第四章"
+    },
+    {
+      "id" : "6018CD5F-64DC-45EF-B503-66BF21B0BEB2",
+      "slides" : [
+        {
+          "chapterNumber" : 5,
+          "hidden" : false,
+          "id" : "A7AE0473-2D3D-4F26-8D11-4D644FB5DEB2",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "重点环节质量管理"
+        },
+        {
+          "headers" : [
+            "制度",
+            "要点"
+          ],
+          "hidden" : false,
+          "id" : "BB8EB232-D6AB-4993-909E-B7D1EC73B0C7",
+          "notes" : null,
+          "rows" : [
+            [
+              "首诊负责",
+              "首诊医师负责到底"
+            ],
+            [
+              "三级查房",
+              "主任、主治、住院医"
+            ],
+            [
+              "会诊制度",
+              "及时、准确"
+            ],
+            [
+              "手术安全核查",
+              "三方核查、Time-out"
+            ],
+            [
+              "病历书写",
+              "及时、完整、准确"
+            ],
+            [
+              "危急值",
+              "接报即办"
+            ]
+          ],
+          "slideType" : "table",
+          "title" : "核心制度（18项医疗质量安全核心制度）"
+        },
+        {
+          "fellowSlides" : [
+            {
+              "hidden" : false,
+              "id" : "A0E6E85E-0EDF-4DDC-B233-EDA973BE2D41",
+              "items" : [
+                "术前：手术指征评估、手术知情同意、术前准备核查",
+                "术中：手术安全核查、手术记录规范、术中应急处理",
+                "术后：术后交接、术后访视、并发症防治"
+              ],
+              "notes" : null,
+              "slideType" : "content",
+              "title" : "围手术期安全管理"
+            },
+            {
+              "headers" : [
+                "环节",
+                "要求"
+              ],
+              "hidden" : false,
+              "id" : "F0312F64-27DC-48F4-8BB3-BEFE46A2372D",
+              "notes" : null,
+              "rows" : [
+                [
+                  "报告",
+                  "及时、准确"
+                ],
+                [
+                  "接收",
+                  "记录、复述"
+                ],
+                [
+                  "处理",
+                  "立即响应"
+                ],
+                [
+                  "追踪",
+                  "闭环管理"
+                ]
+              ],
+              "slideType" : "table",
+              "title" : "危急值管理"
+            }
+          ],
+          "hidden" : false,
+          "id" : "47B05F41-7D04-4FD7-A897-BBFF19311F89",
+          "notes" : null,
+          "title" : "重点环节管理"
+        },
+        {
+          "hidden" : false,
+          "id" : "A0C78195-C668-4F05-B81C-74F79249D577",
+          "items" : [
+            "护理质量指标监测",
+            "护理不良事件管理",
+            "护理文书质量管理",
+            "护理安全管理"
+          ],
+          "notes" : null,
+          "slideType" : "content",
+          "title" : "护理质量管理"
+        }
+      ],
+      "title" : "第五章"
+    }
+  ],
+  "title" : "医院医疗质量与安全管理"
+}

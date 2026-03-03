@@ -211,7 +211,12 @@ let data = try 表格数据.从CSV内容("""
 
 ### Mermaid Diagrams
 
+SwiftSlides uses **BeautifulMermaid** - a native Swift package for rendering Mermaid diagrams. No JavaScript runtime required!
+
+> **Note**: We no longer use the JavaScript mermaid.js library. All diagram rendering is done natively in Swift using the BeautifulMermaid package.
+
 ```swift
+// Flowchart with high-level API
 let flowchart = Mermaid流程图(
     方向: .从上到下,
     节点: [
@@ -223,6 +228,21 @@ let flowchart = Mermaid流程图(
 )
 
 Mermaid流程图页(标题: "业务流程", 流程图: flowchart)
+
+// Gantt Chart - Native SwiftUI rendering
+struct 项目进度: Slide, 甘特图样式 {
+    let title = "项目进度"
+    let ganttTitle = "医院信息化建设进度"
+    let ganttTasks: [SlideGanttTask] = [
+        SlideGanttTask(name: "需求分析", status: .done, start: "2024-01-01", end: "2024-01-15"),
+        SlideGanttTask(name: "系统设计", status: .done, start: "2024-01-16", end: "2024-02-15"),
+        SlideGanttTask(name: "开发阶段", status: .active, start: "2024-02-16", end: "2024-04-30"),
+    ]
+}
+
+// Or use SwiftUI Gantt chart directly (for better rendering)
+let ganttChart = Gantt图表(标题: "项目进度", 任务列表: [...])
+let imageData = try Gantt渲染器.渲染图片(ganttChart)
 ```
 
 ### Templates
@@ -331,8 +351,8 @@ Dependencies:
 ## Requirements
 
 - Swift 6.2+
-- macOS 10.15+
-- Node.js 18+ (for PPTX generation)
+- macOS 12.0+ (for BeautifulMermaid and SwiftUI Gantt charts)
+- Node.js 18+ (optional, for PPTX generation only)
 
 ## License
 

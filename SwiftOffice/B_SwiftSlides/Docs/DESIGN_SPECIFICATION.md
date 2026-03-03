@@ -342,9 +342,84 @@ struct 封面: Slide, 蓝色主题 {
 
 ---
 
-## 10. 参考示例
+## 10. 图表渲染技术
 
-### 10.1 最小可行示例
+### 10.1 Mermaid 图表
+
+SwiftSlides 使用 **BeautifulMermaid** 包进行图表渲染，这是纯 Swift 原生实现，不依赖 JavaScript 运行时。
+
+**支持的图表类型**：
+- 流程图 (Flowchart)
+- 时序图 (Sequence Diagram)
+- 甘特图 (Gantt Chart)
+
+**两种使用方式**：
+
+```swift
+// 方式1：直接写 Mermaid 代码
+struct 业务流程: Slide, Mermaid流程图样式 {
+    let title = "业务流程"
+    let mermaidCode = """
+    flowchart TB
+        A[开始] --> B[处理]
+        B --> C[结束]
+    """
+}
+
+// 方式2：使用高级 API（推荐）
+struct 业务流程: Slide, Mermaid流程图高级样式 {
+    let title = "业务流程"
+    let flowchartDirection: Mermaid方向 = .从上到下
+    let flowchartNodes: [Mermaid节点] = [
+        Mermaid节点(id: "A", 标签: "开始", 形状: .圆形),
+        Mermaid节点(id: "B", 标签: "处理", 形状: .矩形),
+        Mermaid节点(id: "C", 标签: "结束", 形状: .圆形),
+    ]
+    let flowchartConnections: [Mermaid连线] = [
+        Mermaid连线(从: "A", 到: "B"),
+        Mermaid连线(从: "B", 到: "C"),
+    ]
+}
+```
+
+### 10.2 甘特图
+
+甘特图有两种渲染方式：
+
+**方式1：SwiftUI 原生渲染（推荐）**
+
+```swift
+// 使用 SwiftUI 渲染，效果更好
+let ganttChart = Gantt图表(
+    标题: "项目进度",
+    任务列表: [
+        Gantt任务(名称: "需求分析", 开始日期: ..., 结束日期: ..., 进度: 1.0),
+        Gantt任务(名称: "开发阶段", 开始日期: ..., 结束日期: ..., 进度: 0.6),
+    ]
+)
+let imageData = try Gantt渲染器.渲染图片(ganttChart, 宽度: 900, 高度: 500)
+```
+
+**方式2：协议定义**
+
+```swift
+struct 项目进度: Slide, 甘特图样式 {
+    let title = "项目进度"
+    let ganttTitle = "医院信息化建设进度"
+    let ganttTasks: [SlideGanttTask] = [
+        SlideGanttTask(name: "需求分析", status: .done, start: "2024-01-01", end: "2024-01-15"),
+        SlideGanttTask(name: "开发阶段", status: .active, start: "2024-02-16", end: "2024-04-30"),
+    ]
+}
+```
+
+> **注意**：我们已弃用 JavaScript mermaid.js，所有图表渲染均使用 Swift 原生实现。
+
+---
+
+## 11. 参考示例
+
+### 11.1 最小可行示例
 
 ```swift
 import SwiftSlides
@@ -360,7 +435,7 @@ let p = 演示()
 try await p.generatePPTX()
 ```
 
-### 10.2 复杂示例
+### 11.2 复杂示例
 
 ```swift
 import SwiftSlides

@@ -1,0 +1,185 @@
+{
+  "author" : "JK",
+  "id" : "A065285C-659B-4AA8-8080-385AD0B1CBC9",
+  "sections" : [
+    {
+      "id" : "AAB0EE52-25FD-43AF-963C-EB8FFD216661",
+      "slides" : [
+        {
+          "chapterNumber" : 1,
+          "fellowSlides" : [
+            {
+              "fellowSlides" : [
+                {
+                  "content" : "在正式医院出现之前，医疗活动主要在家庭、寺庙和宗教场所进行...",
+                  "hidden" : false,
+                  "id" : "E5A051F3-99DC-4E69-A1A4-AF7AC0839B31",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "医院出现之前"
+                },
+                {
+                  "content" : "中世纪欧洲的医疗主要由修道院承担...",
+                  "hidden" : false,
+                  "id" : "C89C6F94-8278-4E9C-A647-4D33BFFAB9D8",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "黑暗时代"
+                },
+                {
+                  "content" : "18-19世纪，现代医院制度逐步确立...",
+                  "hidden" : false,
+                  "id" : "F1BFA55F-1518-4A87-82A1-A96A1828185C",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "现代医院的诞生"
+                },
+                {
+                  "content" : "人工智能正在深刻改变医疗行业...",
+                  "hidden" : false,
+                  "id" : "0226FF77-EBD7-4D7C-B0EA-8F8CC4D4A3E7",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "AI时代的挑战"
+                },
+                {
+                  "content" : "未来医疗将更加个性化、精准化...",
+                  "hidden" : false,
+                  "id" : "97D6BB1A-0969-4A53-A761-53203922DBB1",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "后AI时代的展望"
+                }
+              ],
+              "hidden" : false,
+              "id" : "0CB553AF-6D51-468A-ABBE-C2F88DF34926",
+              "notes" : null,
+              "title" : "古今纵横"
+            },
+            {
+              "fellowSlides" : [
+                {
+                  "hidden" : false,
+                  "id" : "DA8D45CD-A8F9-432F-BCA3-CF0100805786",
+                  "items" : [
+                    "宗教医院：由教会管理",
+                    "慈善医院：依靠捐赠运营",
+                    "公立医院：政府主导"
+                  ],
+                  "notes" : null,
+                  "slideType" : "content",
+                  "title" : "传统制度"
+                },
+                {
+                  "hidden" : false,
+                  "id" : "B41B86A3-418B-47E7-BDE4-59E319700304",
+                  "items" : [
+                    "公立医院：政府主导",
+                    "私立医院：市场化运营",
+                    "混合所有制：多元投资"
+                  ],
+                  "notes" : null,
+                  "slideType" : "content",
+                  "title" : "现代制度"
+                }
+              ],
+              "hidden" : false,
+              "id" : "C42A33BF-9BA7-4888-8797-61309F3CCFAA",
+              "notes" : null,
+              "title" : "制度类型"
+            }
+          ],
+          "hidden" : false,
+          "id" : "068025B8-425C-4F58-BFDB-41A8CDEB36EC",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "医院的历史由来"
+        },
+        {
+          "chapterNumber" : 2,
+          "fellowSlides" : [
+            {
+              "fellowSlides" : [
+                {
+                  "content" : "中国古代医疗体系以御医院、惠民局为主...",
+                  "hidden" : false,
+                  "id" : "10568307-E1EE-44C4-87F6-A67BD3D4C0B7",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "中国医院的前身"
+                },
+                {
+                  "content" : "新中国成立后，建立了完善的医疗卫生体系...",
+                  "hidden" : false,
+                  "id" : "709CF408-3520-4234-B76C-C6E182BA1F19",
+                  "notes" : null,
+                  "slideType" : "text",
+                  "title" : "中国医院的发展"
+                }
+              ],
+              "hidden" : false,
+              "id" : "99A00F34-205E-419D-87CB-F237E4D21764",
+              "notes" : null,
+              "title" : "中国现代医院的起源"
+            }
+          ],
+          "hidden" : false,
+          "id" : "C725C113-8541-4945-AFF6-ADABD09F04A5",
+          "notes" : null,
+          "slideType" : "chapterCover",
+          "title" : "中国医院的发展历程"
+        }
+      ],
+      "title" : "第一部分"
+    },
+    {
+      "id" : "DFD1029F-5B08-4E53-BBC4-C4F3BBFA1BBD",
+      "slides" : [
+        {
+          "dateFormat" : "YYYY-MM-DD",
+          "ganttTasks" : [
+            {
+              "end" : "2024-01-15",
+              "name" : "需求分析",
+              "start" : "2024-01-01",
+              "status" : "done"
+            },
+            {
+              "end" : "2024-02-15",
+              "name" : "系统设计",
+              "start" : "2024-01-16",
+              "status" : "done"
+            },
+            {
+              "end" : "2024-04-30",
+              "name" : "开发阶段",
+              "start" : "2024-02-16",
+              "status" : "active"
+            },
+            {
+              "end" : "2024-05-31",
+              "name" : "测试验收",
+              "start" : "2024-05-01",
+              "status" : ""
+            },
+            {
+              "end" : "2024-06-15",
+              "name" : "上线部署",
+              "start" : "2024-06-01",
+              "status" : "crit"
+            }
+          ],
+          "ganttTitle" : "医院信息化建设进度",
+          "hidden" : false,
+          "id" : "43E6B30E-DF83-4657-950C-744AB948E8C6",
+          "mermaidCode" : "gantt\n    title 医院信息化建设进度\n    dateFormat YYYY-MM-DD\n    需求分析 : done, 需求分析 : 2024-01-01, 2024-01-15\n    系统设计 : done, 系统设计 : 2024-01-16, 2024-02-15\n    开发阶段 : active, 开发阶段 : 2024-02-16, 2024-04-30\n    测试验收 : 测试验收 : 2024-05-01, 2024-05-31\n    上线部署 : crit, 上线部署 : 2024-06-01, 2024-06-15",
+          "notes" : null,
+          "slideType" : "gantt",
+          "title" : "项目进度"
+        }
+      ],
+      "title" : "第二部分"
+    }
+  ],
+  "title" : "医院管理总览"
+}

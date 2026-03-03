@@ -12,17 +12,13 @@ let package = Package(
             name: "SwiftSlides",
             targets: ["SwiftSlides"]
         ),
-        .library(
-            name: "PreviousDesign",
-            targets: ["PreviousDesign"]
-        ),
         .executable(
             name: "SwiftSlidesDemo",
             targets: ["SwiftSlidesDemo"]
         ),
         .executable(
-            name: "UserPresentation",
-            targets: ["UserPresentation"]
+            name: "C01医管教程",
+            targets: ["C01医管教程"]
         ),
     ],
     dependencies: [
@@ -34,31 +30,23 @@ let package = Package(
             dependencies: [
                 .product(name: "BeautifulMermaid", package: "beautiful-mermaid-swift"),
             ],
-            path: "Sources/SwiftSlides"
-        ),
-        .target(
-            name: "PreviousDesign",
-            path: "Sources/PreviousDesign"
+            path: "B_SwiftSlides/Sources"
         ),
         .executableTarget(
             name: "SwiftSlidesDemo",
             dependencies: ["SwiftSlides"],
-            path: "Sources/SwiftSlidesDemo"
+            path: "B_SwiftSlides/Demo"
+        ),
+        .executableTarget(
+            name: "C01医管教程",
+            dependencies: ["SwiftSlides"],
+            path: "Cases/医管教程",
+            exclude: ["C01_医疗质量与安全管理字典化.swift"]
         ),
         .testTarget(
             name: "SwiftSlidesTests",
             dependencies: ["SwiftSlides"],
-            path: "Tests/SwiftSlidesTests"
-        ),
-        .testTarget(
-            name: "PreviousDesignTests",
-            dependencies: ["PreviousDesign"],
-            path: "Tests/SwiftOfficeTests"
-        ),
-        .executableTarget(
-            name: "UserPresentation",
-            dependencies: ["SwiftSlides"],
-            path: "Sources/UserPresentation"
+            path: "B_SwiftSlides/Tests"
         ),
     ]
 )
