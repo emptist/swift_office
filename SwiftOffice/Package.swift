@@ -20,14 +20,9 @@ let package = Package(
             name: "SwiftSlidesDemo",
             targets: ["SwiftSlidesDemo"]
         ),
-        .executable(
-            name: "swiftoffice",
-            targets: ["SwiftOfficeCLI"]
-        ),
     ],
     dependencies: [
         .package(url: "git@github.com:lukilabs/beautiful-mermaid-swift.git", from: "0.1.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.0"),
     ],
     targets: [
         .target(
@@ -45,14 +40,6 @@ let package = Package(
             name: "SwiftSlidesDemo",
             dependencies: ["SwiftSlides"],
             path: "Sources/SwiftSlidesDemo"
-        ),
-        .executableTarget(
-            name: "SwiftOfficeCLI",
-            dependencies: [
-                "SwiftSlides",
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ],
-            path: "Sources/SwiftOfficeCLI"
         ),
         .testTarget(
             name: "SwiftSlidesTests",
