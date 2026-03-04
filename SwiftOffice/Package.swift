@@ -12,6 +12,10 @@ let package = Package(
             name: "SwiftSlides",
             targets: ["SwiftSlides"]
         ),
+        .library(
+            name: "Runner",
+            targets: ["Runner"]
+        ),
         .executable(
             name: "SwiftSlidesDemo",
             targets: ["SwiftSlidesDemo"]
@@ -27,7 +31,12 @@ let package = Package(
                 .product(name: "BeautifulMermaid", package: "beautiful-mermaid-swift"),
             ],
             path: "B_SwiftSlides/Sources",
-            exclude: ["Cases"]
+            exclude: ["Cases", "Runner"]
+        ),
+        .target(
+            name: "Runner",
+            dependencies: ["SwiftSlides"],
+            path: "B_SwiftSlides/Sources/Runner"
         ),
         .executableTarget(
             name: "SwiftSlidesDemo",
