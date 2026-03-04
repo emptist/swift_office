@@ -16,7 +16,7 @@ import Foundation
 
 @available(macOS 10.15, *)
 public enum ContentParser {
-    public static func parseStringArray(_ contents: Contents) -> [String] {
+    public static func parseStringArray(_ contents: SlideContent) -> [String] {
         // Format 1: Single item ["label": "text"]
         let dict = contents.dict
         for (_, value) in dict {
@@ -28,7 +28,7 @@ public enum ContentParser {
         return contents.asStringArray
     }
     
-    public static func parseString(_ contents: Contents) -> String {
+    public static func parseString(_ contents: SlideContent) -> String {
         // Format: ["label": "text"]
         for (_, value) in contents.dict {
             if let str = value as? String {
@@ -38,7 +38,7 @@ public enum ContentParser {
         return contents.asString
     }
     
-    public static func parseTable(_ contents: Contents) -> (headers: [String], rows: [[String]]) {
+    public static func parseTable(_ contents: SlideContent) -> (headers: [String], rows: [[String]]) {
         // Format 1: Column-oriented (spreadsheet style)
         // ["Category": ["A", "B"], "Value": ["1", "2"]]
         let dict = contents.dict
@@ -63,12 +63,24 @@ public enum ContentParser {
             return (headers, rows)
         }
         
-        // 格式2: 按行组织（传统格式）
-        let headers = contents["headers"]?.asStringArray ?? []
-        let rows = contents["rows"]?.asStringTable ?? []
+        // Format 2: Row-oriented (traditional format) - 支持多语言
+        var headers: [String] = []
+        var rows: [[String]] = []
+        
+        for (key, value) in dict {
+            if ["表头", "headers", "header", "标题", "titles"].contains(key) {
+                headers = value as? [String] ?? []
+            }
+            if ["行", "rows", "row", "数据", "data"].contains(key) {
+                rows = value as? [[String]] ?? []
+            }
+        }
+        
         if !headers.isEmpty || !rows.isEmpty {
             return (headers, rows)
         }
+        
+        // Fallback: try to parse as string table
         let arr = contents.asStringTable
         if arr.count > 1 {
             return (arr[0], Array(arr[1...]))
@@ -76,7 +88,7 @@ public enum ContentParser {
         return ([], [])
     }
     
-    public static func parseHierarchy(_ contents: Contents) -> SlideHierarchyNode? {
+    public static func parseHierarchy(_ contents: SlideContent) -> SlideHierarchyNode? {
         if let levels = contents.dict["levels"] as? [[String]] {
             return parseHierarchyArray(levels)
         }
@@ -106,7 +118,7 @@ public enum ContentParser {
         return buildNode(level: 0, index: 0)
     }
     
-    private static func parseHierarchyNode(_ contents: Contents) -> SlideHierarchyNode? {
+    private static func parseHierarchyNode(_ contents: SlideContent) -> SlideHierarchyNode? {
         let title = contents["title"]?.asString ?? ""
         guard !title.isEmpty else { return nil }
         let id = contents["id"]?.asString ?? UUID().uuidString
@@ -115,7 +127,7 @@ public enum ContentParser {
         return SlideHierarchyNode(id: id, title: title, subtitle: subtitle, children: children.isEmpty ? nil : children)
     }
     
-    public static func 解析循环步骤(_ contents: Contents) -> [SlideCycleStep] {
+    public static func 解析循环步骤(_ contents: SlideContent) -> [SlideCycleStep] {
         contents.asContentsArray.enumerated().map { index, item in
             SlideCycleStep(
                 id: item["id"]?.asString ?? "\(index)",
@@ -125,7 +137,7 @@ public enum ContentParser {
         }
     }
     
-    public static func 解析框图(_ contents: Contents) -> [SlideBox] {
+    public static func 解析框图(_ contents: SlideContent) -> [SlideBox] {
         contents.asContentsArray.map { item in
             SlideBox(
                 title: item["title"]?.asString,
@@ -134,7 +146,7 @@ public enum ContentParser {
         }
     }
     
-    public static func 解析柏拉图(_ contents: Contents) -> [SlideParetoItem] {
+    public static func 解析柏拉图(_ contents: SlideContent) -> [SlideParetoItem] {
         var cumulative = 0.0
         return contents.asDictArray.map { item in
             let category = item["category"] as? String ?? ""
@@ -156,21 +168,60 @@ public protocol CoverStyle: Slide {
 
 @available(macOS 10.15, *)
 public extension CoverStyle {
-    var subtitle: String? { contents["Subtitle"]?.asString }
-    var author: String? { contents["Author"]?.asString }
+    var subtitle: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(副标题|subtitle|Subtitle)$"
+            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+                return value as? String
+            }
+        }
+        return nil
+    }
+    
+    var author: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(作者|author|Author)$"
+            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+                return value as? String
+            }
+        }
+        return nil
+    }
 }
 
-/// Chapter cover style protocol
+/// 章首页样式协议
 @available(macOS 10.15, *)
-public protocol ChapterCoverStyle: Slide {
-    var chapterNumber: Int? { get }
+public protocol 章首页样式: Slide {
+    var 章幻灯片: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension ChapterCoverStyle {
-    var chapterNumber: Int? { 
-        guard let str = contents["ChapterNumber"]?.asString else { return nil }
-        return Int(str)
+public extension 章首页样式 {
+    var 章幻灯片: [any Slide] {
+        for (_, value) in contents.dict {
+            if let slides = value as? [any Slide] {
+                return slides
+            }
+        }
+        return []
+    }
+}
+
+/// 节首页样式协议
+@available(macOS 10.15, *)
+public protocol 节首页样式: Slide {
+    var 节幻灯片: [any Slide] { get }
+}
+
+@available(macOS 10.15, *)
+public extension 节首页样式 {
+    var 节幻灯片: [any Slide] {
+        for (_, value) in contents.dict {
+            if let slides = value as? [any Slide] {
+                return slides
+            }
+        }
+        return []
     }
 }
 
@@ -213,10 +264,45 @@ public protocol TwoColumnStyle: Slide {
 
 @available(macOS 10.15, *)
 public extension TwoColumnStyle {
-    var leftTitle: String? { nil }
-    var rightTitle: String? { nil }
-    var leftItems: [String] { contents.dict["left"] as? [String] ?? [] }
-    var rightItems: [String] { contents.dict["right"] as? [String] ?? [] }
+    var leftTitle: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(左|left)$"
+            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+                return value as? String
+            }
+        }
+        return nil
+    }
+    
+    var rightTitle: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(右|right)$"
+            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+                return value as? String
+            }
+        }
+        return nil
+    }
+    
+    var leftItems: [String] {
+        for (key, value) in contents.dict {
+            let pattern = "^(左|left)$"
+            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+                return value as? [String] ?? []
+            }
+        }
+        return []
+    }
+    
+    var rightItems: [String] {
+        for (key, value) in contents.dict {
+            let pattern = "^(右|right)$"
+            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+                return value as? [String] ?? []
+            }
+        }
+        return []
+    }
 }
 
 /// 卡片布局样式协议
@@ -229,9 +315,35 @@ public protocol CardStyle: Slide {
 @available(macOS 10.15, *)
 public extension CardStyle {
     var cards: [SlideCard] {
-        (contents.dict["cards"] as? [[String: String]])?.map { SlideCard(title: $0["title"] ?? "", content: $0["content"] ?? "") } ?? []
+        for (_, value) in contents.dict {
+            if let cardArray = value as? [[String: any Sendable]] {
+                return cardArray.map { dict in
+                    var title = ""
+                    var content = ""
+                    
+                    for (key, val) in dict {
+                        if ["标题", "title", "Title"].contains(key) {
+                            title = val as? String ?? ""
+                        }
+                        if ["内容", "content", "Content"].contains(key) {
+                            content = val as? String ?? ""
+                        }
+                    }
+                    
+                    return SlideCard(title: title, content: content)
+                }
+            }
+        }
+        return []
     }
-    var columns: Int { contents.dict["columns"] as? Int ?? 2 }
+    
+    var columns: Int {
+        let cardCount = cards.count
+        if cardCount <= 2 { return 1 }
+        if cardCount <= 6 { return 2 }
+        if cardCount <= 12 { return 3 }
+        return 4
+    }
 }
 
 /// 卡片数据结构
@@ -606,9 +718,70 @@ public enum SlideBoxLayout: String, Sendable, Codable {
     case custom
 }
 
+/// 横框图样式协议
 @available(macOS 10.15, *)
-public extension 框图样式 {
+public protocol 横框图样式: 框图样式 {}
+
+/// 竖框图样式协议
+@available(macOS 10.15, *)
+public protocol 竖框图样式: 框图样式 {}
+
+@available(macOS 10.15, *)
+public extension 横框图样式 {
+    var boxLayout: SlideBoxLayout { .horizontal }
+    
+    var boxes: [SlideBox] {
+        for (_, value) in contents.dict {
+            if let items = value as? [[String: any Sendable]] {
+                return items.compactMap { item in
+                    var title: String?
+                    var content: [String]?
+                    
+                    for (key, val) in item {
+                        if ["标题", "title", "Title"].contains(key) {
+                            title = val as? String
+                        }
+                        if ["内容", "content", "Content"].contains(key) {
+                            content = val as? [String]
+                        }
+                    }
+                    
+                    guard let t = title else { return nil }
+                    return SlideBox(title: t, content: content ?? [])
+                }
+            }
+        }
+        return []
+    }
+}
+
+@available(macOS 10.15, *)
+public extension 竖框图样式 {
     var boxLayout: SlideBoxLayout { .vertical }
+    
+    var boxes: [SlideBox] {
+        for (_, value) in contents.dict {
+            if let items = value as? [[String: any Sendable]] {
+                return items.compactMap { item in
+                    var title: String?
+                    var content: [String]?
+                    
+                    for (key, val) in item {
+                        if ["标题", "title", "Title"].contains(key) {
+                            title = val as? String
+                        }
+                        if ["内容", "content", "Content"].contains(key) {
+                            content = val as? [String]
+                        }
+                    }
+                    
+                    guard let t = title else { return nil }
+                    return SlideBox(title: t, content: content ?? [])
+                }
+            }
+        }
+        return []
+    }
 }
 
 /// 层次架构数据
@@ -677,6 +850,25 @@ public protocol 柏拉图样式: Slide {
 public extension 柏拉图样式 {
     var paretoTitle: String? { nil }
     var showCumulativeLine: Bool { true }
+    
+    var paretoItems: [SlideParetoItem] {
+        let items = contents["items"]?.asContentsArray ?? []
+        var cumulative = 0.0
+        let total = items.reduce(0.0) { sum, item in
+            if let value = item["value"]?.asDouble {
+                return sum + value
+            }
+            return sum
+        }
+        
+        return items.map { item in
+            let label = item["category"]?.asString ?? item["label"]?.asString ?? ""
+            let value = item["value"]?.asDouble ?? 0.0
+            cumulative += value
+            let cumulativePercent = total > 0 ? (cumulative / total) * 100 : 0.0
+            return SlideParetoItem(category: label, value: value, cumulativePercent: cumulativePercent)
+        }
+    }
 }
 
 /// 循环流程步骤
@@ -708,6 +900,16 @@ public enum SlideCycleDirection: String, Sendable, Codable {
 @available(macOS 10.15, *)
 public extension 循环流程图样式 {
     var cycleDirection: SlideCycleDirection { .clockwise }
+    
+    var cycleSteps: [SlideCycleStep] {
+        let items = contents["items"]?.asContentsArray ?? []
+        return items.map { item in
+            let id = item["id"]?.asString ?? UUID().uuidString
+            let title = item["title"]?.asString ?? ""
+            let description = item["description"]?.asString
+            return SlideCycleStep(id: id, title: title, description: description)
+        }
+    }
 }
 
 public struct SlideBranchNode: Sendable, Hashable, Codable {
@@ -805,11 +1007,13 @@ public protocol HierarchyStyle: Slide {
 @available(macOS 10.15, *)
 public extension HierarchyStyle {
     var hierarchyLevels: [[String]] {
-        if let levels = contents["levels"]?.asStringArray {
-            return [levels]
-        }
-        if let levels = contents["levels"]?.asStringTable {
-            return levels
+        for (_, value) in contents.dict {
+            if let levels = value as? [String] {
+                return [levels]
+            }
+            if let levels = value as? [[String]] {
+                return levels
+            }
         }
         return []
     }
@@ -873,15 +1077,23 @@ public enum ContainerLayout: String, Sendable, Codable {
 @available(macOS 10.15, *)
 public extension ContainerStyle {
     var containerLayout: ContainerLayout {
-        if let layout = contents["layout"]?.asString {
-            return ContainerLayout(rawValue: layout) ?? .horizontal
+        for (key, value) in contents.dict {
+            if ["布局", "layout", "Layout"].contains(key) {
+                if let str = value as? String {
+                    return ContainerLayout(rawValue: str) ?? .horizontal
+                }
+            }
         }
         return .horizontal
     }
     
     var containerRatio: [Double] {
-        if let ratio = contents["ratio"]?.dict["items"] as? [Double] {
-            return ratio
+        for (key, value) in contents.dict {
+            if ["比例", "ratio", "Ratio"].contains(key) {
+                if let arr = value as? [Double] {
+                    return arr
+                }
+            }
         }
         return [0.5, 0.5]
     }

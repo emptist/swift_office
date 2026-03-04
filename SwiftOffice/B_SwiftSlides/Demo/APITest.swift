@@ -49,7 +49,7 @@ struct LayoutTypesSection: Section {
 
 struct CoverSlide: Slide, CoverStyle {
     let title = "SwiftSlides API Test"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Subtitle": "Protocol-Based Content Design",
         "Author": "JK",
         "Date": "2024"
@@ -58,14 +58,14 @@ struct CoverSlide: Slide, CoverStyle {
 
 struct TextSlideDemo: Slide, TextStyle {
     let title = "Text Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Content": "This is a simple text slide. Users can write any content here in any language they prefer."
     ]
 }
 
 struct ContentSlideDemo: Slide, ContentStyle {
     let title = "Content Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Items": [
             "First item in the list",
             "Second item with more details",
@@ -77,7 +77,7 @@ struct ContentSlideDemo: Slide, ContentStyle {
 
 struct TableSlideDemo: Slide, TableSlideStyle {
     let title = "Table Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Category": ["First Diagnosis", "Three-Level Rounds", "Difficult Cases", "Critical Values"] as [any Sendable],
         "Policy": ["First Diagnosis Policy", "Three-Level Rounds Policy", "Difficult Case Discussion", "Critical Value Reporting"] as [any Sendable],
         "Status": ["Active", "Active", "Active", "Active"] as [any Sendable]
@@ -88,7 +88,7 @@ struct TableSlideDemo: Slide, TableSlideStyle {
 
 struct HierarchySlideDemo: Slide, HierarchyStyle {
     let title = "Hierarchy Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "levels": [
             ["Medical Quality Management System"] as [String],
             ["Top Design", "Middle Management"] as [String],
@@ -99,7 +99,7 @@ struct HierarchySlideDemo: Slide, HierarchyStyle {
 
 struct CycleFlowSlideDemo: Slide, CycleFlowStyle {
     let title = "Cycle Flow Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "items": [
             ["id": "P", "title": "PLAN", "description": "Plan the process"] as [String: any Sendable],
             ["id": "D", "title": "DO", "description": "Execute the plan"] as [String: any Sendable],
@@ -111,7 +111,7 @@ struct CycleFlowSlideDemo: Slide, CycleFlowStyle {
 
 struct ParetoSlideDemo: Slide, ParetoStyle {
     let title = "Pareto Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "items": [
             ["label": "Category A", "value": 45] as [String: any Sendable],
             ["label": "Category B", "value": 25] as [String: any Sendable],
@@ -126,7 +126,7 @@ struct ParetoSlideDemo: Slide, ParetoStyle {
 
 struct TwoColumnSlideDemo: Slide, TwoColumnStyle {
     let title = "Two Column Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "left": [
             "Advantage 1: Easy to use",
             "Advantage 2: Flexible design",
@@ -142,7 +142,7 @@ struct TwoColumnSlideDemo: Slide, TwoColumnStyle {
 
 struct CardSlideDemo: Slide, CardStyle {
     let title = "Card Style Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "cards": [
             ["title": "Feature 1", "content": "Protocol-based design for maximum flexibility"] as [String: any Sendable],
             ["title": "Feature 2", "content": "Type-safe content handling with dictionary support"] as [String: any Sendable],
@@ -154,7 +154,7 @@ struct CardSlideDemo: Slide, CardStyle {
 
 struct ChapterCoverDemo: Slide, CoverStyle {
     let title = "Chapter Cover Demo"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "ChapterNumber": "1",
         "Subtitle": "This is a chapter cover slide"
     ]

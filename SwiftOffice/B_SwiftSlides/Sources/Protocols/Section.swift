@@ -13,6 +13,7 @@ import Foundation
 public protocol Section: Identifiable, Sendable {
     var id: UUID { get }
     var title: String { get }
+    var contents: SlideContent { get }
     var slides: [any Slide] { get }
     func toDict() -> [String: Any]
 }
@@ -20,13 +21,20 @@ public protocol Section: Identifiable, Sendable {
 @available(macOS 10.15, *)
 public extension Section {
     var id: UUID { UUID() }
+    var contents: SlideContent { SlideContent([:]) }
+    
+    var slides: [any Slide] {
+        contents.asSlideArray
+    }
     
     func toDict() -> [String: Any] {
-        [
+        let dict: [String: Any] = [
             "id": id.uuidString,
             "title": title,
+            "contents": contents.toJSONDict(),
             "slides": slides.map { $0.toDict() }
         ]
+        return dict
     }
     
     func flattenSlides() -> [any Slide] {

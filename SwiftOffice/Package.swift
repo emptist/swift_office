@@ -26,7 +26,8 @@ let package = Package(
             dependencies: [
                 .product(name: "BeautifulMermaid", package: "beautiful-mermaid-swift"),
             ],
-            path: "B_SwiftSlides/Sources"
+            path: "B_SwiftSlides/Sources",
+            exclude: ["Cases"]
         ),
         .executableTarget(
             name: "SwiftSlidesDemo",

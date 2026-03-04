@@ -9,6 +9,14 @@ public struct 封面页: Slide {
     public var 作者: String?
     public var 日期: String?
     public var 渐变: 渐变色?
+    public var contents: SlideContent { 
+        var dict: [String: any Sendable] = [:]
+        if let 副标题 = 副标题 { dict["subtitle"] = 副标题 }
+        if let 作者 = 作者 { dict["author"] = 作者 }
+        if let 日期 = 日期 { dict["date"] = 日期 }
+        if let 渐变 = 渐变 { dict["gradient"] = 渐变.rawValue }
+        return SlideContent(dict)
+    }
     
     public var slideType: String { "封面页" }
     
@@ -50,6 +58,13 @@ public struct 章节页: Slide {
     public var 编号: String?
     public var 副标题: String?
     public var 渐变: 渐变色?
+    public var contents: SlideContent { 
+        var dict: [String: any Sendable] = [:]
+        if let 编号 = 编号 { dict["number"] = 编号 }
+        if let 副标题 = 副标题 { dict["subtitle"] = 副标题 }
+        if let 渐变 = 渐变 { dict["gradient"] = 渐变.rawValue }
+        return SlideContent(dict)
+    }
     
     public var slideType: String { "章节页" }
     
@@ -86,6 +101,7 @@ public struct 列表页: Slide {
     public let id = UUID()
     public var title: String
     public var 项目: [String]
+    public var contents: SlideContent { SlideContent(["items": 项目]) }
     
     public var slideType: String { "列表页" }
     
@@ -113,6 +129,7 @@ public struct 卡片页: Slide {
     public var title: String
     public var 卡片列表: [卡片]
     public var 列数: Int
+    public var contents: SlideContent { SlideContent(["cards": 卡片列表.map { ["title": $0.标题, "content": $0.内容] }, "columns": 列数]) }
     
     public var slideType: String { "卡片页" }
     
@@ -157,6 +174,7 @@ public struct 表格页: Slide {
     public var title: String
     public var 表头: [String]
     public var 行数据: [[String]]
+    public var contents: SlideContent { SlideContent(["headers": 表头, "rows": 行数据]) }
     
     public var slideType: String { "表格页" }
     
@@ -186,6 +204,11 @@ public struct 引用页: Slide {
     public var title: String = ""
     public var 引言: String
     public var 作者: String?
+    public var contents: SlideContent { 
+        var dict: [String: any Sendable] = ["quote": 引言]
+        if let 作者 = 作者 { dict["author"] = 作者 }
+        return SlideContent(dict)
+    }
     
     public var slideType: String { "引用页" }
     
@@ -214,6 +237,11 @@ public struct 对比页: Slide {
     public var title: String
     public var 左侧: 对比项
     public var 右侧: 对比项
+    public var contents: SlideContent { 
+        let left: [String: any Sendable] = 左侧.toSendableDict()
+        let right: [String: any Sendable] = 右侧.toSendableDict()
+        return SlideContent(["left": left, "right": right])
+    }
     
     public var slideType: String { "对比页" }
     
@@ -250,6 +278,13 @@ public struct 对比项: Sendable, Hashable {
     public func toDict() -> [String: Any] {
         ["title": 标题, "items": 项目]
     }
+    
+    public func toSendableDict() -> [String: any Sendable] {
+        var dict: [String: any Sendable] = [:]
+        dict["title"] = 标题
+        dict["items"] = 项目
+        return dict
+    }
 }
 
 @available(macOS 10.15, *)
@@ -257,6 +292,7 @@ public struct 时间线页: Slide {
     public let id = UUID()
     public var title: String
     public var 事件列表: [时间事件]
+    public var contents: SlideContent { SlideContent(["events": 事件列表.map { ["date": $0.日期, "title": $0.标题, "description": $0.描述 ?? ""] }]) }
     
     public var slideType: String { "时间线页" }
     
@@ -302,6 +338,11 @@ public struct 结束页: Slide {
     public let id = UUID()
     public var title: String
     public var 副标题: String?
+    public var contents: SlideContent { 
+        var dict: [String: any Sendable] = [:]
+        if let 副标题 = 副标题 { dict["subtitle"] = 副标题 }
+        return SlideContent(dict)
+    }
     
     public var slideType: String { "结束页" }
     
@@ -330,6 +371,7 @@ public struct 流程页: Slide {
     public var title: String
     public var 步骤列表: [String]
     public var 是否循环: Bool
+    public var contents: SlideContent { SlideContent(["steps": 步骤列表, "isLoop": 是否循环]) }
     
     public var slideType: String { "流程页" }
     
@@ -358,6 +400,7 @@ public struct 结构图页: Slide {
     public let id = UUID()
     public var title: String
     public var 层级列表: [String]
+    public var contents: SlideContent { SlideContent(["levels": 层级列表]) }
     
     public var slideType: String { "结构图页" }
     
@@ -393,6 +436,7 @@ public struct 定义页: Slide {
     public let id = UUID()
     public var title: String
     public var 定义内容: String
+    public var contents: SlideContent { SlideContent(["definition": 定义内容]) }
     
     public var slideType: String { "定义页" }
     
@@ -427,6 +471,22 @@ public enum 架构层: Sendable, Hashable {
         case .底层(let 项目): return ["level": "bottom", "items": 项目]
         }
     }
+    
+    public func toSendableDict() -> [String: any Sendable] {
+        var dict: [String: any Sendable] = [:]
+        switch self {
+        case .顶层(let 项目):
+            dict["level"] = "top"
+            dict["items"] = 项目
+        case .中层(let 项目):
+            dict["level"] = "middle"
+            dict["items"] = 项目
+        case .底层(let 项目):
+            dict["level"] = "bottom"
+            dict["items"] = 项目
+        }
+        return dict
+    }
 }
 
 @available(macOS 10.15, *)
@@ -434,6 +494,10 @@ public struct 架构图页: Slide {
     public let id = UUID()
     public var title: String
     public var 层次结构: [架构层]
+    public var contents: SlideContent { 
+        let layers: [any Sendable] = 层次结构.map { $0.toSendableDict() }
+        return SlideContent(["layers": layers])
+    }
     
     public var slideType: String { "架构图页" }
     
@@ -461,6 +525,7 @@ public struct 流程图页: Slide {
     public var title: String
     public var 步骤列表: [String]
     public var 是否循环: Bool
+    public var contents: SlideContent { SlideContent(["steps": 步骤列表, "isLoop": 是否循环]) }
     
     public var slideType: String { "流程图页" }
     
@@ -499,6 +564,14 @@ public struct 金字塔层: Sendable, Hashable {
     public func toDict() -> [String: Any] {
         ["label": 标签, "percentage": 占比, "color": 颜色.rawValue]
     }
+    
+    public func toSendableDict() -> [String: any Sendable] {
+        var dict: [String: any Sendable] = [:]
+        dict["label"] = 标签
+        dict["percentage"] = 占比
+        dict["color"] = 颜色.rawValue
+        return dict
+    }
 }
 
 @available(macOS 10.15, *)
@@ -506,6 +579,10 @@ public struct 金字塔页: Slide {
     public let id = UUID()
     public var title: String
     public var 层级列表: [金字塔层]
+    public var contents: SlideContent { 
+        let layers: [any Sendable] = 层级列表.map { $0.toSendableDict() }
+        return SlideContent(["layers": layers])
+    }
     
     public var slideType: String { "金字塔页" }
     
@@ -542,6 +619,14 @@ public struct 矩阵单元格: Sendable, Hashable {
     public func toDict() -> [String: Any] {
         ["row": 行标签, "column": 列标签, "content": 内容]
     }
+    
+    public func toSendableDict() -> [String: any Sendable] {
+        var dict: [String: any Sendable] = [:]
+        dict["row"] = 行标签
+        dict["column"] = 列标签
+        dict["content"] = 内容
+        return dict
+    }
 }
 
 @available(macOS 10.15, *)
@@ -551,6 +636,10 @@ public struct 矩阵页: Slide {
     public var 行标签: [String]
     public var 列标签: [String]
     public var 单元格: [矩阵单元格]
+    public var contents: SlideContent { 
+        let cells: [any Sendable] = 单元格.map { $0.toSendableDict() }
+        return SlideContent(["rows": 行标签, "columns": 列标签, "cells": cells])
+    }
     
     public var slideType: String { "矩阵页" }
     
@@ -599,6 +688,16 @@ public struct 柏拉图页: Slide {
     public var title: String
     public var 项目列表: [柏拉图项]
     public var 累计占比阈值: Double
+    public var contents: SlideContent { 
+        let items: [any Sendable] = 项目列表.map { item -> [String: any Sendable] in
+            var dict: [String: any Sendable] = [:]
+            dict["label"] = item.标签
+            dict["value"] = item.数值
+            dict["isCore"] = item.是否核心
+            return dict
+        }
+        return SlideContent(["items": items, "threshold": 累计占比阈值])
+    }
     
     public var slideType: String { "柏拉图页" }
     
@@ -628,6 +727,11 @@ public struct 图片页: Slide {
     public var title: String
     public var 图片路径: String
     public var 说明: String?
+    public var contents: SlideContent { 
+        var dict: [String: any Sendable] = ["imagePath": 图片路径]
+        if let 说明 = 说明 { dict["caption"] = 说明 }
+        return SlideContent(dict)
+    }
     
     public var slideType: String { "图片页" }
     
@@ -660,6 +764,11 @@ public struct 双栏页: Slide {
     public var 左栏内容: [String]
     public var 右栏标题: String?
     public var 右栏内容: [String]
+    public var contents: SlideContent { 
+        let left: [String: any Sendable] = ["标题": 左栏标题 ?? "", "内容": 左栏内容]
+        let right: [String: any Sendable] = ["标题": 右栏标题 ?? "", "内容": 右栏内容]
+        return SlideContent(["左": left, "右": right])
+    }
     
     public var slideType: String { "双栏页" }
     
@@ -717,6 +826,13 @@ public struct 图表数据系列: Sendable {
     public func toDict() -> [String: Any] {
         ["name": 名称, "values": 数值]
     }
+    
+    public func toSendableDict() -> [String: any Sendable] {
+        var dict: [String: any Sendable] = [:]
+        dict["name"] = 名称
+        dict["values"] = 数值
+        return dict
+    }
 }
 
 @available(macOS 10.15, *)
@@ -729,6 +845,10 @@ public struct 图表页: Slide {
     public var X轴标题: String?
     public var Y轴标题: String?
     public var 显示图例: Bool
+    public var contents: SlideContent { 
+        let series: [any Sendable] = 数据系列.map { $0.toSendableDict() }
+        return SlideContent(["chartType": 图表类型值.rawValue, "labels": 标签列表, "series": series])
+    }
     
     public var slideType: String { "图表页" }
     
@@ -775,6 +895,7 @@ public struct Mermaid流程图页: Slide {
     public var title: String
     public var 流程图: Mermaid流程图
     public var 主题: DiagramTheme
+    public var contents: SlideContent { SlideContent(["mermaidCode": 流程图.生成语法()]) }
     
     public var slideType: String { "Mermaid流程图页" }
     
@@ -812,6 +933,7 @@ public struct Mermaid时序图页: Slide {
     public var title: String
     public var 时序图: Mermaid时序图
     public var 主题: DiagramTheme
+    public var contents: SlideContent { SlideContent(["mermaidCode": 时序图.生成语法()]) }
     
     public var slideType: String { "Mermaid时序图页" }
     
@@ -848,6 +970,7 @@ public struct Mermaid甘特图页: Slide {
     public let id = UUID()
     public var title: String
     public var 甘特图: Mermaid甘特图
+    public var contents: SlideContent { SlideContent(["mermaidCode": 甘特图.生成语法()]) }
     
     public var slideType: String { "Mermaid甘特图页" }
     
@@ -876,6 +999,7 @@ public struct Mermaid状态图页: Slide {
     public var title: String
     public var 状态代码: String
     public var 主题: DiagramTheme
+    public var contents: SlideContent { SlideContent(["mermaidCode": 状态代码]) }
     
     public var slideType: String { "Mermaid状态图页" }
     
@@ -911,6 +1035,7 @@ public struct Mermaid类图页: Slide {
     public var title: String
     public var 类代码: String
     public var 主题: DiagramTheme
+    public var contents: SlideContent { SlideContent(["mermaidCode": 类代码]) }
     
     public var slideType: String { "Mermaid类图页" }
     
@@ -946,6 +1071,7 @@ public struct MermaidER图页: Slide {
     public var title: String
     public var ER代码: String
     public var 主题: DiagramTheme
+    public var contents: SlideContent { SlideContent(["mermaidCode": ER代码]) }
     
     public var slideType: String { "MermaidER图页" }
     
@@ -980,6 +1106,26 @@ public struct Gantt图页: Slide {
     public let id = UUID()
     public var title: String
     public let 甘特图: Gantt图表
+    public var contents: SlideContent { 
+        let dict = 甘特图.toDict()
+        var sendableDict: [String: any Sendable] = [:]
+        for (key, value) in dict {
+            if let sendableValue = value as? String {
+                sendableDict[key] = sendableValue
+            } else if let sendableValue = value as? Bool {
+                sendableDict[key] = sendableValue
+            } else if let sendableValue = value as? Double {
+                sendableDict[key] = sendableValue
+            } else if let sendableValue = value as? [String] {
+                sendableDict[key] = sendableValue
+            } else if let sendableValue = value as? [[String: any Sendable]] {
+                sendableDict[key] = sendableValue
+            } else {
+                sendableDict[key] = String(describing: value)
+            }
+        }
+        return SlideContent(sendableDict)
+    }
     
     public var slideType: String { "Gantt图页" }
     

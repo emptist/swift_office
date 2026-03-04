@@ -43,4 +43,20 @@ public struct Gantt图表: Sendable {
         guard let 开始 = 最早开始, let 结束 = 最晚结束 else { return 0 }
         return Calendar.current.dateComponents([.day], from: 开始, to: 结束).day ?? 0 + 1
     }
+    
+    public func toDict() -> [String: Any] {
+        [
+            "title": 标题,
+            "tasks": 任务列表.map { task in
+                [
+                    "name": task.名称,
+                    "startDate": ISO8601DateFormatter().string(from: task.开始日期),
+                    "endDate": ISO8601DateFormatter().string(from: task.结束日期),
+                    "color": task.颜色 ?? "",
+                    "progress": task.进度 ?? 0.0
+                ]
+            },
+            "showDates": 显示日期
+        ]
+    }
 }
