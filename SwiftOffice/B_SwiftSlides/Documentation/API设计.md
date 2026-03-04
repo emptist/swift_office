@@ -35,7 +35,7 @@ Users only need to write two elements:
 ```swift
 struct IntroSlide: Slide, TextStyle {
     let title = "Introduction"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Summary": "This course covers medical quality management"
     ]
 }
@@ -46,7 +46,7 @@ struct IntroSlide: Slide, TextStyle {
 ```swift
 struct CorePoliciesSlide: Slide, TableSlideStyle {
     let title = "Core Policies"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Category": ["First Diagnosis", "Three-Level Rounds", "Difficult Cases"] as [any Sendable],
         "Policy": ["First Diagnosis Policy", "Three-Level Rounds Policy", "Difficult Case Discussion"] as [any Sendable]
     ]
@@ -60,7 +60,7 @@ Key = Column name, Value = Column data
 ```swift
 struct SystemStructureSlide: Slide, HierarchyStyle {
     let title = "Quality Management System"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "levels": [
             ["Medical Quality Management System"] as [String],
             ["Top Design", "Middle Management"] as [String],
@@ -75,7 +75,7 @@ struct SystemStructureSlide: Slide, HierarchyStyle {
 ```swift
 struct ComparisonSlide: Slide, TwoColumnStyle {
     let title = "Comparison Analysis"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "left": ["Advantage 1", "Advantage 2"] as [any Sendable],
         "right": ["Disadvantage 1", "Disadvantage 2"] as [any Sendable]
     ]
@@ -89,7 +89,7 @@ For complex layouts that combine multiple slides:
 ```swift
 struct ComparisonContainer: Slide, ContainerStyle {
     let title = "Before vs After Comparison"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "layout": "horizontal",
         "ratio": [0.382, 0.618]  // Golden ratio
     ]
@@ -105,7 +105,7 @@ struct ComparisonContainer: Slide, ContainerStyle {
 ```swift
 struct FeaturesSlide: Slide, CardStyle {
     let title = "Core Features"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "cards": [
             ["title": "Feature 1", "content": "Description 1"] as [String: any Sendable],
             ["title": "Feature 2", "content": "Description 2"] as [String: any Sendable]
@@ -116,7 +116,7 @@ struct FeaturesSlide: Slide, CardStyle {
 
 ## Available Protocols
 
-| Protocol | Purpose | Contents Format |
+| Protocol | Purpose | SlideContent Format |
 |----------|---------|-----------------|
 | `TextStyle` | Single text | `["label": "content"]` |
 | `ContentStyle` | List items | `["label": ["item1", "item2"]]` |
@@ -136,15 +136,15 @@ struct FeaturesSlide: Slide, CardStyle {
 2. **Protocol Parsing** - Protocols parse dictionaries and determine presentation
 3. **User Friendly** - Users only need `title` + `contents`
 4. **Data Source Agnostic** - JSON, database, hand-written all use the same format
-5. **Type Safe** - `Contents` provides type-safe access
+5. **Type Safe** - `SlideContent` provides type-safe access
 6. **Language Agnostic** - User content can be in any language
 
 ## Internal Implementation
 
-### Contents Type
+### SlideContent Type
 
 ```swift
-public struct Contents: Sendable, ExpressibleByDictionaryLiteral {
+public struct SlideContent: Sendable, ExpressibleByDictionaryLiteral {
     public var dict: [String: any Sendable]
     
     // Supports dictionary literals
@@ -165,16 +165,16 @@ public struct Contents: Sendable, ExpressibleByDictionaryLiteral {
 ```swift
 public enum ContentParser {
     // Parse single string
-    public static func parseString(_ contents: Contents) -> String
+    public static func parseString(_ contents: SlideContent) -> String
     
     // Parse string array
-    public static func parseStringArray(_ contents: Contents) -> [String]
+    public static func parseStringArray(_ contents: SlideContent) -> [String]
     
     // Parse table (supports spreadsheet format)
-    public static func parseTable(_ contents: Contents) -> (headers: [String], rows: [[String]])
+    public static func parseTable(_ contents: SlideContent) -> (headers: [String], rows: [[String]])
     
     // Parse hierarchy structure
-    public static func parseHierarchy(_ contents: Contents) -> SlideHierarchyNode?
+    public static func parseHierarchy(_ contents: SlideContent) -> SlideHierarchyNode?
 }
 ```
 
@@ -183,7 +183,7 @@ public enum ContentParser {
 ```swift
 struct MedicalQualityCourse: Slide, WithSubslidesStyle {
     let title = "Medical Quality Management"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "Subtitle": "Core Knowledge and Skills"
     ]
     
@@ -203,7 +203,7 @@ Users can write content in any language they prefer:
 // Chinese content
 struct 核心制度页: Slide, TableSlideStyle {
     let title = "核心制度"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "类别": ["首诊负责", "三级查房"] as [any Sendable],
         "制度": ["首诊负责制度", "三级查房制度"] as [any Sendable]
     ]
@@ -212,7 +212,7 @@ struct 核心制度页: Slide, TableSlideStyle {
 // Japanese content
 struct コア制度ページ: Slide, TableSlideStyle {
     let title = "コア制度"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "カテゴリー": ["初診担当", "三回診察"] as [any Sendable],
         "制度": ["初診担当制度", "三回診察制度"] as [any Sendable]
     ]
@@ -230,7 +230,7 @@ For simple two-column comparisons:
 ```swift
 struct SimpleComparison: Slide, TwoColumnStyle {
     let title = "Simple Comparison"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "left": ["Item 1", "Item 2"] as [any Sendable],
         "right": ["Item A", "Item B"] as [any Sendable]
     ]
@@ -244,7 +244,7 @@ For complex layouts with full slide content:
 ```swift
 struct ComplexComparison: Slide, ContainerStyle {
     let title = "Complex Comparison"
-    let contents: Contents = [
+    let contents: SlideContent = [
         "layout": "horizontal",
         "ratio": [0.382, 0.618]  // Golden ratio
     ]
@@ -261,12 +261,12 @@ Due to Swift 6's strict concurrency checking, array values in dictionaries need 
 
 ```swift
 // Required
-let contents: Contents = [
+let contents: SlideContent = [
     "items": ["A", "B"] as [any Sendable]
 ]
 
 // Future improvement: Automatic type inference
-// let contents: Contents = [
+// let contents: SlideContent = [
 //     "items": ["A", "B"]
 // ]
 ```

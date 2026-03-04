@@ -313,7 +313,7 @@ SwiftSlides - 我的演示文稿
 ## 注意事项
 
 1. **协议一致性**：确保你的结构符合 `Presentation`、`Section` 和 `Slide` 协议
-2. **内容类型**：使用 `SlideContent` 而不是旧的 `Contents` 类型
+2. **内容类型**：使用 `SlideContent` 而不是旧的 `SlideContent` 类型
 3. **字典键**：协议会自动从字典中提取数据，无需硬编码键名
 4. **多语言支持**：字典键可以使用任何语言（中文、英文等）
 

@@ -27,7 +27,7 @@ The core design principle is that everything is a dictionary, and protocols dete
 └─────────────────────────────────────────────────────────┘
 ```
 
-### Core Elements: Title + Contents
+### Core Elements: Title + SlideContent
 
 Every slide has two essential elements:
 - **title** - The slide title (identifier)
@@ -54,7 +54,7 @@ View (PPTX/JSON Output)
 
 ### Key Protocols
 
-| Protocol | Purpose | Contents Format |
+| Protocol | Purpose | SlideContent Format |
 |----------|---------|-----------------|
 | `TextStyle` | Single text | `["label": "content"]` |
 | `ContentStyle` | List items | `["label": ["item1", "item2"]]` |

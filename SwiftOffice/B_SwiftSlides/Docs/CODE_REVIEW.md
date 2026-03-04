@@ -166,7 +166,7 @@ public extension ContentStyle {
 
 **ContentParser.parseStringArray 实现**：
 ```swift
-public static func parseStringArray(_ contents: Contents) -> [String] {
+public static func parseStringArray(_ contents: SlideContent) -> [String] {
     let dict = contents.dict
     for (_, value) in dict {
         if let str = value as? String {
@@ -215,7 +215,7 @@ public extension TextStyle {
 
 **ContentParser.parseString 实现**：
 ```swift
-public static func parseString(_ contents: Contents) -> String {
+public static func parseString(_ contents: SlideContent) -> String {
     for (_, value) in contents.dict {
         if let str = value as? String {
             return str
@@ -330,7 +330,7 @@ public extension TableSlideStyle {
 
 **ContentParser.parseTable 实现**：
 ```swift
-public static func parseTable(_ contents: Contents) -> (headers: [String], rows: [[String]]) {
+public static func parseTable(_ contents: SlideContent) -> (headers: [String], rows: [[String]]) {
     // Format 1: Column-oriented (spreadsheet style)
     // ["Category": ["A", "B"], "Value": ["1", "2"]]
     let dict = contents.dict

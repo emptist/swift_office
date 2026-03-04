@@ -4,7 +4,7 @@ This guide is for **package contributors** who want to develop, extend, or maint
 
 > **For application developers**: See [Cases/APPLICATION_DEVELOPER_GUIDE.md](Cases/APPLICATION_DEVELOPER_GUIDE.md) for creating projects using SwiftOffice.
 
-## Table of Contents
+## Table of SlideContent
 
 1. [Architecture Overview](#architecture-overview)
 2. [Development Setup](#development-setup)
