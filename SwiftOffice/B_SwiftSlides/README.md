@@ -70,7 +70,74 @@ B_SwiftSlides/
 
 The recommended way to use SwiftSlides with clean separation between content and tools:
 
-### 1. Define Your Content
+### Option 1: Using PresentationRunner (Recommended)
+
+Use the universal `PresentationRunner` library to generate any presentation without creating a custom runner for each one.
+
+```swift
+import SwiftSlides
+import Runner
+
+// Define your presentation structure
+struct MyPresentation: Presentation {
+    let title = "我的演示文稿"
+    let contents: SlideContent = SlideContent([
+        "author": "作者姓名"
+    ])
+    
+    var author: String? {
+        for (_, value) in contents.dict {
+            if let str = value as? String {
+                return str
+            }
+        }
+        return nil
+    }
+    
+    var sections: [any Section] = [
+        MySection()
+    ]
+    
+    func toDict() -> [String: Any] { ... }
+    func toJSON() throws -> String { ... }
+    func generatePPTX(outputPath: String) async throws { ... }
+}
+
+struct MySection: Section {
+    let title = "我的章节"
+    let contents: SlideContent = SlideContent([
+        "slides": [MySlide()] as [any Sendable]
+    ])
+    
+    var slides: [any Slide] { contents.asSlideArray }
+    func toDict() -> [String: Any] { ... }
+}
+
+struct MySlide: Slide, ContentStyle {
+    let title = "我的幻灯片"
+    let contents: SlideContent = SlideContent([
+        "items": ["第一项", "第二项"] as [any Sendable]
+    ])
+}
+
+// Generate PPTX
+@main
+struct MyPresentationApp {
+    static func main() async {
+        let presentation = MyPresentation()
+        try? await PresentationRunner.generate(presentation, saveJSON: false)
+    }
+}
+```
+
+**Benefits:**
+- No need to create a custom runner for each presentation
+- JSON saving is optional (for debugging only)
+- Clean separation between content and generation logic
+
+See [RUNNER_USAGE.md](Docs/RUNNER_USAGE.md) for detailed documentation.
+
+### Option 2: Define Your Content (Traditional)
 
 See `Demo/ProtocolCompositionDemo.swift` for a complete example:
 

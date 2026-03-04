@@ -1,9 +1,15 @@
 {
   "author" : "JK",
-  "id" : "9AC190DC-34DC-4770-8B02-4A2703A2AC04",
+  "contents" : {
+
+  },
+  "id" : "10C25A5B-E6A9-459E-B800-428C89DA6111",
   "sections" : [
     {
-      "id" : "8935DB30-8C2D-4B14-8AAF-74BF72D6129B",
+      "contents" : {
+
+      },
+      "id" : "41C1134A-9D4F-4CE3-9490-F3636A7D023A",
       "slides" : [
         {
           "contents" : {
@@ -12,7 +18,7 @@
             "Subtitle" : "Protocol-Based Content Design"
           },
           "hidden" : false,
-          "id" : "E408ACF3-76D5-449F-86CE-EF6267902B20",
+          "id" : "A87F5184-31DB-481A-823E-68472B64A6C7",
           "notes" : null,
           "slideType" : "cover",
           "title" : "SwiftSlides API Test"
@@ -23,7 +29,7 @@
             "Content" : "This is a simple text slide. Users can write any content here in any language they prefer."
           },
           "hidden" : false,
-          "id" : "9F072A3B-0436-43A0-B4C6-A6C03BFD75F4",
+          "id" : "2A4EB488-3A8B-4AB0-9881-C6F2DD1A8C3F",
           "notes" : null,
           "slideType" : "text",
           "title" : "Text Style Demo"
@@ -38,7 +44,7 @@
             ]
           },
           "hidden" : false,
-          "id" : "6001299F-7A19-4B96-A82F-3E630C2BF4BE",
+          "id" : "0A85782E-4074-43A8-8663-2AF300AF4A59",
           "items" : [
             "First item in the list",
             "Second item with more details",
@@ -71,32 +77,32 @@
             ]
           },
           "headers" : [
-            "Policy",
             "Category",
+            "Policy",
             "Status"
           ],
           "hidden" : false,
-          "id" : "FD7E4B6D-AC2F-4183-AF1B-480CD6B2A082",
+          "id" : "D634E1DC-5971-4697-A3C9-3B87DA1B62B3",
           "notes" : null,
           "rows" : [
             [
-              "First Diagnosis Policy",
               "First Diagnosis",
+              "First Diagnosis Policy",
               "Active"
             ],
             [
-              "Three-Level Rounds Policy",
               "Three-Level Rounds",
+              "Three-Level Rounds Policy",
               "Active"
             ],
             [
-              "Difficult Case Discussion",
               "Difficult Cases",
+              "Difficult Case Discussion",
               "Active"
             ],
             [
-              "Critical Value Reporting",
               "Critical Values",
+              "Critical Value Reporting",
               "Active"
             ]
           ],
@@ -107,7 +113,10 @@
       "title" : "Basic Types"
     },
     {
-      "id" : "4CCDA2FB-4C75-4C86-9096-1EFAE4BAC24C",
+      "contents" : {
+
+      },
+      "id" : "21F58BAA-7B6E-4C50-9CA6-37C359C857C0",
       "slides" : [
         {
           "contents" : {
@@ -128,7 +137,7 @@
             ]
           },
           "hidden" : false,
-          "id" : "5D9937D1-B2F2-4ABF-B27B-50917BC514CB",
+          "id" : "8C9F98B5-5E8F-42C7-AE59-A317D4205EF5",
           "notes" : null,
           "title" : "Hierarchy Style Demo"
         },
@@ -158,7 +167,7 @@
             ]
           },
           "hidden" : false,
-          "id" : "347A5DE6-596A-43AA-BAC2-370700053F58",
+          "id" : "767FFF82-2389-4D0B-8B27-4D0C78666619",
           "notes" : null,
           "title" : "Cycle Flow Style Demo"
         },
@@ -188,7 +197,7 @@
             ]
           },
           "hidden" : false,
-          "id" : "9C1ABF5C-3038-4514-AB6E-EB89D7E4617D",
+          "id" : "41A0466B-4FD9-46C5-A335-82057DE312C6",
           "notes" : null,
           "title" : "Pareto Style Demo"
         }
@@ -196,7 +205,10 @@
       "title" : "Chart Types"
     },
     {
-      "id" : "7E877D1B-66AF-401B-983A-2BD425253F39",
+      "contents" : {
+
+      },
+      "id" : "B2879C4C-7BDA-45BE-8425-4F5AD5B2DB10",
       "slides" : [
         {
           "contents" : {
@@ -212,7 +224,7 @@
             ]
           },
           "hidden" : false,
-          "id" : "2EF477A4-AA47-4EEA-B509-09011A80D628",
+          "id" : "4AD1ECDE-6B4C-4D79-9C92-081FD92D981C",
           "leftItems" : [
             "Advantage 1: Easy to use",
             "Advantage 2: Flexible design",
@@ -268,7 +280,7 @@
             ]
           },
           "hidden" : false,
-          "id" : "7C4D1EDB-3108-473C-A4C8-1E5ACA67CD0E",
+          "id" : "38D6B713-B880-415F-B74A-6E188B995038",
           "notes" : null,
           "slideType" : "cards",
           "title" : "Card Style Demo"
@@ -279,7 +291,7 @@
             "Subtitle" : "This is a chapter cover slide"
           },
           "hidden" : false,
-          "id" : "C6E1BB4D-B499-43E4-801D-637E4598BE22",
+          "id" : "FCE86494-8D6C-467B-94A1-72A5C6897D39",
           "notes" : null,
           "slideType" : "cover",
           "title" : "Chapter Cover Demo"
