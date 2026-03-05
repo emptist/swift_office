@@ -191,13 +191,13 @@ public extension CoverStyle {
 
 /// 章首页样式协议
 @available(macOS 10.15, *)
-public protocol 章首页样式: Slide {
-    var 章幻灯片: [any Slide] { get }
+public protocol ChapterCoverStyle: Slide {
+    var chapterSlides: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension 章首页样式 {
-    var 章幻灯片: [any Slide] {
+public extension ChapterCoverStyle {
+    var chapterSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
                 return slides
@@ -209,13 +209,13 @@ public extension 章首页样式 {
 
 /// 节首页样式协议
 @available(macOS 10.15, *)
-public protocol 节首页样式: Slide {
-    var 节幻灯片: [any Slide] { get }
+public protocol NodeCoverStyle: Slide {
+    var nodeSlides: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension 节首页样式 {
-    var 节幻灯片: [any Slide] {
+public extension NodeCoverStyle {
+    var nodeSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
                 return slides

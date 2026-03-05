@@ -70,10 +70,10 @@ View (PPTX/JSON Output)
 
 ### Structural Layout Pages
 
-- **Examples**: 章首页 (Chapter Cover), 节首页 (Section Cover)
+- **Examples**: 章首页 (Chapter Cover), 节首页 (Node Cover)
 - **Characteristics**: Use vague keys (e.g., "包含", "fellowSlides", "子页面")
 - **Purpose**: Convey hierarchy structure information
-- **Protocols**: 章首页样式, 节首页样式
+- **Protocols**: ChapterCoverStyle, NodeCoverStyle
 - **Key**: **带页面就不传意念** (Carry pages, don't convey content ideas)
 
 ### Content Idea Pages

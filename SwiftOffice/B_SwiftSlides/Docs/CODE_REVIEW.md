@@ -15,7 +15,7 @@ SwiftOffice 项目中的所有协议实现，重点关注是否符合设计需�
 - 同一个字典可以用不同协议呈现不同效果，数据和呈现完全分离
 
 ### 页面类型
-1. **结构布局页面**（章首页、节首页）- 用模糊的 key，传递层级结构信息
+1. **结构布局页面**（ChapterCover、NodeCover）- 用模糊的 key，传递层级结构信息
 2. **内容意念页面**（具体内容页面）- 用精确的 key，传递需要呈现在页面上的内容
 
 ### 协议实现要求
@@ -27,19 +27,19 @@ SwiftOffice 项目中的所有协议实现，重点关注是否符合设计需�
 
 ## 发现的问题
 
-### 1. 章首页样式协议 - 严重错误
+### 1. ChapterCoverStyle协议 - 严重错误
 
 **位置**：`SlideStyleProtocols.swift:168-179`
 
 **当前实现**：
 ```swift
-public protocol 章首页样式: Slide {
+public protocol ChapterCoverStyle: Slide {
     var chapterNumber: Int? { get }
     var chapterSlides: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension 章首页样式 {
+public extension ChapterCoverStyle {
     var chapterNumber: Int? {
         guard let str = contents["ChapterNumber"]?.asString else { return nil }
         return Int(str)
@@ -58,12 +58,12 @@ public extension 章首页样式 {
 
 **正确实现**：
 ```swift
-public protocol 章首页样式: Slide {
+public protocol ChapterCoverStyle: Slide {
     var chapterSlides: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension 章首页样式 {
+public extension ChapterCoverStyle {
     var chapterSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
@@ -77,18 +77,18 @@ public extension 章首页样式 {
 
 ---
 
-### 2. 节首页样式协议 - 严重错误
+### 2. NodeCoverStyle协议 - 严重错误
 
 **位置**：`SlideStyleProtocols.swift:184-192`
 
 **当前实现**：
 ```swift
-public protocol 节首页样式: Slide {
+public protocol NodeCoverStyle: Slide {
     var sectionSlides: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension 节首页样式 {
+public extension NodeCoverStyle {
     var sectionSlides: [any Slide] {
         contents["fellowSlides"]?.asSlideArray ?? []
     }
@@ -102,7 +102,7 @@ public extension 节首页样式 {
 **正确实现**：
 ```swift
 @available(macOS 10.15, *)
-public extension 节首页样式 {
+public extension NodeCoverStyle {
     var sectionSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
@@ -582,8 +582,8 @@ var slides: [any Slide] {
 
 ### 严重错误（必须修复）
 
-1. ❌ `章首页样式` 协议 - 硬编码 `fellowSlides`，有 `chapterNumber` 胡编属性
-2. ❌ `节首页样式` 协议 - 硬编码 `fellowSlides`
+1. ❌ `ChapterCoverStyle` 协议 - 硬编码 `fellowSlides`，有 `chapterNumber` 胡编属性
+2. ❌ `NodeCoverStyle` 协议 - 硬编码 `fellowSlides`
 3. ❌ `TwoColumnStyle` 协议 - 硬编码 `left` 和 `right`
 4. ❌ `CardStyle` 协议 - 硬编码 `cards` 和 `columns`
 5. ❌ `横框图样式` 协议 - 硬编码 `items`
@@ -618,7 +618,7 @@ var slides: [any Slide] {
 ## 建议的修复顺序
 
 1. **第一阶段**：修复严重错误
-   - 修复 `章首页样式` 和 `节首页样式` 协议
+   - 修复 `ChapterCoverStyle` 和 `NodeCoverStyle` 协议
    - 删除 `chapterNumber` 胡编属性
 
 2. **第二阶段**：讨论设计问题

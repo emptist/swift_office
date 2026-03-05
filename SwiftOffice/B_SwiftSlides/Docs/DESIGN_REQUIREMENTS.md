@@ -104,8 +104,8 @@ struct 页面2: Slide, TextStyle {
     let contents = data
 }
 
-// 页面3：用 节首页样式 协议，显示为导航页
-struct 页面3: Slide, 节首页样式 {
+// 页面3：用 NodeCoverStyle 协议，显示为导航页
+struct 页面3: Slide, NodeCoverStyle {
     let title = "医疗质量概念"
     let contents = data
 }
@@ -114,7 +114,7 @@ struct 页面3: Slide, 节首页样式 {
 ### 用户自由命名 key
 
 ```swift
-struct 医疗质量概念: Slide, 节首页样式 {
+struct 医疗质量概念: Slide, NodeCoverStyle {
     let contents: SlideContent = [
         "fellowSlides": [  // 用户可以这样命名
             医疗质量定义页(),
@@ -123,7 +123,7 @@ struct 医疗质量概念: Slide, 节首页样式 {
     ]
 }
 
-struct 医疗质量概念: Slide, 节首页样式 {
+struct 医疗质量概念: Slide, NodeCoverStyle {
     let contents: SlideContent = [
         "包含": [  // 用户也可以这样命名
             医疗质量定义页(),
@@ -132,7 +132,7 @@ struct 医疗质量概念: Slide, 节首页样式 {
     ]
 }
 
-struct 医疗质量概念: Slide, 节首页样式 {
+struct 医疗质量概念: Slide, NodeCoverStyle {
     let contents: SlideContent = [
         "子页面": [  // 用户还可以这样命名
             医疗质量定义页(),
@@ -148,7 +148,7 @@ struct 医疗质量概念: Slide, 节首页样式 {
 
 **错误示例**（硬编码 key）：
 ```swift
-public extension 章首页样式 {
+public extension ChapterCoverStyle {
     var chapterSlides: [any Slide] {
         contents["fellowSlides"]?.asSlideArray ?? []  // ❌ 硬编码了 key
     }
@@ -157,7 +157,7 @@ public extension 章首页样式 {
 
 **正确示例**（遍历字典）：
 ```swift
-public extension 章首页样式 {
+public extension ChapterCoverStyle {
     var chapterSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
@@ -294,7 +294,7 @@ Presentation (演示文稿)
 
 **示例**：
 ```swift
-struct 章首页_医疗质量概念: Slide, 章首页样式 {
+struct 章首页_医疗质量概念: Slide, ChapterCoverStyle {
     let title = "第一章 医疗质量概念"  // 用户自己决定是否要写"第一章"
     let contents: SlideContent = [
         "包含": [
@@ -305,7 +305,7 @@ struct 章首页_医疗质量概念: Slide, 章首页样式 {
 }
 
 // 复用示例
-struct 章首页_医疗质量管理: Slide, 章首页样式 {
+struct 章首页_医疗质量管理: Slide, ChapterCoverStyle {
     let title = "第二章 医疗质量管理"  // 复用时，章节号可以自由修改
     let contents: SlideContent = [
         "包含": [
@@ -396,7 +396,7 @@ struct 第一章: Section {
 
 **定义方式**：
 ```swift
-struct 章首页_医疗质量概念: Slide, 章首页样式 {
+struct 章首页_医疗质量概念: Slide, ChapterCoverStyle {
     let title = "第一章 医疗质量概念"
     let contents: SlideContent = [
         "包含": [  // 或 "fellowSlides", "子页面" 等任何用户喜欢的 key
@@ -419,7 +419,7 @@ struct 章首页_医疗质量概念: Slide, 章首页样式 {
 
 **定义方式**：
 ```swift
-struct 节首页_医疗质量定义: Slide, 节首页样式 {
+struct 节首页_医疗质量定义: Slide, NodeCoverStyle {
     let title = "1.1 医疗质量定义"
     let contents: SlideContent = [
         "包含": [  // 或 "fellowSlides", "子页面" 等任何用户喜欢的 key
@@ -496,10 +496,10 @@ struct 第一章: Section {
 - 这个数组的元素会直接出现在最终的 PPTX 中
 - 可以省略，直接在 Section 中定义章首页或节首页
 
-### 3. 章首页样式.章幻灯片
+### 3. ChapterCoverStyle.chapterSlides
 
 ```swift
-struct 章首页_医疗质量概念: Slide, 章首页样式 {
+struct 章首页_医疗质量概念: Slide, ChapterCoverStyle {
     let contents: SlideContent = [
         "包含": [  // ← 这里提供 [any Slide] 数组
             节首页_医疗质量定义(),
@@ -515,10 +515,10 @@ struct 章首页_医疗质量概念: Slide, 章首页样式 {
 - 只是告诉系统这个章包含哪些节
 - 可以省略，直接在 Section 中定义节首页或普通页面
 
-### 4. 节首页样式.节幻灯片
+### 4. NodeCoverStyle.nodeSlides
 
 ```swift
-struct 节首页_医疗质量定义: Slide, 节首页样式 {
+struct 节首页_医疗质量定义: Slide, NodeCoverStyle {
     let contents: SlideContent = [
         "包含": [  // ← 这里提供 [any Slide] 数组
             医疗质量定义页(),
@@ -644,7 +644,7 @@ struct 我的演示文稿: Presentation {
 ### 方式 5：通过章首页和节首页的逻辑组织
 
 ```swift
-struct 章首页_医疗质量概念: Slide, 章首页样式 {
+struct 章首页_医疗质量概念: Slide, ChapterCoverStyle {
     let contents: SlideContent = [
         "包含": [
             节首页_医疗质量定义(),
@@ -672,8 +672,8 @@ struct 章首页_医疗质量概念: Slide, 章首页样式 {
 4. **[slides] 出现的地方**：
    - `Presentation.sections`：提供 `[any Section]` 数组
    - `Section.slides`：提供 `[any Slide]` 数组
-   - `章首页样式.章幻灯片`：提供 `[any Slide]` 数组
-   - `节首页样式.节幻灯片`：提供 `[any Slide]` 数组
+   - `ChapterCoverStyle.chapterSlides`：提供 `[any Slide]` 数组
+   - `NodeCoverStyle.nodeSlides`：提供 `[any Slide]` 数组
 
 **关键点**：
 
@@ -874,7 +874,7 @@ struct 第二章: Section {
 }
 
 // 也可以放在章首页或节首页的逻辑组织中
-struct 章首页_医疗质量概念: Slide, 章首页样式 {
+struct 章首页_医疗质量概念: Slide, ChapterCoverStyle {
     let contents: SlideContent = [
         "包含": [
             医疗质量定义页(),  // 复用

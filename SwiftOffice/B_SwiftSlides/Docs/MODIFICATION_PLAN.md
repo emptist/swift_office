@@ -44,7 +44,7 @@ public typealias Content = SlideContent
 
 ---
 
-#### 1. 修复 章首页样式 协议
+#### 1. 修复 ChapterCoverStyle 协议
 
 **文件**：`SlideStyleProtocols.swift:168-179`
 
@@ -58,13 +58,13 @@ public typealias Content = SlideContent
 
 **修改方案**：
 ```swift
-public protocol 章首页样式: Slide {
-    var 章幻灯片: [any Slide] { get }
+public protocol ChapterCoverStyle: Slide {
+    var chapterSlides: [any Slide] { get }
 }
 
 @available(macOS 10.15, *)
-public extension 章首页样式 {
-    var 章幻灯片: [any Slide] {
+public extension ChapterCoverStyle {
+    var chapterSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
                 return slides
@@ -77,7 +77,7 @@ public extension 章首页样式 {
 
 ---
 
-#### 2. 修复 节首页样式 协议
+#### 2. 修复 NodeCoverStyle 协议
 
 **文件**：`SlideStyleProtocols.swift:184-192`
 
@@ -87,8 +87,8 @@ public extension 章首页样式 {
 **修改方案**：
 ```swift
 @available(macOS 10.15, *)
-public extension 节首页样式 {
-    var 节幻灯片: [any Slide] {
+public extension NodeCoverStyle {
+    var nodeSlides: [any Slide] {
         for (_, value) in contents.dict {
             if let slides = value as? [any Slide] {
                 return slides
@@ -620,8 +620,8 @@ public var asSlideArray: [any Slide] {
 ## 修改优先级
 
 ### 高优先级（必须修复）
-1. 章首页样式 协议
-2. 节首页样式 协议
+1. ChapterCoverStyle 协议
+2. NodeCoverStyle 协议
 3. TwoColumnStyle 协议
 4. CardStyle 协议
 5. 横框图样式 协议
