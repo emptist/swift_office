@@ -1,0 +1,76 @@
+{
+  "author" : "JK",
+  "date" : "2024",
+  "id" : "A86B6760-158F-43A2-9EA2-E559AA577631",
+  "sections" : [
+    {
+      "id" : "DE483789-E3CA-4AA8-B99F-8457A3536A25",
+      "slides" : [
+        {
+          "contents" : {
+            "description" : "This slide has an image property",
+            "photo" : {
+              "path" : "demo-image.jpg",
+              "type" : "image"
+            }
+          },
+          "id" : "1DEB04DA-DDA4-4D79-AAFF-F55D71D924BD",
+          "title" : "Image Type Wrapper"
+        },
+        {
+          "contents" : {
+            "color" : {
+              "hex" : "#FF5500",
+              "type" : "color"
+            },
+            "count" : 42,
+            "enabled" : true,
+            "items" : [
+              "A",
+              "B",
+              "C"
+            ],
+            "link" : {
+              "type" : "url",
+              "url" : "https:\/\/github.com"
+            },
+            "movie" : {
+              "path" : "demo.mp4",
+              "type" : "video"
+            },
+            "photo" : {
+              "path" : "photo.jpg",
+              "type" : "image"
+            }
+          },
+          "id" : "B150E344-8CA5-4F68-B227-A4403DA6065F",
+          "slideType" : "content",
+          "title" : "Multiple Type Wrappers"
+        }
+      ],
+      "title" : "Type Wrappers"
+    },
+    {
+      "id" : "E199B5A4-FEBB-42AF-B969-AA10AF534D12",
+      "slides" : [
+        {
+          "contents" : {
+            "作者" : "张三",
+            "年份" : 2024,
+            "项目" : [
+              "第一项：Mirror自动发现",
+              "第二项：任意属性名",
+              "第三项：支持中文",
+              "第四项：简洁优雅"
+            ]
+          },
+          "id" : "67A015D3-D2AA-4FDE-A1E4-0F3A6EA3756B",
+          "title" : "中文属性测试"
+        }
+      ],
+      "title" : "中文属性演示"
+    }
+  ],
+  "subtitle" : "Mirror-Based Property Discovery",
+  "title" : "Flat Property API Demo"
+}

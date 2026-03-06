@@ -47,13 +47,11 @@ struct LayoutTypesSection: Section {
 
 // MARK: - Basic Types
 
-struct CoverSlide: Slide, CoverStyle {
+struct CoverSlide: Slide, SlideCoverStyle {
     let title = "SwiftSlides API Test"
-    let contents: SlideContent = [
-        "Subtitle": "Protocol-Based Content Design",
-        "Author": "JK",
-        "Date": "2024"
-    ]
+    let subtitle: String? = "Protocol-Based Content Design"
+    let author: String? = "JK"
+    let date: String? = "2024"
 }
 
 struct TextSlideDemo: Slide, TextStyle {
@@ -152,12 +150,11 @@ struct CardSlideDemo: Slide, CardStyle {
     ]
 }
 
-struct ChapterCoverDemo: Slide, CoverStyle {
+struct ChapterCoverDemo: Slide, SlideCoverStyle {
     let title = "Chapter Cover Demo"
-    let contents: SlideContent = [
-        "ChapterNumber": "1",
-        "Subtitle": "This is a chapter cover slide"
-    ]
+    let subtitle: String? = "This is a chapter cover slide"
+    let author: String? = nil
+    let date: String? = nil
 }
 
 // MARK: - Runner

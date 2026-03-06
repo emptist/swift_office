@@ -119,12 +119,32 @@ public enum ContentParser {
     }
     
     private static func parseHierarchyNode(_ contents: SlideContent) -> SlideHierarchyNode? {
-        let title = contents["title"]?.asString ?? ""
+        var title = ""
+        var id = UUID().uuidString
+        var subtitle: String? = nil
+        var children: [SlideHierarchyNode]? = nil
+        
+        for (key, value) in contents.dict {
+            let titlePattern = "^(标题|title|Title|名称|name)$"
+            let idPattern = "^(标识|id|ID|编号)$"
+            let subtitlePattern = "^(副标题|subtitle|Subtitle)$"
+            let childrenPattern = "^(子节点|children|Children|子项|items)$"
+            
+            if key.range(of: titlePattern, options: .regularExpression) != nil {
+                title = value as? String ?? ""
+            } else if key.range(of: idPattern, options: .regularExpression) != nil {
+                id = value as? String ?? UUID().uuidString
+            } else if key.range(of: subtitlePattern, options: .regularExpression) != nil {
+                subtitle = value as? String
+            } else if key.range(of: childrenPattern, options: .regularExpression) != nil {
+                if let arr = value as? [[String: any Sendable]] {
+                    children = arr.map { parseHierarchyNode(SlideContent($0)) }.compactMap { $0 }
+                }
+            }
+        }
+        
         guard !title.isEmpty else { return nil }
-        let id = contents["id"]?.asString ?? UUID().uuidString
-        let subtitle = contents["subtitle"]?.asString
-        let children = contents["children"]?.asContentsArray.compactMap { parseHierarchyNode($0) } ?? []
-        return SlideHierarchyNode(id: id, title: title, subtitle: subtitle, children: children.isEmpty ? nil : children)
+        return SlideHierarchyNode(id: id, title: title, subtitle: subtitle, children: children?.isEmpty == true ? nil : children)
     }
     
     public static func 解析循环步骤(_ contents: SlideContent) -> [SlideCycleStep] {
@@ -157,21 +177,29 @@ public enum ContentParser {
     }
 }
 
-// MARK: - 基础样式协议
+// MARK: - Cover Style Protocols
 
-/// Cover style protocol
+/// Base CoverStyle protocol - can be applied to any type (Presentation, Section, Slide)
+/// Does NOT require Slide - use specific sub-protocols for each type
 @available(macOS 10.15, *)
-public protocol CoverStyle: Slide {
+public protocol CoverStyle: Sendable {
+    var title: String { get }
     var subtitle: String? { get }
     var author: String? { get }
+    var date: String? { get }
+}
+
+/// SlideCoverStyle - for Slide covers
+@available(macOS 10.15, *)
+public protocol SlideCoverStyle: Slide, CoverStyle {
 }
 
 @available(macOS 10.15, *)
-public extension CoverStyle {
+public extension SlideCoverStyle {
     var subtitle: String? {
         for (key, value) in contents.dict {
             let pattern = "^(副标题|subtitle|Subtitle)$"
-            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+            if key.range(of: pattern, options: .regularExpression) != nil {
                 return value as? String
             }
         }
@@ -181,13 +209,47 @@ public extension CoverStyle {
     var author: String? {
         for (key, value) in contents.dict {
             let pattern = "^(作者|author|Author)$"
-            if key.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil {
+            if key.range(of: pattern, options: .regularExpression) != nil {
+                return value as? String
+            }
+        }
+        return nil
+    }
+    
+    var date: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(日期|date|Date|年份|year)$"
+            if key.range(of: pattern, options: .regularExpression) != nil {
                 return value as? String
             }
         }
         return nil
     }
 }
+
+/// SectionCoverStyle - for Section covers
+@available(macOS 10.15, *)
+public protocol SectionCoverStyle: Section, CoverStyle {
+}
+
+@available(macOS 10.15, *)
+public extension SectionCoverStyle {
+    // No default implementations - use stored properties from conforming type
+}
+
+/// PresentationCoverStyle - for Presentation covers
+@available(macOS 10.15, *)
+public protocol PresentationCoverStyle: Presentation, CoverStyle {
+}
+
+@available(macOS 10.15, *)
+public extension PresentationCoverStyle {
+    // No default implementations - use stored properties from conforming type
+}
+
+/// Backward compatibility alias
+@available(macOS 10.15, *)
+public typealias 封面样式 = SlideCoverStyle
 
 /// 章首页样式协议
 @available(macOS 10.15, *)
@@ -852,22 +914,41 @@ public extension 柏拉图样式 {
     var showCumulativeLine: Bool { true }
     
     var paretoItems: [SlideParetoItem] {
-        let items = contents["items"]?.asContentsArray ?? []
-        var cumulative = 0.0
-        let total = items.reduce(0.0) { sum, item in
-            if let value = item["value"]?.asDouble {
-                return sum + value
+        for (_, value) in contents.dict {
+            if let arr = value as? [[String: any Sendable]] {
+                var cumulative = 0.0
+                let total = arr.reduce(0.0) { sum, item in
+                    for (_, val) in item {
+                        let valuePattern = "^(值|value|Value|数值)$"
+                        if item.keys.first?.range(of: valuePattern, options: .regularExpression) != nil {
+                            if let v = val as? Double { return sum + v }
+                            if let v = val as? Int { return sum + Double(v) }
+                        }
+                    }
+                    return sum
+                }
+                
+                return arr.map { item in
+                    var label = ""
+                    var value = 0.0
+                    for (key, val) in item {
+                        let labelPattern = "^(标签|label|Label|类别|category|Category)$"
+                        let valuePattern = "^(值|value|Value|数值)$"
+                        
+                        if key.range(of: labelPattern, options: .regularExpression) != nil {
+                            label = val as? String ?? ""
+                        } else if key.range(of: valuePattern, options: .regularExpression) != nil {
+                            if let v = val as? Double { value = v }
+                            else if let v = val as? Int { value = Double(v) }
+                        }
+                    }
+                    cumulative += value
+                    let cumulativePercent = total > 0 ? (cumulative / total) * 100 : 0.0
+                    return SlideParetoItem(category: label, value: value, cumulativePercent: cumulativePercent)
+                }
             }
-            return sum
         }
-        
-        return items.map { item in
-            let label = item["category"]?.asString ?? item["label"]?.asString ?? ""
-            let value = item["value"]?.asDouble ?? 0.0
-            cumulative += value
-            let cumulativePercent = total > 0 ? (cumulative / total) * 100 : 0.0
-            return SlideParetoItem(category: label, value: value, cumulativePercent: cumulativePercent)
-        }
+        return []
     }
 }
 
@@ -902,13 +983,32 @@ public extension 循环流程图样式 {
     var cycleDirection: SlideCycleDirection { .clockwise }
     
     var cycleSteps: [SlideCycleStep] {
-        let items = contents["items"]?.asContentsArray ?? []
-        return items.map { item in
-            let id = item["id"]?.asString ?? UUID().uuidString
-            let title = item["title"]?.asString ?? ""
-            let description = item["description"]?.asString
-            return SlideCycleStep(id: id, title: title, description: description)
+        for (_, value) in contents.dict {
+            if let arr = value as? [[String: any Sendable]] {
+                return arr.enumerated().map { index, item in
+                    var id = "\(index)"
+                    var title = ""
+                    var description: String? = nil
+                    
+                    for (key, val) in item {
+                        let idPattern = "^(标识|id|ID|编号)$"
+                        let titlePattern = "^(标题|title|Title|名称|name)$"
+                        let descPattern = "^(描述|description|Description|说明)$"
+                        
+                        if key.range(of: idPattern, options: .regularExpression) != nil {
+                            id = val as? String ?? "\(index)"
+                        } else if key.range(of: titlePattern, options: .regularExpression) != nil {
+                            title = val as? String ?? ""
+                        } else if key.range(of: descPattern, options: .regularExpression) != nil {
+                            description = val as? String
+                        }
+                    }
+                    
+                    return SlideCycleStep(id: id, title: title, description: description)
+                }
+            }
         }
+        return []
     }
 }
 
@@ -1028,14 +1128,28 @@ public protocol CycleFlowStyle: Slide {
 @available(macOS 10.15, *)
 public extension CycleFlowStyle {
     var cycleItems: [[String: String]] {
-        let items = contents["items"]?.asContentsArray ?? []
-        return items.map { item in
-            var result: [String: String] = [:]
-            if let id = item["id"]?.asString { result["id"] = id }
-            if let title = item["title"]?.asString { result["title"] = title }
-            if let desc = item["description"]?.asString { result["description"] = desc }
-            return result
+        for (_, value) in contents.dict {
+            if let arr = value as? [[String: any Sendable]] {
+                return arr.map { item in
+                    var result: [String: String] = [:]
+                    for (key, val) in item {
+                        let idPattern = "^(标识|id|ID|编号)$"
+                        let titlePattern = "^(标题|title|Title|名称|name)$"
+                        let descPattern = "^(描述|description|Description|说明)$"
+                        
+                        if key.range(of: idPattern, options: .regularExpression) != nil {
+                            result["id"] = val as? String ?? ""
+                        } else if key.range(of: titlePattern, options: .regularExpression) != nil {
+                            result["title"] = val as? String ?? ""
+                        } else if key.range(of: descPattern, options: .regularExpression) != nil {
+                            result["description"] = val as? String ?? ""
+                        }
+                    }
+                    return result
+                }
+            }
         }
+        return []
     }
 }
 
@@ -1048,14 +1162,26 @@ public protocol ParetoStyle: Slide {
 @available(macOS 10.15, *)
 public extension ParetoStyle {
     var paretoItems: [[String: Any]] {
-        let items = contents["items"]?.asContentsArray ?? []
-        return items.map { item in
-            var result: [String: Any] = [:]
-            if let label = item["label"]?.asString { result["label"] = label }
-            if let value = item["value"]?.dict["value"] as? Int { result["value"] = value }
-            if let value = item["value"]?.dict["value"] as? Double { result["value"] = value }
-            return result
+        for (_, value) in contents.dict {
+            if let arr = value as? [[String: any Sendable]] {
+                return arr.map { item in
+                    var result: [String: Any] = [:]
+                    for (key, val) in item {
+                        let labelPattern = "^(标签|label|Label|类别|category|Category)$"
+                        let valuePattern = "^(值|value|Value|数值)$"
+                        
+                        if key.range(of: labelPattern, options: .regularExpression) != nil {
+                            result["label"] = val as? String ?? ""
+                        } else if key.range(of: valuePattern, options: .regularExpression) != nil {
+                            if let intVal = val as? Int { result["value"] = intVal }
+                            else if let doubleVal = val as? Double { result["value"] = doubleVal }
+                        }
+                    }
+                    return result
+                }
+            }
         }
+        return []
     }
 }
 

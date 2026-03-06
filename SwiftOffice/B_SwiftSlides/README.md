@@ -6,9 +6,10 @@ SwiftSlides is a powerful, natural language-like Swift framework for generating 
 
 ## Features
 
+- **Flat Properties API** - Write slides with simple `let` properties, no dictionary wrapping
+- **Mirror Discovery** - System auto-discovers all properties via reflection
 - **Protocol Composition** - Mix and match slide styles using protocols
 - **Data/Presentation Separation** - Clean separation between content and styling
-- **Script Mode Support** - Run directly with `swift run` or as scripts
 - **23 Slide Types** - Cover, section, list, table, chart, timeline, flowchart, etc.
 - **Data-Driven API** - Create slides from arrays, CSV, TSV, or JSON data
 - **8 Predefined Themes** - Professional blue, business green, tech purple, etc.
@@ -70,57 +71,67 @@ B_SwiftSlides/
 
 The recommended way to use SwiftSlides with clean separation between content and tools:
 
-### Option 1: Using PresentationRunner (Recommended)
+### Flat Properties API (Recommended)
 
-Use the universal `PresentationRunner` library to generate any presentation without creating a custom runner for each one.
+Write slides with simple `let` properties - no dictionary wrapping needed:
+
+```swift
+import SwiftSlides
+
+// Define your presentation
+struct MyPresentation: Presentation {
+    let title = "我的演示文稿"
+    let author: String? = "作者姓名"
+    let sections: [any Section] = [MySection()]
+}
+
+struct MySection: Section {
+    let title = "我的章节"
+    let slides: [any Slide] = [MySlide()]
+}
+
+struct MySlide: Slide, ContentStyle {
+    let title = "我的幻灯片"
+    let items = ["第一项", "第二项", "第三项"]  // Flat property!
+    let author = "JK"                          // Flat property!
+}
+
+// Generate PPTX
+@main
+struct MyPresentationApp {
+    static func main() async {
+        let presentation = MyPresentation()
+        try? await PresentationRunner.generate(presentation)
+    }
+}
+```
+
+**Key Points:**
+- `contents` is auto-generated internally via Mirror - users never write it
+- Property names can be anything (Chinese, English, any language)
+- Protocols find data by type matching, not hardcoded key names
+- System handles layout, styling, and rendering
+
+### How It Works
+
+```
+User writes:     let items = ["A", "B", "C"]
+                 let author = "JK"
+                 
+System does:     1. Mirror discovers all properties
+                 2. Auto-generates contents dictionary
+                 3. Protocol finds data by type
+                 4. Renders beautifully
+```
+
+### Using PresentationRunner
+
+Use the universal `PresentationRunner` library to generate any presentation:
 
 ```swift
 import SwiftSlides
 import Runner
 
-// Define your presentation structure
-struct MyPresentation: Presentation {
-    let title = "我的演示文稿"
-    let contents: SlideContent = SlideContent([
-        "author": "作者姓名"
-    ])
-    
-    var author: String? {
-        for (_, value) in contents.dict {
-            if let str = value as? String {
-                return str
-            }
-        }
-        return nil
-    }
-    
-    var sections: [any Section] = [
-        MySection()
-    ]
-    
-    func toDict() -> [String: Any] { ... }
-    func toJSON() throws -> String { ... }
-    func generatePPTX(outputPath: String) async throws { ... }
-}
-
-struct MySection: Section {
-    let title = "我的章节"
-    let contents: SlideContent = SlideContent([
-        "slides": [MySlide()] as [any Sendable]
-    ])
-    
-    var slides: [any Slide] { contents.asSlideArray }
-    func toDict() -> [String: Any] { ... }
-}
-
-struct MySlide: Slide, ContentStyle {
-    let title = "我的幻灯片"
-    let contents: SlideContent = SlideContent([
-        "items": ["第一项", "第二项"] as [any Sendable]
-    ])
-}
-
-// Generate PPTX
 @main
 struct MyPresentationApp {
     static func main() async {
@@ -130,102 +141,7 @@ struct MyPresentationApp {
 }
 ```
 
-**Benefits:**
-- No need to create a custom runner for each presentation
-- JSON saving is optional (for debugging only)
-- Clean separation between content and generation logic
-
 See [RUNNER_USAGE.md](Docs/RUNNER_USAGE.md) for detailed documentation.
-
-### Option 2: Define Your Content (Traditional)
-
-See `Demo/ProtocolCompositionDemo.swift` for a complete example:
-
-```swift
-import SwiftSlides
-
-// Define your presentation structure
-struct 医院管理总览: Presentation {
-    var title = "医院管理总览"
-    var author: String? = "张三"
-    var sections: [any Section] = [
-        封面章节(),
-        历史沿革章节(),
-    ]
-}
-
-struct 封面章节: Section {
-    var title = "封面"
-    var slides: [any Slide] = [
-        封面页(),
-    ]
-}
-
-struct 历史沿革章节: Section {
-    var title = "历史沿革"
-    var slides: [any Slide] = [
-        章节首页(),
-        古代医院(),
-        现代医院(),
-    ]
-}
-
-// Define slides with protocol composition
-struct 封面页: Slide, 封面样式 {
-    var title = "医院管理总览"
-    var subtitle: String? = "2024年度报告"
-    var author: String? = "张三"
-}
-
-struct 章节首页: Slide, 章节样式 {
-    var title = "历史沿革"
-    var chapterNumber: Int? = 1
-}
-
-struct 古代医院: Slide, 内容样式 {
-    var title = "古代医院"
-    var items = [
-        "公元前400年：希波克拉底创立医学伦理",
-        "公元100年：罗马建立第一所公立医院",
-    ]
-}
-
-struct 现代医院: Slide, 内容样式 {
-    var title = "现代医院"
-    var items = [
-        "19世纪：无菌手术技术",
-        "20世纪：抗生素广泛应用",
-        "21世纪：数字化医疗",
-    ]
-}
-
-// Auto-generated runner (don't modify)
-@main
-struct AutoRunner {
-    static func main() async {
-        let presentation = 医院管理总览()
-        try? await presentation.generatePPTX(outputPath: "outputs/\(presentation.title).pptx")
-    }
-}
-```
-
-### 2. Generate PPTX
-
-```bash
-swift run
-```
-
-Output: `outputs/医院管理总览.pptx`
-
-### Style Protocols
-
-Use protocol composition to style your slides:
-
-| Protocol | Properties | Purpose |
-|----------|------------|---------|
-| `封面样式` | `subtitle`, `author` | Cover slides |
-| `章节样式` | `chapterNumber` | Section dividers |
-| `内容样式` | `items: [String]` | Bullet point lists |
 
 ## Alternative: Builder Mode
 
@@ -379,10 +295,28 @@ node Scripts/swiftslides-pptx.js output/demo.pptx < output/demo.json
 
 SwiftSlides uses Protocol-Oriented Programming (POP) with the following core protocols:
 
-- `Slide` - Base protocol for all slide types
+- `Slide` - Base protocol for all slide types (uses Mirror for property discovery)
 - `Section` - Container for slides
 - `Presentation` - Top-level container
 - `封面样式`, `章节样式`, `内容样式` - Style protocols for protocol composition
+
+### Data Flow
+
+```
+User writes flat properties:
+    let items = ["A", "B", "C"]
+    let author = "JK"
+            ↓
+Mirror discovers all properties (internal)
+            ↓
+Auto-generates contents dictionary (internal)
+    ["items": ["A", "B", "C"], "author": "JK"]
+            ↓
+Protocol finds data by type
+    ContentStyle → finds [String] → renders as list
+            ↓
+System generates PPTX output
+```
 
 All types are `Sendable` for thread safety and use value semantics (structs) for predictability.
 

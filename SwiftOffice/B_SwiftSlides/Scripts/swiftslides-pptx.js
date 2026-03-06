@@ -3,18 +3,32 @@
 const pptxgen = require('pptxgenjs');
 const https = require('https');
 const pako = require('pako');
+const fs = require('fs');
 
-let input = '';
-
-process.stdin.on('data', chunk => {
-    input += chunk.toString();
-});
-
-process.stdin.on('end', async () => {
+async function main() {
     try {
-        const params = JSON.parse(input);
-        const presentation = JSON.parse(params.presentation);
-        const outputPath = params.outputPath || `${presentation.title || 'presentation'}.pptx`;
+        let presentation, outputPath;
+        
+        // Support both stdin and file arguments
+        if (process.argv.length >= 4) {
+            // File arguments mode: node script.js <input.json> <output.pptx>
+            const inputPath = process.argv[2];
+            outputPath = process.argv[3];
+            const json = fs.readFileSync(inputPath, 'utf8');
+            presentation = JSON.parse(json);
+        } else {
+            // Stdin mode
+            let input = '';
+            for await (const chunk of process.stdin) {
+                input += chunk;
+            }
+            const params = JSON.parse(input);
+            presentation = typeof params.presentation === 'string' 
+                ? JSON.parse(params.presentation) 
+                : params.presentation;
+            outputPath = params.outputPath || `${presentation.title || 'presentation'}.pptx`;
+        }
+        
         await generatePPTX(presentation, outputPath);
     } catch (error) {
         console.log(JSON.stringify({ 
@@ -24,7 +38,9 @@ process.stdin.on('end', async () => {
         }));
         process.exit(1);
     }
-});
+}
+
+main();
 
 function encodeMermaid(code) {
     const json = JSON.stringify({code: code});
@@ -88,6 +104,11 @@ async function generatePPTX(data, outputPath) {
         }
     };
     
+    // Add presentation cover if it has cover properties
+    if (data.subtitle || data.date) {
+        await addPresentationCover(pres, data, theme);
+    }
+    
     for (const section of data.sections || []) {
         for (const slide of section.slides || []) {
             await processSlideRecursive(pres, slide, theme);
@@ -113,107 +134,121 @@ async function processSlideRecursive(pres, slide, theme) {
     }
 }
 
+async function addPresentationCover(pres, data, theme) {
+    const slideObj = pres.addSlide();
+    addCoverSlide(slideObj, {
+        title: data.title,
+        subtitle: data.subtitle,
+        author: data.author,
+        date: data.date,
+        gradient: '蓝色'
+    }, theme);
+}
+
 async function addSlide(pres, slide, theme) {
     const type = slide.slideType || slide.type;
     const slideObj = pres.addSlide();
     
+    // Merge contents into slide for easier access
+    const data = { ...slide, ...(slide.contents || {}) };
+    
     switch (type) {
         case 'cover':
         case '封面页':
-            addCoverSlide(slideObj, slide, theme);
+            addCoverSlide(slideObj, data, theme);
             break;
         case 'chapterCover':
         case '章节页':
-            addSectionSlide(slideObj, slide, theme);
+            addSectionSlide(slideObj, data, theme);
             break;
         case 'content':
         case '列表页':
-            addListSlide(slideObj, slide, theme);
+            addListSlide(slideObj, data, theme);
             break;
         case 'text':
         case '定义页':
-            addTextSlide(slideObj, slide, theme);
+            addTextSlide(slideObj, data, theme);
             break;
         case 'cards':
         case '卡片页':
-            addCardSlide(slideObj, slide, theme);
+            addCardSlide(slideObj, data, theme);
             break;
         case 'table':
         case '表格页':
-            addTableSlide(slideObj, slide, theme);
+            addTableSlide(slideObj, data, theme);
             break;
         case 'quote':
         case '引用页':
-            addQuoteSlide(slideObj, slide, theme);
+            addQuoteSlide(slideObj, data, theme);
             break;
         case 'twoColumn':
         case '对比页':
-            addComparisonSlide(slideObj, slide, theme);
+            addComparisonSlide(slideObj, data, theme);
             break;
         case 'timeline':
         case '时间线页':
-            addTimelineSlide(slideObj, slide, theme);
+            addTimelineSlide(slideObj, data, theme);
             break;
         case 'flowchart':
         case '流程页':
-            addProcessSlide(slideObj, slide, theme);
+            addProcessSlide(slideObj, data, theme);
             break;
         case 'end':
         case '结束页':
-            addEndSlide(slideObj, slide, theme);
+            addEndSlide(slideObj, data, theme);
             break;
         case 'chart':
         case '图表页':
-            addChartSlide(slideObj, slide, theme, pres);
+            addChartSlide(slideObj, data, theme, pres);
             break;
         case 'image':
         case '图片页':
-            addImageSlide(slideObj, slide, theme);
+            addImageSlide(slideObj, data, theme);
             break;
         case 'pyramid':
         case '金字塔页':
-            addPyramidSlide(slideObj, slide, theme);
+            addPyramidSlide(slideObj, data, theme);
             break;
         case 'matrix':
         case '矩阵页':
-            addMatrixSlide(slideObj, slide, theme);
+            addMatrixSlide(slideObj, data, theme);
             break;
         case 'pareto':
         case '柏拉图页':
-            addParetoSlide(slideObj, slide, theme);
+            addParetoSlide(slideObj, data, theme);
             break;
         case 'hierarchy':
         case '架构图页':
-            addHierarchySlide(slideObj, slide, theme);
+            addHierarchySlide(slideObj, data, theme);
             break;
         case 'cycleFlow':
-            addCycleFlowSlide(slideObj, slide, theme);
+            addCycleFlowSlide(slideObj, data, theme);
             break;
         case 'boxDiagram':
-            addBoxDiagramSlide(slideObj, slide, theme);
+            addBoxDiagramSlide(slideObj, data, theme);
             break;
         case 'branchedHierarchy':
-            addBranchedHierarchySlide(slideObj, slide, theme);
+            addBranchedHierarchySlide(slideObj, data, theme);
             break;
         case 'quadrantMatrix':
-            addQuadrantMatrixSlide(slideObj, slide, theme);
+            addQuadrantMatrixSlide(slideObj, data, theme);
             break;
         case 'mermaidFlowchart':
         case 'Mermaid流程图页':
-            await addMermaidSlide(slideObj, slide, theme);
+            await addMermaidSlide(slideObj, data, theme);
             break;
         case 'mermaidSequence':
         case 'Mermaid时序图页':
-            await addMermaidSlide(slideObj, slide, theme);
+            await addMermaidSlide(slideObj, data, theme);
             break;
         case 'gantt':
         case 'mermaidGantt':
         case 'Gantt图页':
         case 'Mermaid甘特图页':
-            await addMermaidSlide(slideObj, slide, theme);
+            await addMermaidSlide(slideObj, data, theme);
             break;
         default:
-            addDefaultSlide(slideObj, slide, theme);
+            addDefaultSlide(slideObj, data, theme);
     }
 }
 
@@ -276,15 +311,16 @@ function addSectionSlide(slide, data, theme) {
 function addListSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const items = data.items || [];
-    const textItems = items.map(item => ({
-        text: item,
-        options: { bullet: { type: 'bullet' }, fontSize: 18, color: theme.text }
-    }));
+    const items = data.items || data.Items || [];
     
-    slide.addText(textItems, {
-        x: 0.5, y: 1.2, w: 9, h: 4,
-        valign: 'top'
+    // Simple bullet list format
+    let yPos = 1.5;
+    items.forEach(item => {
+        slide.addText('• ' + item, {
+            x: 0.5, y: yPos, w: 9, h: 0.4,
+            fontSize: 18, color: theme.text
+        });
+        yPos += 0.5;
     });
 }
 
@@ -323,8 +359,28 @@ function addCardSlide(slide, data, theme) {
 function addTableSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const headers = data.headers || [];
-    const rows = data.rows || [];
+    // Support both old format (headers/rows) and new format (multiple arrays)
+    let headers = data.headers || [];
+    let rows = data.rows || [];
+    
+    // If no headers/rows, try to build from multiple arrays
+    if (headers.length === 0 && rows.length === 0) {
+        const arrays = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (Array.isArray(value) && typeof value[0] === 'string') {
+                arrays[key] = value;
+            }
+        }
+        const keys = Object.keys(arrays);
+        if (keys.length >= 2) {
+            headers = keys;
+            const numRows = arrays[keys[0]].length;
+            rows = [];
+            for (let i = 0; i < numRows; i++) {
+                rows.push(keys.map(k => arrays[k][i]));
+            }
+        }
+    }
     
     const tableData = [
         headers.map(h => ({ text: h, options: { bold: true, fill: theme.primary, color: 'FFFFFF' } })),
@@ -363,8 +419,8 @@ function addComparisonSlide(slide, data, theme) {
     
     const leftTitle = data.leftTitle || '选项A';
     const rightTitle = data.rightTitle || '选项B';
-    const leftItems = data.leftItems || [];
-    const rightItems = data.rightItems || [];
+    const leftItems = data.leftItems || data.left || [];
+    const rightItems = data.rightItems || data.right || [];
     
     slide.addText(leftTitle, {
         x: 0.5, y: 1.5, w: 4, h: 0.5,
@@ -718,8 +774,15 @@ function addMatrixSlide(slide, data, theme) {
 function addParetoSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const items = data.paretoItems || [];
+    let items = data.paretoItems || data.items || [];
     if (items.length === 0) return;
+    
+    // Normalize items to have category/label and value
+    items = items.map(item => ({
+        category: item.category || item.label || '',
+        value: item.value || 0,
+        cumulativePercent: item.cumulativePercent || 0
+    }));
     
     const maxVal = Math.max(...items.map(i => i.value));
     const barHeight = 0.4;
@@ -1114,7 +1177,42 @@ function addChartSlide(slide, data, theme, pres) {
 function addDefaultSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    if (data.content) {
+    const contents = data.contents || {};
+    const keys = Object.keys(contents);
+    
+    // Find first array in contents (likely items list)
+    let itemsArray = null;
+    for (const key of keys) {
+        if (Array.isArray(contents[key]) && typeof contents[key][0] === 'string') {
+            itemsArray = contents[key];
+            break;
+        }
+    }
+    
+    // Find first string value (likely content text)
+    let textContent = null;
+    for (const key of keys) {
+        if (typeof contents[key] === 'string' && !contents[key].startsWith('[')) {
+            textContent = contents[key];
+            break;
+        }
+    }
+    
+    if (itemsArray) {
+        // Render as list
+        const bulletText = itemsArray.map(item => `• ${item}`).join('\n');
+        slide.addText(bulletText, {
+            x: 0.5, y: 1.5, w: 9, h: 4,
+            fontSize: 18, color: theme.text,
+            valign: 'top'
+        });
+    } else if (textContent) {
+        // Render as text
+        slide.addText(textContent, {
+            x: 0.5, y: 1.5, w: 9, h: 3.5,
+            fontSize: 16, color: theme.text
+        });
+    } else if (data.content) {
         slide.addText(data.content, {
             x: 0.5, y: 1.5, w: 9, h: 3.5,
             fontSize: 16, color: theme.text
@@ -1139,14 +1237,15 @@ function addSlideTitle(slide, title, theme) {
 function addTextSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    if (data.content) {
+    const content = data.content || data.Content;
+    if (content) {
         slide.addShape('rect', {
             x: 0.5, y: 1.5, w: 9, h: 3.5,
             fill: { color: 'F8F8F8' },
             line: { color: theme.accent, width: 1 }
         });
         
-        slide.addText(data.content, {
+        slide.addText(content, {
             x: 0.8, y: 1.8, w: 8.4, h: 3,
             fontSize: 14, color: theme.text,
             valign: 'top'
@@ -1157,6 +1256,56 @@ function addTextSlide(slide, data, theme) {
 function addHierarchySlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
+    // Support both hierarchyRoot and levels format
+    const levels = data.levels || [];
+    if (levels.length === 0 && !data.hierarchyRoot) return;
+    
+    // If using levels format (array of arrays)
+    if (levels.length > 0) {
+        const colors = [theme.primary, theme.secondary, theme.accent];
+        const levelHeight = 1.0;
+        const startY = 1.5;
+        
+        levels.forEach((levelItems, levelIndex) => {
+            const items = Array.isArray(levelItems) ? levelItems : [levelItems];
+            const y = startY + levelIndex * (levelHeight + 0.3);
+            const itemWidth = 9 / items.length;
+            
+            items.forEach((item, itemIndex) => {
+                const x = 0.5 + itemIndex * itemWidth;
+                
+                slide.addShape('rect', {
+                    x: x, y: y, w: itemWidth - 0.2, h: levelHeight,
+                    fill: { color: colors[levelIndex % colors.length] },
+                    line: { color: 'FFFFFF', width: 1 }
+                });
+                
+                slide.addText(item, {
+                    x: x, y: y, w: itemWidth - 0.2, h: levelHeight,
+                    fontSize: 12, color: 'FFFFFF',
+                    align: 'center', valign: 'middle'
+                });
+            });
+            
+            // Draw connecting lines
+            if (levelIndex < levels.length - 1) {
+                const nextItems = Array.isArray(levels[levelIndex + 1]) ? levels[levelIndex + 1] : [levels[levelIndex + 1]];
+                const nextItemWidth = 9 / nextItems.length;
+                
+                items.forEach((_, itemIndex) => {
+                    const x = 0.5 + itemIndex * itemWidth + (itemWidth - 0.2) / 2;
+                    slide.addShape('line', {
+                        x: x, y: y + levelHeight,
+                        w: 0, h: 0.3,
+                        line: { color: theme.accent, width: 1 }
+                    });
+                });
+            }
+        });
+        return;
+    }
+    
+    // Original hierarchyRoot format
     const root = data.hierarchyRoot;
     if (!root) return;
     
@@ -1287,7 +1436,7 @@ function addHierarchySlide(slide, data, theme) {
 function addCycleFlowSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
-    const steps = data.cycleSteps || [];
+    const steps = data.cycleSteps || data.items || [];
     if (steps.length === 0) return;
     
     const centerX = 5;

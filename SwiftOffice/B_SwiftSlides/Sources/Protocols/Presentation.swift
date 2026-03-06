@@ -14,7 +14,6 @@ import Foundation
 public protocol Presentation: Identifiable, Sendable {
     var id: UUID { get }
     var title: String { get }
-    var contents: SlideContent { get }
     var author: String? { get }
     var sections: [any Section] { get }
     var theme: 主题? { get }
@@ -26,23 +25,24 @@ public protocol Presentation: Identifiable, Sendable {
 @available(macOS 10.15, *)
 public extension Presentation {
     var id: UUID { UUID() }
-    var contents: SlideContent { SlideContent([:]) }
-    var author: String? { contents["Author"]?.asString }
+    var author: String? { nil }
     var theme: 主题? { nil }
-    
-    var sections: [any Section] {
-        contents.asSectionArray
-    }
     
     func toDict() -> [String: Any] {
         var dict: [String: Any] = [
             "id": id.uuidString,
             "title": title,
-            "contents": contents.toJSONDict(),
             "sections": sections.map { $0.toDict() }
         ]
         if let author = author { dict["author"] = author }
         if let theme = theme { dict["theme"] = theme.toDict() }
+        
+        // Add cover properties if conforms to CoverStyle
+        if let cover = self as? any CoverStyle {
+            if let subtitle = cover.subtitle { dict["subtitle"] = subtitle }
+            if let date = cover.date { dict["date"] = date }
+        }
+        
         return dict
     }
     

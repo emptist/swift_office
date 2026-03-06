@@ -1,36 +1,25 @@
 {
   "author" : "JK",
-  "contents" : {
-
-  },
-  "id" : "10C25A5B-E6A9-459E-B800-428C89DA6111",
+  "id" : "789C8DA4-F4AE-4649-8A0F-D099CC32C738",
   "sections" : [
     {
-      "contents" : {
-
-      },
-      "id" : "41C1134A-9D4F-4CE3-9490-F3636A7D023A",
+      "id" : "ACDCDA6C-A949-4DAA-8385-9242A4A0469D",
       "slides" : [
         {
           "contents" : {
-            "Author" : "JK",
-            "Date" : "2024",
-            "Subtitle" : "Protocol-Based Content Design"
+            "author" : "JK",
+            "date" : "2024",
+            "subtitle" : "Protocol-Based Content Design"
           },
-          "hidden" : false,
-          "id" : "A87F5184-31DB-481A-823E-68472B64A6C7",
-          "notes" : null,
+          "id" : "5261D2B3-F3FF-436A-86ED-605950BEC80F",
           "slideType" : "cover",
           "title" : "SwiftSlides API Test"
         },
         {
-          "content" : "This is a simple text slide. Users can write any content here in any language they prefer.",
           "contents" : {
             "Content" : "This is a simple text slide. Users can write any content here in any language they prefer."
           },
-          "hidden" : false,
-          "id" : "2A4EB488-3A8B-4AB0-9881-C6F2DD1A8C3F",
-          "notes" : null,
+          "id" : "F90D49EF-7E28-4751-95DF-8290356AA57D",
           "slideType" : "text",
           "title" : "Text Style Demo"
         },
@@ -43,15 +32,7 @@
               "Fourth item demonstrates scalability"
             ]
           },
-          "hidden" : false,
-          "id" : "0A85782E-4074-43A8-8663-2AF300AF4A59",
-          "items" : [
-            "First item in the list",
-            "Second item with more details",
-            "Third item to show flexibility",
-            "Fourth item demonstrates scalability"
-          ],
-          "notes" : null,
+          "id" : "3B663BB8-CCF8-4527-9BF0-4B5DA0A4A896",
           "slideType" : "content",
           "title" : "Content Style Demo"
         },
@@ -76,36 +57,7 @@
               "Active"
             ]
           },
-          "headers" : [
-            "Category",
-            "Policy",
-            "Status"
-          ],
-          "hidden" : false,
-          "id" : "D634E1DC-5971-4697-A3C9-3B87DA1B62B3",
-          "notes" : null,
-          "rows" : [
-            [
-              "First Diagnosis",
-              "First Diagnosis Policy",
-              "Active"
-            ],
-            [
-              "Three-Level Rounds",
-              "Three-Level Rounds Policy",
-              "Active"
-            ],
-            [
-              "Difficult Cases",
-              "Difficult Case Discussion",
-              "Active"
-            ],
-            [
-              "Critical Values",
-              "Critical Value Reporting",
-              "Active"
-            ]
-          ],
+          "id" : "9E64E0BF-0CFF-4D38-954F-B73B24D7C1D4",
           "slideType" : "table",
           "title" : "Table Style Demo"
         }
@@ -113,10 +65,7 @@
       "title" : "Basic Types"
     },
     {
-      "contents" : {
-
-      },
-      "id" : "21F58BAA-7B6E-4C50-9CA6-37C359C857C0",
+      "id" : "D1585945-46DB-48F9-B82A-AAAD9F16F1B2",
       "slides" : [
         {
           "contents" : {
@@ -136,9 +85,8 @@
               ]
             ]
           },
-          "hidden" : false,
-          "id" : "8C9F98B5-5E8F-42C7-AE59-A317D4205EF5",
-          "notes" : null,
+          "id" : "02EB18C2-5AEC-4018-8748-79B6288A6DE5",
+          "slideType" : "hierarchy",
           "title" : "Hierarchy Style Demo"
         },
         {
@@ -166,9 +114,8 @@
               }
             ]
           },
-          "hidden" : false,
-          "id" : "767FFF82-2389-4D0B-8B27-4D0C78666619",
-          "notes" : null,
+          "id" : "7104079C-1E37-44FF-98EE-A60EABD6C1F7",
+          "slideType" : "cycleFlow",
           "title" : "Cycle Flow Style Demo"
         },
         {
@@ -196,19 +143,15 @@
               }
             ]
           },
-          "hidden" : false,
-          "id" : "41A0466B-4FD9-46C5-A335-82057DE312C6",
-          "notes" : null,
+          "id" : "4BCFD0F4-03F9-47F9-938E-7CF0F21486B0",
+          "slideType" : "pareto",
           "title" : "Pareto Style Demo"
         }
       ],
       "title" : "Chart Types"
     },
     {
-      "contents" : {
-
-      },
-      "id" : "B2879C4C-7BDA-45BE-8425-4F5AD5B2DB10",
+      "id" : "9F9E7488-78B2-4A5A-A163-308A14D52E9C",
       "slides" : [
         {
           "contents" : {
@@ -223,42 +166,11 @@
               "Consideration 3: Documentation"
             ]
           },
-          "hidden" : false,
-          "id" : "4AD1ECDE-6B4C-4D79-9C92-081FD92D981C",
-          "leftItems" : [
-            "Advantage 1: Easy to use",
-            "Advantage 2: Flexible design",
-            "Advantage 3: Type safe"
-          ],
-          "notes" : null,
-          "rightItems" : [
-            "Consideration 1: Learning curve",
-            "Consideration 2: Initial setup",
-            "Consideration 3: Documentation"
-          ],
+          "id" : "90FD67A7-86C5-418A-9BF7-C245DB0D832C",
           "slideType" : "twoColumn",
           "title" : "Two Column Style Demo"
         },
         {
-          "cards" : [
-            {
-              "content" : "Protocol-based design for maximum flexibility",
-              "title" : "Feature 1"
-            },
-            {
-              "content" : "Type-safe content handling with dictionary support",
-              "title" : "Feature 2"
-            },
-            {
-              "content" : "Language-agnostic user content",
-              "title" : "Feature 3"
-            },
-            {
-              "content" : "Simple title + contents API",
-              "title" : "Feature 4"
-            }
-          ],
-          "columns" : 2,
           "contents" : {
             "cards" : [
               {
@@ -279,20 +191,15 @@
               }
             ]
           },
-          "hidden" : false,
-          "id" : "38D6B713-B880-415F-B74A-6E188B995038",
-          "notes" : null,
+          "id" : "98E8FBDE-ED49-4021-8B72-AE0058B3D4A2",
           "slideType" : "cards",
           "title" : "Card Style Demo"
         },
         {
           "contents" : {
-            "ChapterNumber" : "1",
-            "Subtitle" : "This is a chapter cover slide"
+            "subtitle" : "This is a chapter cover slide"
           },
-          "hidden" : false,
-          "id" : "FCE86494-8D6C-467B-94A1-72A5C6897D39",
-          "notes" : null,
+          "id" : "EA1B30EC-8F0D-4B0B-A156-73AE07EE0428",
           "slideType" : "cover",
           "title" : "Chapter Cover Demo"
         }

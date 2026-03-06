@@ -127,6 +127,28 @@ public struct SlideContent: Sendable, ExpressibleByDictionaryLiteral {
                         return section.toDict()
                     } else if let slide = item as? any Slide {
                         return slide.toDict()
+                    } else if let str = item as? String {
+                        return str
+                    } else if let num = item as? Int {
+                        return num
+                    } else if let num = item as? Double {
+                        return num
+                    } else if let dict = item as? [String: any Sendable] {
+                        return dict
+                    } else if let nestedArr = item as? [any Sendable] {
+                        return nestedArr.map { nestedItem -> Any in
+                            if let str = nestedItem as? String {
+                                return str
+                            } else if let num = nestedItem as? Int {
+                                return num
+                            } else if let num = nestedItem as? Double {
+                                return num
+                            } else if let bool = nestedItem as? Bool {
+                                return bool
+                            } else {
+                                return String(describing: nestedItem)
+                            }
+                        }
                     } else {
                         return String(describing: item)
                     }
@@ -137,6 +159,16 @@ public struct SlideContent: Sendable, ExpressibleByDictionaryLiteral {
                 result[key] = section.toDict()
             } else if let slide = value as? any Slide {
                 result[key] = slide.toDict()
+            } else if let dict = value as? [String: any Sendable] {
+                result[key] = dict
+            } else if let str = value as? String {
+                result[key] = str
+            } else if let num = value as? Int {
+                result[key] = num
+            } else if let num = value as? Double {
+                result[key] = num
+            } else if let bool = value as? Bool {
+                result[key] = bool
             } else {
                 result[key] = String(describing: value)
             }
@@ -241,7 +273,6 @@ public typealias Content = SlideContent
 public protocol Slide: Identifiable, Sendable {
     var id: UUID { get }
     var title: String { get }
-    var contents: SlideContent { get }
     var notes: String? { get }
     var hidden: Bool { get }
     var fellowSlides: [any Slide] { get }
@@ -255,12 +286,71 @@ public extension Slide {
     var hidden: Bool { false }
     var fellowSlides: [any Slide] { [] }
     
+    var contents: SlideContent {
+        var dict: [String: any Sendable] = [:]
+        let mirror = Mirror(reflecting: self)
+        let excludedProperties = ["id", "title", "notes", "hidden", "fellowSlides"]
+        
+        for child in mirror.children {
+            guard let label = child.label,
+                  !excludedProperties.contains(label) else {
+                continue
+            }
+            
+            // Support old API: explicit contents property
+            if label == "contents", let slideContent = child.value as? SlideContent {
+                return slideContent
+            }
+            
+            // New API: flat properties
+            if let value = child.value as? String {
+                dict[label] = value
+            } else if let value = child.value as? [String] {
+                dict[label] = value as any Sendable
+            } else if let value = child.value as? [[String]] {
+                dict[label] = value as any Sendable
+            } else if let value = child.value as? [any Slide] {
+                dict[label] = value as any Sendable
+            } else if let value = child.value as? [[String: any Sendable]] {
+                dict[label] = value as any Sendable
+            } else if let value = child.value as? Int {
+                dict[label] = value
+            } else if let value = child.value as? Double {
+                dict[label] = value
+            } else if let value = child.value as? Bool {
+                dict[label] = value
+            } else if let value = child.value as? SlideImage {
+                dict[label] = ["type": "image", "path": value.path] as any Sendable
+            } else if let value = child.value as? SlideVideo {
+                dict[label] = ["type": "video", "path": value.path] as any Sendable
+            } else if let value = child.value as? SlideAudio {
+                dict[label] = ["type": "audio", "path": value.path] as any Sendable
+            } else if let value = child.value as? SlideURL {
+                dict[label] = ["type": "url", "url": value.urlString] as any Sendable
+            } else if let value = child.value as? SlideHexColor {
+                dict[label] = ["type": "color", "hex": value.hex] as any Sendable
+            } else if let value = child.value as? SlideSimpleChart {
+                dict[label] = ["type": "chart", "chartType": value.type.rawValue, "data": value.data as any Sendable] as any Sendable
+            } else if let value = child.value as? SlideQRCode {
+                dict[label] = ["type": "qrcode", "content": value.content] as any Sendable
+            }
+        }
+        return SlideContent(dict)
+    }
+    
     func toDict() -> [String: Any] {
         var result: [String: Any] = [
             "id": id.uuidString,
             "title": title,
             "contents": contents.toJSONDict()
         ]
+        
+        // Detect slide type from protocol conformance
+        let slideType = detectSlideType()
+        if !slideType.isEmpty {
+            result["slideType"] = slideType
+        }
+        
         if let notes = notes {
             result["notes"] = notes
         }
@@ -271,6 +361,60 @@ public extension Slide {
             result["fellowSlides"] = fellowSlides.map { $0.toDict() }
         }
         return result
+    }
+    
+    func detectSlideType() -> String {
+        // Check for cover styles
+        if self is SlideCoverStyle {
+            return "cover"
+        }
+        // Check for content styles by contents structure
+        let dict = contents.dict
+        
+        // Check for two column first (left and right arrays)
+        if dict["left"] != nil && dict["right"] != nil {
+            return "twoColumn"
+        }
+        
+        if dict["items"] != nil || dict["Items"] != nil {
+            if let items = dict["items"] as? [[String: Any]] {
+                if items.first?["id"] != nil && items.first?["title"] != nil {
+                    return "cycleFlow"
+                }
+                if items.first?["label"] != nil && items.first?["value"] != nil {
+                    return "pareto"
+                }
+            }
+            if let items = dict["Items"] as? [[String: Any]] {
+                if items.first?["id"] != nil && items.first?["title"] != nil {
+                    return "cycleFlow"
+                }
+                if items.first?["label"] != nil && items.first?["value"] != nil {
+                    return "pareto"
+                }
+            }
+            return "content"
+        }
+        
+        if dict["cards"] != nil {
+            return "cards"
+        }
+        
+        if dict["levels"] != nil {
+            return "hierarchy"
+        }
+        
+        if dict["Content"] != nil || dict["content"] != nil {
+            return "text"
+        }
+        
+        // Check for table - multiple arrays of same length
+        let arrays = dict.values.compactMap { $0 as? [String] }
+        if arrays.count >= 2 {
+            return "table"
+        }
+        
+        return ""
     }
     
     func flattenSlides() -> [any Slide] {

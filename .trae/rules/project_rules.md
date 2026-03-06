@@ -8,65 +8,105 @@ SwiftOffice is a Swift-based presentation generation framework that uses Protoco
 
 ### 1. Data-Presentation Separation
 
-**Everything is a dictionary, protocols determine presentation**
+**"内容是一味，呈现看协议"** (Content is one flavor, presentation depends on protocol)
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Data Sources (Unified Format)         │
+│              User Writes (Flat Properties)               │
 ├─────────────────────────────────────────────────────────┤
-│  JSON file  →  Dictionary  ←  Database  ←  Hand-written │
-│                                                         │
-│  { "key": "value" }                                     │
+│  struct MySlide: Slide, ContentStyle {                  │
+│      let title = "My Slide"                             │
+│      let items = ["A", "B", "C"]                        │
+│      let author = "JK"                                  │
+│  }                                                      │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│                    Protocols (Determine Presentation)    │
+│         System Discovers via Mirror (Internal)           │
 ├─────────────────────────────────────────────────────────┤
-│  TableSlideStyle    →  Table slide                      │
-│  CardStyle          →  Card layout                      │
-│  ContentStyle       →  List display                     │
-│  HierarchyStyle     →  Hierarchy diagram                │
+│  contents = ["items": ["A", "B", "C"], "author": "JK"]  │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│         Protocol Determines Presentation (Style)         │
+├─────────────────────────────────────────────────────────┤
+│  ContentStyle → finds [String] → renders as list        │
+│  TextStyle → finds String → renders as text             │
+│  TableSlideStyle → finds [[String]] → renders as table  │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│              System Generates Output (PPTX)              │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 2. Core Elements: Title + SlideContent
+### 2. Core Elements: Title + Flat Properties
 
-Every slide has two essential elements:
-- **title** - The slide title (identifier)
-- **contents** - Dictionary data (substance)
+Every slide has:
+- **title** - The slide title (identifier, required)
+- **Flat properties** - User-defined properties (any name, any type)
+- **Style protocol** - Determines how to present the data
 
-Other properties (notes, hidden, fellowSlides) are optional.
+**`contents` is auto-generated internally via Mirror - users never write it.**
 
 ### 3. Language Convention
 
-- **Technical terms**: English (title, contents, Slide, TextStyle, etc.)
+- **Technical terms**: English (title, Slide, TextStyle, etc.)
 - **User content**: Any language (Chinese, Japanese, Arabic, etc.)
+- **Property names**: User-defined, any language, any naming
+
+### 4. Type Wrappers (Optional)
+
+For semantic clarity, users can use lightweight type wrappers:
+
+```swift
+let photo: Image = "photo.jpg"    // Image wrapper (not just String)
+let movie: Video = "movie.mp4"    // Video wrapper
+```
 
 ## Architecture
 
 ### MVVM + POP
 
 ```
-Model (Data)
-  ↓
+Model (Flat Properties)
+  ↓ (Mirror discovers)
 ViewModel (Protocols)
-  ↓
+  ↓ (Type matching)
 View (PPTX/JSON Output)
 ```
 
 ### Key Protocols
 
-| Protocol | Purpose | SlideContent Format |
-|----------|---------|-----------------|
-| `TextStyle` | Single text | `["label": "content"]` |
-| `ContentStyle` | List items | `["label": ["item1", "item2"]]` |
-| `TableSlideStyle` | Table | `["column1": [...], "column2": [...]]` |
-| `TwoColumnStyle` | Two columns | `["left": [...], "right": [...]]` |
-| `CardStyle` | Card layout | `["cards": [...]]` |
-| `HierarchyStyle` | Hierarchy structure | `["levels": [[...]]]` |
-| `CycleFlowStyle` | Cycle flow | `["items": [...]]` |
-| `ParetoStyle` | Pareto chart | `["items": [...]]` |
-| `ContainerStyle` | Container for multiple slides | `["layout": "horizontal", "ratio": [0.382, 0.618]]` |
+| Protocol | Purpose | Finds Type |
+|----------|---------|------------|
+| `TextStyle` | Single text | String |
+| `ContentStyle` | List items | [String] |
+| `TableSlideStyle` | Table | [[String]] or column dict |
+| `TwoColumnStyle` | Two columns | Two [String] arrays |
+| `CardStyle` | Card layout | [[String: Any]] |
+| `HierarchyStyle` | Hierarchy | [[String]] or nested nodes |
+| `CycleFlowStyle` | Cycle flow | [[String: Any]] |
+| `ParetoStyle` | Pareto chart | [[String: Any]] |
+
+**Note**: Protocols find values by type matching, not hardcoded property names.
+
+### User API (Minimal)
+
+**User writes**:
+```swift
+struct MySlide: Slide, ContentStyle {
+    let title = "My Slide"
+    let items = ["A", "B", "C"]      // Any property name
+    let author = "JK"                 // Any property name
+}
+```
+
+**System does**:
+1. Mirror discovers all properties
+2. Auto-generates `contents` dictionary internally
+3. Protocol finds data by type
+4. Renders beautifully
 
 ## Coding Standards
 

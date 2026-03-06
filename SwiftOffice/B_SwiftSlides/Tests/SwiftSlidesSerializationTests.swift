@@ -132,3 +132,156 @@ struct SwiftSlidesSerializationTests {
         #expect(dict["threshold"] as? Double == 80.0)
     }
 }
+
+@Suite("Flat Property API 测试")
+struct FlatPropertyAPITests {
+    
+    struct TestSlide: Slide, ContentStyle {
+        let title = "Test Slide"
+        let items = ["Item 1", "Item 2", "Item 3"]
+        let author = "JK"
+        let year = 2024
+    }
+    
+    @Test("Mirror discovers flat properties")
+    func testMirrorDiscoversProperties() {
+        let slide = TestSlide()
+        let contents = slide.contents
+        
+        #expect(contents.dict["items"] != nil)
+        #expect(contents.dict["author"] != nil)
+        #expect(contents.dict["year"] != nil)
+        
+        let items = contents.dict["items"] as? [String]
+        #expect(items?.count == 3)
+        #expect(items?.first == "Item 1")
+        
+        let author = contents.dict["author"] as? String
+        #expect(author == "JK")
+        
+        let year = contents.dict["year"] as? Int
+        #expect(year == 2024)
+    }
+    
+    @Test("toDict includes auto-generated contents")
+    func testToDictIncludesContents() {
+        let slide = TestSlide()
+        let dict = slide.toDict()
+        
+        #expect(dict["title"] as? String == "Test Slide")
+        
+        let contents = dict["contents"] as? [String: Any]
+        #expect(contents != nil)
+        #expect(contents?["items"] != nil)
+        #expect(contents?["author"] != nil)
+    }
+    
+    @Test("Excluded properties not in contents")
+    func testExcludedPropertiesNotInContents() {
+        let slide = TestSlide()
+        let contents = slide.contents
+        
+        #expect(contents.dict["id"] == nil)
+        #expect(contents.dict["title"] == nil)
+        #expect(contents.dict["notes"] == nil)
+        #expect(contents.dict["hidden"] == nil)
+        #expect(contents.dict["fellowSlides"] == nil)
+        #expect(contents.dict["contents"] == nil)
+    }
+    
+    struct ImageSlide: Slide {
+        let title = "Image Slide"
+        let photo: Image = "photo.jpg"
+        let items = ["A", "B"]
+    }
+    
+    @Test("Image type wrapper works")
+    func testImageTypeWrapper() {
+        let slide = ImageSlide()
+        let contents = slide.contents
+        
+        let photo = contents.dict["photo"] as? [String: Any]
+        #expect(photo?["type"] as? String == "image")
+        #expect(photo?["path"] as? String == "photo.jpg")
+        
+        let items = contents.dict["items"] as? [String]
+        #expect(items?.count == 2)
+    }
+    
+    struct VideoSlide: Slide {
+        let title = "Video Slide"
+        let movie: Video = "movie.mp4"
+    }
+    
+    @Test("Video type wrapper works")
+    func testVideoTypeWrapper() {
+        let slide = VideoSlide()
+        let contents = slide.contents
+        
+        let movie = contents.dict["movie"] as? [String: Any]
+        #expect(movie?["type"] as? String == "video")
+        #expect(movie?["path"] as? String == "movie.mp4")
+    }
+    
+    struct QRCodeSlide: Slide {
+        let title = "QR Code Slide"
+        let qr: QRCode = "https://example.com"
+    }
+    
+    @Test("QRCode type wrapper works")
+    func testQRCodeTypeWrapper() {
+        let slide = QRCodeSlide()
+        let contents = slide.contents
+        
+        let qr = contents.dict["qr"] as? [String: Any]
+        #expect(qr?["type"] as? String == "qrcode")
+        #expect(qr?["content"] as? String == "https://example.com")
+    }
+    
+    struct MultiTypeSlide: Slide {
+        let title = "Multi Type Slide"
+        let photo: Image = "photo.jpg"
+        let movie: Video = "movie.mp4"
+        let link: URLString = "https://example.com"
+        let color: HexColor = "#FF5500"
+        let items = ["A", "B", "C"]
+        let count = 42
+        let enabled = true
+    }
+    
+    @Test("Multiple type wrappers work together")
+    func testMultipleTypeWrappers() {
+        let slide = MultiTypeSlide()
+        let contents = slide.contents
+        
+        #expect((contents.dict["photo"] as? [String: Any])?["type"] as? String == "image")
+        #expect((contents.dict["movie"] as? [String: Any])?["type"] as? String == "video")
+        #expect((contents.dict["link"] as? [String: Any])?["type"] as? String == "url")
+        #expect((contents.dict["color"] as? [String: Any])?["type"] as? String == "color")
+        #expect((contents.dict["items"] as? [String])?.count == 3)
+        #expect(contents.dict["count"] as? Int == 42)
+        #expect(contents.dict["enabled"] as? Bool == true)
+    }
+    
+    struct ChinesePropertySlide: Slide {
+        let title = "中文属性测试"
+        let 项目 = ["项目一", "项目二"]
+        let 作者 = "张三"
+        let 年份 = 2024
+    }
+    
+    @Test("Chinese property names work")
+    func testChinesePropertyNames() {
+        let slide = ChinesePropertySlide()
+        let contents = slide.contents
+        
+        let items = contents.dict["项目"] as? [String]
+        #expect(items?.count == 2)
+        
+        let author = contents.dict["作者"] as? String
+        #expect(author == "张三")
+        
+        let year = contents.dict["年份"] as? Int
+        #expect(year == 2024)
+    }
+}

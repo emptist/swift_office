@@ -20,6 +20,10 @@ let package = Package(
             name: "SwiftSlidesDemo",
             targets: ["SwiftSlidesDemo"]
         ),
+        .executable(
+            name: "FlatAPIDemo",
+            targets: ["FlatAPIDemo"]
+        ),
     ],
     dependencies: [
         .package(url: "git@github.com:lukilabs/beautiful-mermaid-swift.git", from: "0.1.0"),
@@ -41,7 +45,14 @@ let package = Package(
         .executableTarget(
             name: "SwiftSlidesDemo",
             dependencies: ["SwiftSlides"],
-            path: "B_SwiftSlides/Demo"
+            path: "B_SwiftSlides/Demo",
+            exclude: ["FlatAPIDemo.swift"]
+        ),
+        .executableTarget(
+            name: "FlatAPIDemo",
+            dependencies: ["SwiftSlides", "Runner"],
+            path: "B_SwiftSlides/Demo",
+            sources: ["FlatAPIDemo.swift"]
         ),
         .testTarget(
             name: "SwiftSlidesTests",
