@@ -364,14 +364,14 @@ public extension Slide {
     }
     
     func detectSlideType() -> String {
-        // Check for cover styles
-        if self is SlideCoverStyle {
+        if self is any EndCoverStyle {
+            return "endCover"
+        }
+        if self is any SlideCoverStyle {
             return "cover"
         }
-        // Check for content styles by contents structure
         let dict = contents.dict
         
-        // Check for two column first (left and right arrays)
         if dict["left"] != nil && dict["right"] != nil {
             return "twoColumn"
         }
@@ -404,14 +404,20 @@ public extension Slide {
             return "hierarchy"
         }
         
-        if dict["Content"] != nil || dict["content"] != nil {
+        if (dict["Content"] as? String ?? dict["content"] as? String) != nil {
             return "text"
         }
         
-        // Check for table - multiple arrays of same length
         let arrays = dict.values.compactMap { $0 as? [String] }
         if arrays.count >= 2 {
             return "table"
+        }
+        
+        if dict.count > 1 {
+            let hasOnlyArrays = dict.values.allSatisfy { $0 is [String] }
+            if hasOnlyArrays {
+                return "table"
+            }
         }
         
         return ""

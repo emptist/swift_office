@@ -179,8 +179,34 @@ public enum ContentParser {
 
 // MARK: - Cover Style Protocols
 
-/// Base CoverStyle protocol - can be applied to any type (Presentation, Section, Slide)
-/// Does NOT require Slide - use specific sub-protocols for each type
+// ============================================
+// Cover Style Protocols - 封面样式协议
+// ============================================
+//
+// IMPORTANT: Understanding Cover Styles
+// ============================================
+// 
+// Key Principle: "Everyone has a head, but each head needs a hairstyle"
+// 
+// - Presentation/Chapter/Node/Section themselves ARE covers (they have heads)
+// - We don't need separate "Cover" protocols (no extra heads)
+// - We DO need "CoverStyle" protocols to control how they're rendered (hairstyles)
+// 
+// Analogy:
+// - Every person grows their own head naturally (Presentation/Chapter/Node/Section)
+// - A mother doesn't grow a separate head for her child (no extra Cover protocols)
+// - But each head can have different hairstyles (CoverStyle protocols)
+// 
+// Therefore:
+// - Presentation itself is a cover → use PresentationCoverStyle for styling
+// - Chapter itself is a cover → use ChapterCoverStyle for styling
+// - Node itself is a cover → use NodeCoverStyle for styling
+// - Section itself is a cover → use SectionCoverStyle for styling
+// - Slide needs explicit cover → use SlideCoverStyle/EndCoverStyle
+// ============================================
+
+/// CoverStyle - Base protocol for all cover styles
+/// Controls how covers are rendered (like a hairstyle)
 @available(macOS 10.15, *)
 public protocol CoverStyle: Sendable {
     var title: String { get }
@@ -252,39 +278,63 @@ public extension PresentationCoverStyle {
 public typealias 封面样式 = SlideCoverStyle
 
 /// 章首页样式协议
+/// Chapter itself is a cover, this protocol controls how it's rendered
 @available(macOS 10.15, *)
-public protocol ChapterCoverStyle: Slide {
-    var chapterSlides: [any Slide] { get }
+public protocol ChapterCoverStyle: Chapter, CoverStyle {
 }
 
 @available(macOS 10.15, *)
 public extension ChapterCoverStyle {
-    var chapterSlides: [any Slide] {
-        for (_, value) in contents.dict {
-            if let slides = value as? [any Slide] {
-                return slides
+    // No default implementations - use stored properties from conforming type
+}
+
+/// EndCoverStyle - for ending/thank you slides
+@available(macOS 10.15, *)
+public protocol EndCoverStyle: Slide, CoverStyle {
+}
+
+@available(macOS 10.15, *)
+public extension EndCoverStyle {
+    var subtitle: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(副标题|subtitle|Subtitle)$"
+            if key.range(of: pattern, options: .regularExpression) != nil {
+                return value as? String
             }
         }
-        return []
+        return nil
+    }
+    
+    var author: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(作者|author|Author)$"
+            if key.range(of: pattern, options: .regularExpression) != nil {
+                return value as? String
+            }
+        }
+        return nil
+    }
+    
+    var date: String? {
+        for (key, value) in contents.dict {
+            let pattern = "^(日期|date|Date|年份|year)$"
+            if key.range(of: pattern, options: .regularExpression) != nil {
+                return value as? String
+            }
+        }
+        return nil
     }
 }
 
 /// 节首页样式协议
+/// Node itself is a cover, this protocol controls how it's rendered
 @available(macOS 10.15, *)
-public protocol NodeCoverStyle: Slide {
-    var nodeSlides: [any Slide] { get }
+public protocol NodeCoverStyle: Node, CoverStyle {
 }
 
 @available(macOS 10.15, *)
 public extension NodeCoverStyle {
-    var nodeSlides: [any Slide] {
-        for (_, value) in contents.dict {
-            if let slides = value as? [any Slide] {
-                return slides
-            }
-        }
-        return []
-    }
+    // No default implementations - use stored properties from conforming type
 }
 
 /// contents样式协议

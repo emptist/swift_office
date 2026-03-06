@@ -13,26 +13,26 @@ public struct 项目报告模板: 演示文稿模板 {
         
         var sections: [any Section] = []
         
-        sections.append(章节(标题: "项目概述", slides: [
+        sections.append(册(标题: "项目概述", slides: [
             封面页(标题: 配置.标题, 副标题: 配置.副标题, 渐变: .蓝色),
         ]))
         
         if let 数据 = 配置.数据源 {
-            sections.append(章节(标题: "数据分析", slides: [
+            sections.append(册(标题: "数据分析", slides: [
                 数据.转换为表格页(标题: "数据概览"),
             ].compactMap { $0 as? any Slide }))
         }
         
         for 章节配置 in 配置.章节列表 {
             let slides = 章节配置.幻灯片列表.map { 创建幻灯片($0, 上下文: 配置) }
-            sections.append(章节(标题: 章节配置.标题, slides: slides))
+            sections.append(册(标题: 章节配置.标题, slides: slides))
         }
         
-        sections.append(章节(标题: "总结", slides: [
+        sections.append(册(标题: "总结", slides: [
             结束页(标题: "谢谢！", 副标题: 配置.作者),
         ]))
         
-        return 演示文稿(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
+        return SectionPresentation(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
     }
 }
 
@@ -49,7 +49,7 @@ public struct 培训课程模板: 演示文稿模板 {
         
         var sections: [any Section] = []
         
-        sections.append(章节(标题: "课程导言", slides: [
+        sections.append(册(标题: "课程导言", slides: [
             封面页(标题: 配置.标题, 副标题: 配置.副标题, 渐变: .绿色),
         ]))
         
@@ -62,15 +62,15 @@ public struct 培训课程模板: 演示文稿模板 {
                 slides.append(创建幻灯片(幻灯片配置, 上下文: 配置))
             }
             
-            sections.append(章节(标题: 章节配置.标题, slides: slides))
+            sections.append(册(标题: 章节配置.标题, slides: slides))
         }
         
-        sections.append(章节(标题: "课程结束", slides: [
+        sections.append(册(标题: "课程结束", slides: [
             引用页(引言: "学习是一个持续的过程", 作者: 配置.作者),
             结束页(标题: "谢谢！", 副标题: "期待下次再见"),
         ]))
         
-        return 演示文稿(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
+        return SectionPresentation(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
     }
 }
 
@@ -87,7 +87,7 @@ public struct 年度总结模板: 演示文稿模板 {
         
         var sections: [any Section] = []
         
-        sections.append(章节(标题: "年度概览", slides: [
+        sections.append(册(标题: "年度概览", slides: [
             封面页(标题: 配置.标题, 副标题: 配置.副标题, 渐变: .绿色),
         ]))
         
@@ -100,19 +100,19 @@ public struct 年度总结模板: 演示文稿模板 {
                 数据幻灯片.append(图表)
             }
             
-            sections.append(章节(标题: "数据分析", slides: 数据幻灯片))
+            sections.append(册(标题: "数据分析", slides: 数据幻灯片))
         }
         
         for 章节配置 in 配置.章节列表 {
             let slides = 章节配置.幻灯片列表.map { 创建幻灯片($0, 上下文: 配置) }
-            sections.append(章节(标题: 章节配置.标题, slides: slides))
+            sections.append(册(标题: 章节配置.标题, slides: slides))
         }
         
-        sections.append(章节(标题: "展望未来", slides: [
+        sections.append(册(标题: "展望未来", slides: [
             结束页(标题: "谢谢！", 副标题: 配置.作者),
         ]))
         
-        return 演示文稿(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
+        return SectionPresentation(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
     }
 }
 
@@ -129,7 +129,7 @@ public struct 数据分析报告模板: 演示文稿模板 {
         
         var sections: [any Section] = []
         
-        sections.append(章节(标题: "报告概述", slides: [
+        sections.append(册(标题: "报告概述", slides: [
             封面页(标题: 配置.标题, 副标题: 配置.副标题, 渐变: .紫色),
         ]))
         
@@ -150,19 +150,19 @@ public struct 数据分析报告模板: 演示文稿模板 {
                 }
             }
             
-            sections.append(章节(标题: "数据分析", slides: 数据幻灯片))
+            sections.append(册(标题: "数据分析", slides: 数据幻灯片))
         }
         
         for 章节配置 in 配置.章节列表 {
             let slides = 章节配置.幻灯片列表.map { 创建幻灯片($0, 上下文: 配置) }
-            sections.append(章节(标题: 章节配置.标题, slides: slides))
+            sections.append(册(标题: 章节配置.标题, slides: slides))
         }
         
-        sections.append(章节(标题: "结论", slides: [
+        sections.append(册(标题: "结论", slides: [
             结束页(标题: "谢谢！", 副标题: 配置.作者),
         ]))
         
-        return 演示文稿(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
+        return SectionPresentation(标题: 配置.标题, 作者: 配置.作者, 主题: 主题, sections: sections)
     }
 }
 

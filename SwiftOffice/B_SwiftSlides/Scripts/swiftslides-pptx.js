@@ -109,10 +109,46 @@ async function generatePPTX(data, outputPath) {
         await addPresentationCover(pres, data, theme);
     }
     
-    for (const section of data.sections || []) {
-        for (const slide of section.slides || []) {
+    // Process hierarchy levels in order: sections → chapters → nodes → slides
+    // Each level is mutually exclusive based on the hierarchy used
+    const sections = data.sections || [];
+    const chapters = data.chapters || [];
+    const nodes = data.nodes || [];
+    const slides = data.slides || [];
+    
+    // Process sections (册)
+    for (const section of sections) {
+        // Sections can contain chapters, nodes, or slides
+        const sectionChapters = section.chapters || [];
+        const sectionNodes = section.nodes || [];
+        const sectionSlides = section.slides || [];
+        
+        for (const chapter of sectionChapters) {
+            await processChapter(pres, chapter, theme);
+        }
+        
+        for (const node of sectionNodes) {
+            await processNode(pres, node, theme);
+        }
+        
+        for (const slide of sectionSlides) {
             await processSlideRecursive(pres, slide, theme);
         }
+    }
+    
+    // Process chapters (章)
+    for (const chapter of chapters) {
+        await processChapter(pres, chapter, theme);
+    }
+    
+    // Process nodes (节)
+    for (const node of nodes) {
+        await processNode(pres, node, theme);
+    }
+    
+    // Process slides directly
+    for (const slide of slides) {
+        await processSlideRecursive(pres, slide, theme);
     }
     
     await pres.writeFile({ fileName: outputPath });
@@ -122,6 +158,55 @@ async function generatePPTX(data, outputPath) {
         path: outputPath,
         slides: pres.slides.length
     }));
+}
+
+async function processChapter(pres, chapter, theme) {
+    // Add chapter cover if it has cover properties
+    if (chapter.subtitle) {
+        await addChapterCover(pres, chapter, theme);
+    }
+    
+    // Chapters can contain nodes or slides
+    const nodes = chapter.nodes || [];
+    const slides = chapter.slides || [];
+    
+    for (const node of nodes) {
+        await processNode(pres, node, theme);
+    }
+    
+    for (const slide of slides) {
+        await processSlideRecursive(pres, slide, theme);
+    }
+}
+
+async function processNode(pres, node, theme) {
+    // Add node cover if it has cover properties
+    if (node.subtitle) {
+        await addNodeCover(pres, node, theme);
+    }
+    
+    // Nodes contain slides
+    const slides = node.slides || [];
+    
+    for (const slide of slides) {
+        await processSlideRecursive(pres, slide, theme);
+    }
+}
+
+async function addChapterCover(pres, data, theme) {
+    const slideObj = pres.addSlide();
+    addSectionSlide(slideObj, {
+        title: data.title,
+        subtitle: data.subtitle
+    }, theme);
+}
+
+async function addNodeCover(pres, data, theme) {
+    const slideObj = pres.addSlide();
+    addSectionSlide(slideObj, {
+        title: data.title,
+        subtitle: data.subtitle
+    }, theme);
 }
 
 async function processSlideRecursive(pres, slide, theme) {
@@ -194,6 +279,7 @@ async function addSlide(pres, slide, theme) {
             addProcessSlide(slideObj, data, theme);
             break;
         case 'end':
+        case 'endCover':
         case '结束页':
             addEndSlide(slideObj, data, theme);
             break;
@@ -1238,7 +1324,7 @@ function addTextSlide(slide, data, theme) {
     addSlideTitle(slide, data.title, theme);
     
     const content = data.content || data.Content;
-    if (content) {
+    if (content && typeof content === 'string') {
         slide.addShape('rect', {
             x: 0.5, y: 1.5, w: 9, h: 3.5,
             fill: { color: 'F8F8F8' },
@@ -1250,6 +1336,8 @@ function addTextSlide(slide, data, theme) {
             fontSize: 14, color: theme.text,
             valign: 'top'
         });
+    } else {
+        addDefaultSlide(slide, data, theme);
     }
 }
 

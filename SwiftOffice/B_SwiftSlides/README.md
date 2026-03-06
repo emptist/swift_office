@@ -293,12 +293,159 @@ node Scripts/swiftslides-pptx.js output/demo.pptx < output/demo.json
 
 ## Architecture
 
-SwiftSlides uses Protocol-Oriented Programming (POP) with the following core protocols:
+SwiftSlides uses Protocol-Oriented Programming (POP) with following core protocols:
 
 - `Slide` - Base protocol for all slide types (uses Mirror for property discovery)
-- `Section` - Container for slides
-- `Presentation` - Top-level container
-- `封面样式`, `章节样式`, `内容样式` - Style protocols for protocol composition
+- `Node` - Container for slides (节 - logical grouping)
+- `Chapter` - Container for nodes or slides (章 - logical grouping)
+- `Section` - Container for chapters or slides (册 - physical grouping)
+- `Presentation` - Top-level container (演示文稿/古书)
+
+### Five-Level Hierarchy
+
+```
+Presentation (演示文稿/古书) ─ 物理整体
+  │
+  └── Section (册) ─ 物理分组（如上册、下册）
+        │
+        └── Chapter (章) ─ 逻辑分组（如第一章）
+              │
+              └── Node (节) ─ 逻辑分组（如1.1节）
+                    │
+                    └── Slide (幻灯片) ─ 内容单元
+```
+
+**Hierarchy Rules:**
+
+1. **Order is Fixed**: The hierarchy order is always Presentation → Section → Chapter → Node → Slide
+2. **No Reverse Order**: Cannot skip upward (e.g., Slide cannot contain Node)
+3. **Flexible Combination**: Users can skip any intermediate levels as needed
+4. **Automatic Numbering**: All level numbers are automatically generated based on array index
+
+### Automatic Numbering System
+
+**Important**: Section, Chapter, and Node numbers are automatically generated based on their position in the parent's array. Users should NOT manually set any numbers to avoid hardcoding.
+
+**How It Works:**
+
+```swift
+// User writes:
+struct MyPresentation: ChapterBasedPresentation {
+    let title = "My Course"
+    let chapters: [any Chapter] = [
+        Chapter1(),  // Position 0
+        Chapter2(),  // Position 1
+        Chapter3(),  // Position 2
+    ]
+}
+
+// System automatically generates:
+// Chapter 1 → "第1章"
+// Chapter 2 → "第2章"
+// Chapter 3 → "第3章"
+```
+
+**Numbering Format:**
+
+| Level | Array Index | Auto-Generated Display |
+|-------|-------------|---------------------|
+| Section 1 | 0 | "第1册" |
+| Section 2 | 1 | "第2册" |
+| Chapter 1 | 0 | "第1章" |
+| Chapter 2 | 1 | "第2章" |
+| Node 1 | 0 | "1.1节" |
+| Node 2 | 1 | "1.2节" |
+
+**Benefits:**
+
+- ✅ **No Hardcoding**: Numbers are generated dynamically from array structure
+- ✅ **Extreme Flexibility**: Add/remove items anywhere without manual renumbering
+- ✅ **Automatic Updates**: Numbers update automatically when array changes
+- ✅ **Style-Based Display**: PPTX generation can choose to show/hide numbers based on theme
+
+**Implementation Details:**
+
+The numbering is generated during JSON serialization (`toDict()` method):
+
+```swift
+// In Presentation.swift
+dict["chapters"] = chapters.enumerated().map { index, chapter in
+    chapter.toDict(chapterIndex: index)  // Pass index to child
+}
+
+// In Chapter.swift
+func toDict(chapterIndex: Int? = nil) -> [String: Any] {
+    var dict: [String: Any] = [...]
+    
+    if let chapterIndex = chapterIndex {
+        dict["chapterNumber"] = chapterIndex + 1
+        dict["chapterNumberDisplay"] = "第\(chapterIndex + 1)章"
+    }
+    
+    return dict
+}
+```
+
+**Valid Combinations:**
+
+```swift
+// Example 1: Simple - Skip all intermediate levels
+struct SimplePresentation: Presentation {
+    let title = "Simple Demo"
+    let slides: [any Slide] = [Slide1(), Slide2()]
+}
+
+// Example 2: With Section - Skip Chapter and Node
+struct SectionPresentation: Presentation {
+    let title = "Section Demo"
+    let sections: [any Section] = [Section1()]
+}
+
+struct Section1: Section {
+    let title = "Section 1"
+    let slides: [any Slide] = [Slide1(), Slide2()]
+}
+
+// Example 3: With Chapter - Skip Section and Node
+struct ChapterPresentation: Presentation {
+    let title = "Chapter Demo"
+    let chapters: [any Chapter] = [Chapter1()]
+}
+
+struct Chapter1: Chapter {
+    let title = "Chapter 1"
+    let slides: [any Slide] = [Slide1(), Slide2()]
+}
+
+// Example 4: Full Hierarchy - All levels
+struct FullPresentation: Presentation {
+    let title = "Full Demo"
+    let sections: [any Section] = [Section1()]
+}
+
+struct Section1: Section {
+    let title = "Section 1"
+    let chapters: [any Chapter] = [Chapter1()]
+}
+
+struct Chapter1: Chapter {
+    let title = "Chapter 1"
+    let nodes: [any Node] = [Node1()]
+}
+
+struct Node1: Node {
+    let title = "Node 1"
+    let slides: [any Slide] = [Slide1()]
+}
+```
+
+**Key Points:**
+- Each level can only contain the next level or lower levels
+- Presentation can contain Section, Chapter, Node, or Slide
+- Section can contain Chapter, Node, or Slide
+- Chapter can contain Node or Slide
+- Node can contain Slide
+- Slide is the lowest level and cannot contain other levels
 
 ### Data Flow
 

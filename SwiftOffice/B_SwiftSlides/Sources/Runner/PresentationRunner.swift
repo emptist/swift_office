@@ -10,12 +10,42 @@ public struct PresentationRunner {
         
         print("📊 Presentation: \(presentation.title)")
         print("👤 Author: \(presentation.author ?? "N/A")")
-        print("📁 Sections: \(presentation.sections.count)")
-        print("")
         
-        for section in presentation.sections {
-            print("📂 \(section.title)")
-            for slide in section.slides {
+        if let sectionBased = presentation as? any SectionBasedPresentation {
+            print("📁 Sections: \(sectionBased.sections.count)")
+            print("")
+            
+            for section in sectionBased.sections {
+                print("📂 \(section.title)")
+                for slide in section.flattenSlides() {
+                    printSlideTree(slide, indent: 2)
+                }
+            }
+        } else if let chapterBased = presentation as? any ChapterBasedPresentation {
+            print("📚 Chapters: \(chapterBased.chapters.count)")
+            print("")
+            
+            for chapter in chapterBased.chapters {
+                print("📖 \(chapter.title)")
+                for slide in chapter.flattenSlides() {
+                    printSlideTree(slide, indent: 2)
+                }
+            }
+        } else if let nodeBased = presentation as? any NodeBasedPresentation {
+            print("📑 Nodes: \(nodeBased.nodes.count)")
+            print("")
+            
+            for node in nodeBased.nodes {
+                print("📄 \(node.title)")
+                for slide in node.flattenSlides() {
+                    printSlideTree(slide, indent: 2)
+                }
+            }
+        } else if let slideBased = presentation as? any SlideBasedPresentation {
+            print("📄 Slides: \(slideBased.slides.count)")
+            print("")
+            
+            for slide in slideBased.slides {
                 printSlideTree(slide, indent: 2)
             }
         }

@@ -1,7 +1,7 @@
 import Foundation
 
 // ============================================
-// Section 协议 - 册协议（物理分组）
+// Chapter 协议 - 章协议（逻辑分组）
 // ============================================
 //
 // # Five-Level Hierarchy
@@ -31,50 +31,43 @@ import Foundation
 // 2. **No Reverse Order**: Cannot skip upward (e.g., Slide cannot contain Node)
 // 3. **Flexible Combination**: Users can skip any intermediate levels as needed
 //
-// # Section (册) - Physical Grouping
+// # Chapter (章) - Logical Content Grouping
 //
-// Section represents physical grouping of materials, similar to volumes in a book.
-// Examples: "上册" (Volume 1), "下册" (Volume 2)
+// Chapter represents logical content grouping, similar to chapters in a book.
+// Examples: "第一章：AI时代背景", "第二章：数据资产管理"
 //
 // # Automatic Numbering
 //
-// **Important**: Section numbers are automatically generated based on array index.
-// Users should NOT manually set section numbers to avoid hardcoding.
+// **Important**: Chapter numbers are automatically generated based on array index.
+// Users should NOT manually set chapter numbers to avoid hardcoding.
 //
-// - Section 1 → "第1册"
-// - Section 2 → "第2册"
-// - Section 3 → "第3册"
+// - Chapter 1 → "第1章"
+// - Chapter 2 → "第2章"
+// - Chapter 3 → "第3章"
 //
-// The numbering is generated during PPTX generation based on the section's position
-// in the parent's sections array.
+// The numbering is generated during PPTX generation based on chapter's position
+// in parent's chapters array.
 //
 // # Flexible Combinations
 //
-// Section can contain:
-// - Chapters (章) - logical content grouping
+// Chapter can contain:
 // - Nodes (节) - logical content grouping
 // - Slides (幻灯片) - content units
 //
-// Only one type of content should be used per Section to maintain clarity.
+// Only one type of content should be used per Chapter to maintain clarity.
 //
 // # Valid Combinations
 //
 // ```swift
-// Example 1: Section with Chapters
-// struct Section1: Section {
-//     let title = "上册"
-//     let chapters: [any Chapter] = [Chapter1(), Chapter2()]
-// }
-//
-// Example 2: Section with Nodes (skip Chapter level)
-// struct Section1: Section {
-//     let title = "上册"
+// Example 1: Chapter with Nodes
+// struct Chapter1: Chapter {
+//     let title = "第一章：AI时代背景"
 //     let nodes: [any Node] = [Node1(), Node2()]
 // }
 //
-// Example 3: Section with Slides (skip Chapter and Node levels)
-// struct Section1: Section {
-//     let title = "上册"
+// Example 2: Chapter with Slides (skip Node level)
+// struct Chapter1: Chapter {
+//     let title = "第一章：AI时代背景"
 //     let slides: [any Slide] = [Slide1(), Slide2()]
 // }
 // ```
@@ -82,43 +75,35 @@ import Foundation
 // # Design Principles
 //
 // 1. Protocol uses `var { get }`, implementation uses `let`
-// 2. Section is physical grouping (e.g., "上册", "下册")
-// 3. Section contains Chapters, Nodes, or Slides
+// 2. Chapter is logical content grouping (e.g., "第一章：AI时代背景")
+// 3. Chapter contains Nodes or Slides
 // 4. Automatic numbering based on array index (no manual numbering)
 // ============================================
 
 @available(macOS 10.15, *)
-public protocol Section: Identifiable, Sendable {
+public protocol Chapter: Identifiable, Sendable {
     var id: UUID { get }
     var title: String { get }
-    var chapters: [any Chapter] { get }
     var nodes: [any Node] { get }
     var slides: [any Slide] { get }
-    func toDict(sectionIndex: Int?) -> [String: Any]
+    func toDict(chapterIndex: Int?) -> [String: Any]
 }
 
 @available(macOS 10.15, *)
-public extension Section {
+public extension Chapter {
     var id: UUID { UUID() }
-    var chapters: [any Chapter] { [] }
     var nodes: [any Node] { [] }
     var slides: [any Slide] { [] }
     
-    func toDict(sectionIndex: Int? = nil) -> [String: Any] {
+    func toDict(chapterIndex: Int? = nil) -> [String: Any] {
         var dict: [String: Any] = [
             "id": id.uuidString,
             "title": title
         ]
         
-        if let sectionIndex = sectionIndex {
-            dict["sectionNumber"] = sectionIndex + 1
-            dict["sectionNumberDisplay"] = "第\(sectionIndex + 1)册"
-        }
-        
-        if !chapters.isEmpty {
-            dict["chapters"] = chapters.enumerated().map { index, chapter in
-                chapter.toDict(chapterIndex: index)
-            }
+        if let chapterIndex = chapterIndex {
+            dict["chapterNumber"] = chapterIndex + 1
+            dict["chapterNumberDisplay"] = "第\(chapterIndex + 1)章"
         }
         
         if !nodes.isEmpty {
@@ -137,10 +122,6 @@ public extension Section {
     func flattenSlides() -> [any Slide] {
         var result: [any Slide] = []
         
-        for chapter in chapters {
-            result.append(contentsOf: chapter.flattenSlides())
-        }
-        
         for node in nodes {
             result.append(contentsOf: node.flattenSlides())
         }
@@ -156,20 +137,18 @@ public extension Section {
 // MARK: - Default Implementation
 
 @available(macOS 10.15, *)
-public struct 册: Section {
+public struct 章: Chapter {
     public let id = UUID()
     public let title: String
-    public let chapters: [any Chapter]
     public let nodes: [any Node]
     public let slides: [any Slide]
     
-    public init(标题: String, chapters: [any Chapter] = [], nodes: [any Node] = [], slides: [any Slide] = []) {
+    public init(标题: String, nodes: [any Node] = [], slides: [any Slide] = []) {
         self.title = 标题
-        self.chapters = chapters
         self.nodes = nodes
         self.slides = slides
     }
 }
 
 @available(macOS 10.15, *)
-public typealias SectionBase = 册
+public typealias ChapterBase = 章

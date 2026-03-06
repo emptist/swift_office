@@ -92,6 +92,40 @@ See [SwiftOffice/B_SwiftSlides/README.md](SwiftOffice/B_SwiftSlides/README.md) f
 
 See [SwiftOffice/A_PreviousDesign/SwiftOfficeValidator/](SwiftOffice/A_PreviousDesign/SwiftOfficeValidator/) for details.
 
+## Architecture
+
+SwiftSlides uses Protocol-Oriented Programming (POP) with a five-level hierarchy:
+
+```
+Presentation (演示文稿/古书) ─ 物理整体
+  │
+  └── Section (册) ─ 物理分组（如上册、下册）
+        │
+        └── Chapter (章) ─ 逻辑分组（如第一章）
+              │
+              └── Node (节) ─ 逻辑分组（如1.1节）
+                    │
+                    └── Slide (幻灯片) ─ 内容单元
+```
+
+**Hierarchy Rules:**
+
+1. **Order is Fixed**: The hierarchy order is always Presentation → Section → Chapter → Node → Slide
+2. **No Reverse Order**: Cannot skip upward (e.g., Slide cannot contain Node)
+3. **Flexible Combination**: Users can skip any intermediate levels as needed
+
+**Key Principles:**
+
+- **Presentation & Section**: Grouped by physical materials (物理材料分组)
+- **Chapter, Node & Slide**: Grouped by logic and ideas (逻辑内容分组)
+- **No Separate Cover Structs**: Cover pages are integrated directly into hierarchy levels via protocols (PresentationCoverStyle, SectionCoverStyle, ChapterCoverStyle, NodeCoverStyle)
+- **Semantic Naming**: Use descriptive names that reflect actual content, not generic names like "Chapter1Node1"
+
+For detailed documentation, see:
+- [SwiftOffice/B_SwiftSlides/README.md](SwiftOffice/B_SwiftSlides/README.md) - Full framework documentation
+- [SwiftOffice/B_SwiftSlides/Docs/RUNNER_USAGE.md](SwiftOffice/B_SwiftSlides/Docs/RUNNER_USAGE.md) - PresentationRunner usage guide
+- [.trae/rules/project_rules.md](.trae/rules/project_rules.md) - Project rules and best practices
+
 ## Development History
 
 1. **SwiftOfficeValidator** - Foundation exploration, understanding Swift ↔ CoffeeScript patterns

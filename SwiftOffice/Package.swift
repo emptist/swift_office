@@ -24,6 +24,10 @@ let package = Package(
             name: "FlatAPIDemo",
             targets: ["FlatAPIDemo"]
         ),
+        .executable(
+            name: "DataAssetCourseDemo",
+            targets: ["DataAssetCourseDemo"]
+        ),
     ],
     dependencies: [
         .package(url: "git@github.com:lukilabs/beautiful-mermaid-swift.git", from: "0.1.0"),
@@ -46,13 +50,19 @@ let package = Package(
             name: "SwiftSlidesDemo",
             dependencies: ["SwiftSlides"],
             path: "B_SwiftSlides/Demo",
-            exclude: ["FlatAPIDemo.swift"]
+            exclude: ["FlatAPIDemo.swift", "DataAssetCourseDemo.swift"]
         ),
         .executableTarget(
             name: "FlatAPIDemo",
             dependencies: ["SwiftSlides", "Runner"],
             path: "B_SwiftSlides/Demo",
             sources: ["FlatAPIDemo.swift"]
+        ),
+        .executableTarget(
+            name: "DataAssetCourseDemo",
+            dependencies: ["SwiftSlides", "Runner"],
+            path: "B_SwiftSlides/Demo",
+            sources: ["DataAssetCourseDemo.swift"]
         ),
         .testTarget(
             name: "SwiftSlidesTests",
