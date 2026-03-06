@@ -58,6 +58,8 @@ Current SwiftSlides framework - the main implementation:
 Real-world application cases:
 - **goodhospital2021/**: Hospital data analysis and report generation case
 
+See [Cases/README.md](Cases/README.md) for detailed case documentation.
+
 ## Packages
 
 ### SwiftOffice
